@@ -1,6 +1,4 @@
-﻿using Domain.ValueObjects.ValueObjects;
-
-namespace Services.Abstractions;
+﻿namespace Services.Abstractions;
 public interface IHasher
 {
     string GeneratePassword(string passwordToChange);

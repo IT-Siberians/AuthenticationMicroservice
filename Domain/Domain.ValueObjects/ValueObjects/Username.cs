@@ -1,15 +1,23 @@
 ﻿using Domain.ValueObjects.BaseEntities;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace Domain.ValueObjects.ValueObjects;
-
+/// <summary>
+/// Базовый элемент Имя пользователя(никнейм)
+/// </summary>
+/// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Имени пользователя(никнейма)</param>
 public class Username(string value) : ValueObject<string>(value)
 {
     public const int MinNameLength = 3;
     public const int MaxNameLength = 30;
     private const string ValidNamePattern = "(^[a-zA-Z_-]+$)";
-
+    /// <summary>
+    /// Метод проверки соответствия правилам базового имени пользователя(никнейма)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <exception cref="ArgumentNullException">Нулевая или пустая строка в параметрах метода</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Несоответствие длине имени пользователя(никнейма)</exception>
+    /// <exception cref="ArgumentException">Несоответствие паттерну имени пользователя(никнейму)</exception>
     protected override void Validate(string value)
     {
         if ((value == null) ||

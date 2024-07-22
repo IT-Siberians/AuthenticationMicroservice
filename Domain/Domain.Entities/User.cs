@@ -48,11 +48,6 @@ public class User
         }
     }
 
-    public void RestrictUser()
-    {
-        AccountStatus = AccountStatuses.RestrictedAccount;
-    }
-
     public bool SignIn()
     {
         return true;

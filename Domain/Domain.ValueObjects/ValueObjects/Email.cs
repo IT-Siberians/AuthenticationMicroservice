@@ -2,12 +2,24 @@
 using System.Text.RegularExpressions;
 
 namespace Domain.ValueObjects.ValueObjects;
-/// <summary>
-/// Базовый элемент Электронная почта
-/// </summary>
-/// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Электронной почты</param>
-public class Email(string value) : ValueObject<string>(value)
+public class Email : ValueObject<string>
 {
+    /// <summary>
+    /// Конструктор для EF
+    /// </summary>
+    protected Email() : base(string.Empty)
+    {
+
+    }
+    /// <summary>
+    /// Базовый элемент Электронная почта
+    /// </summary>
+    /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Электронной почты</param>
+
+    public Email(string value) : base(value)
+    {
+
+    }
     public const int MaxEmailLength = 255;
     private const string ValidEmailPattern = @"[.\-_a-z0-9]+@([a-z0-9][\-a-z0-9]+\.)+[a-z]{2,6}";
     /// <summary>
@@ -19,14 +31,14 @@ public class Email(string value) : ValueObject<string>(value)
     /// <exception cref="ArgumentException">Несоответствие паттерну электронной почты</exception>
     protected override void Validate(string? value)
     {
-        if ((value == null)||
+        if ((value == null) ||
             (string.IsNullOrWhiteSpace(value)))
             throw new ArgumentNullException(nameof(value), "Email cannot null or empty");
 
         if (value.Length > MaxEmailLength)
             throw new ArgumentOutOfRangeException(
                 $"Invalid email address  length. Maximum length is {MaxEmailLength}. Email value: {value}");
-        
+
         var isMatch = Regex.Match(value, ValidEmailPattern, RegexOptions.IgnoreCase);
         if (!isMatch.Success)
             throw new ArgumentException(

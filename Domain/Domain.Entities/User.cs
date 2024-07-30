@@ -2,7 +2,7 @@
 using Domain.ValueObjects.ValueObjects;
 
 namespace Domain.Entities;
-public class User
+public class User : IEntity<Guid>
 {
     public Guid Id { get; }
     public Username Username { get; private set; }

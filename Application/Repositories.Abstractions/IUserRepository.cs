@@ -1,11 +1,9 @@
 ﻿using Domain.Entities;
 
 namespace Repositories.Abstractions;
-public interface IUserRepository
+
+public interface IUserRepository : IBaseRepository<User, Guid>
 {
-    Task<User?> GetByIdAsync(Guid id);
-    Task<Guid> AddAsync(User user);
-    Task<bool> UpdateUserAsync(Guid id, User newUser);
-    Task<bool> CheckIsAvailableUsername(string username);
-    Task<bool> CheckIsAvailableEmail(string email);
+    Task<bool> CheckIsAvailableUsernameAsync(string username);
+    Task<bool> CheckIsAvailableEmailAsync(string email);
 }

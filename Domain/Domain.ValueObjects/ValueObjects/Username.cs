@@ -6,8 +6,24 @@ namespace Domain.ValueObjects.ValueObjects;
 /// Базовый элемент Имя пользователя(никнейм)
 /// </summary>
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Имени пользователя(никнейма)</param>
-public class Username(string value) : ValueObject<string>(value)
+public class Username: ValueObject<string>
 {
+    /// <summary>
+    /// Конструктор для EF
+    /// </summary>
+    protected Username() : base(string.Empty)
+    {
+
+    }
+    /// <summary>
+    /// Базовый элемент Хэшированный пароль
+    /// </summary>
+    /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
+
+    public Username(string value): base(value)
+    {
+        
+    }
     public const int MinNameLength = 3;
     public const int MaxNameLength = 30;
     private const string ValidNamePattern = "(^[a-zA-Z_-]+$)";

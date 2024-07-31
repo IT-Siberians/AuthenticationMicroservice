@@ -15,7 +15,7 @@ public class PasswordHash: ValueObject<string>
     /// </summary>
     /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
 
-    public PasswordHash(string value) : base(value)
+    public PasswordHash(string? value) : base(value)
     {
 
     }

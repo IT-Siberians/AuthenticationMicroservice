@@ -23,13 +23,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApi", "WebApi", "{35C77D9A-A40C-4B63-A996-B5684FE50E01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiAuthenticate", "WebApi\WebApiAuthenticate\WebApiAuthenticate.csproj", "{BDFA4EBC-150D-4771-B13E-F287CFAD9E50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiAuthenticate", "WebApi\WebApiAuthenticate\WebApiAuthenticate.csproj", "{BDFA4EBC-150D-4771-B13E-F287CFAD9E50}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{46395E52-BFA9-4494-8EA0-91FF5217EBC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.Implementations", "Infrastructure\Repositories.Implementations\Repositories.Implementations.csproj", "{A907177C-5A49-4DAD-AA31-0D75C582A919}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories.Implementations", "Infrastructure\Repositories.Implementations\Repositories.Implementations.csproj", "{A907177C-5A49-4DAD-AA31-0D75C582A919}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFramework", "Infrastructure\EntityFramework\EntityFramework.csproj", "{ACB9FF5D-29A9-4706-B310-2FE8669DC6BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFramework", "Infrastructure\EntityFramework\EntityFramework.csproj", "{ACB9FF5D-29A9-4706-B310-2FE8669DC6BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PasswordHasher", "Infrastructure\PasswordHasher\PasswordHasher.csproj", "{B5B45935-C903-4088-8C08-69E34DBCBF7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{ACB9FF5D-29A9-4706-B310-2FE8669DC6BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACB9FF5D-29A9-4706-B310-2FE8669DC6BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACB9FF5D-29A9-4706-B310-2FE8669DC6BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B45935-C903-4088-8C08-69E34DBCBF7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B45935-C903-4088-8C08-69E34DBCBF7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B45935-C903-4088-8C08-69E34DBCBF7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B45935-C903-4088-8C08-69E34DBCBF7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +93,7 @@ Global
 		{BDFA4EBC-150D-4771-B13E-F287CFAD9E50} = {35C77D9A-A40C-4B63-A996-B5684FE50E01}
 		{A907177C-5A49-4DAD-AA31-0D75C582A919} = {46395E52-BFA9-4494-8EA0-91FF5217EBC9}
 		{ACB9FF5D-29A9-4706-B310-2FE8669DC6BE} = {46395E52-BFA9-4494-8EA0-91FF5217EBC9}
+		{B5B45935-C903-4088-8C08-69E34DBCBF7A} = {46395E52-BFA9-4494-8EA0-91FF5217EBC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {64E118D0-8E3B-4902-AFBF-296BB0F7D329}

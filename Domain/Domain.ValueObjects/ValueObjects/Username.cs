@@ -20,7 +20,7 @@ public class Username: ValueObject<string>
     /// </summary>
     /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
 
-    public Username(string value): base(value)
+    public Username(string? value): base(value)
     {
         
     }

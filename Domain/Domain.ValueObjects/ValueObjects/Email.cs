@@ -16,7 +16,7 @@ public class Email : ValueObject<string>
     /// </summary>
     /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Электронной почты</param>
 
-    public Email(string value) : base(value)
+    public Email(string? value) : base(value)
     {
 
     }

@@ -34,17 +34,17 @@ public class User : IEntity<Guid>
     /// Изменение имени пользователя(никнейма)
     /// </summary>
     /// <param name="newUsername">Value object Username - новое имя пользователя</param>
-    public void ChangeUsername(Username newUsername)
+    public void ChangeUsername(string? newUsername)
     {
-        Username = newUsername;
+        Username = new Username(newUsername);
     }
     /// <summary>
     /// Изменение хэшированного пароля
     /// </summary>
     /// <param name="newPasswordHash">Value object PasswordHash - хэшированный пароль, на который заменяется</param>
-    public void ChangePassword(PasswordHash newPasswordHash)
+    public void ChangePassword(string? newPasswordHash)
     {
-        PasswordHash = newPasswordHash;
+        PasswordHash = new PasswordHash(newPasswordHash);
     }
     /// <summary>
     /// Изменение электронной почты
@@ -58,9 +58,9 @@ public class User : IEntity<Guid>
     /// Подтверждение и замена электронной почты
     /// </summary>
     /// <param name="newEmail">Value object Email - новая электронная почта</param>
-    public void ConfirmNewEmail(Email newEmail)
+    public void ConfirmNewEmail(string? newEmail)
     {
-        ChangeEmail(newEmail);
+        ChangeEmail(new Email(newEmail));
         if (AccountStatus == AccountStatuses.UnconfirmedAccount)
         {
             AccountStatus = AccountStatuses.ConfirmedAccount;

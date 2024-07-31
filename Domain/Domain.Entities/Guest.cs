@@ -7,11 +7,11 @@ namespace Domain.Entities;
 /// <param name="username">Value object Username - имя пользователя</param>
 /// <param name="passwordHash">Value object PasswordHash - хэшированный пароль</param>
 /// <param name="email">Value object Email - электронная почта</param>
-public class Guest(Username username, PasswordHash passwordHash, Email email)
+public class Guest(string? username, string? passwordHash, string? email)
 {
-    public readonly Username Username = username;
-    private readonly PasswordHash _passwordHash = passwordHash;
-    public readonly Email Email = email;
+    public readonly Username Username = new(username);
+    private readonly PasswordHash _passwordHash = new(passwordHash);
+    public readonly Email Email = new(email);
     /// <summary>
     /// Зарегистрировать гостя
     /// </summary>

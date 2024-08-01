@@ -89,7 +89,7 @@ public class UsersController(
             string.IsNullOrWhiteSpace(changeEmailModel.NewEmail))
             return BadRequest("Empty input in required fields");// сделать валидацию ввода
 
-        var changeEmailDto = mapper.Map<ChangeEmailDto>(changeEmailModel);
+        var changeEmailDto = mapper.Map<PublicationOfEmailConfirmationDto>(changeEmailModel);
 
         var isCreated = await managementService.CreateEmailChangeRequestAsync(changeEmailDto);
         if (isCreated)

@@ -9,6 +9,6 @@ public interface IUserManagementService
     Task<UserReadDto> CreateUserAsync(CreateUserDto createUserDto);
     Task<UserReadDto> ChangeUsernameAsync(ChangeUsernameDto changeUsernameDto);
     Task<UserReadDto> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
-    Task<bool> CreateEmailChangeRequestAsync(ChangeEmailDto changeEmailDto);
+    Task<bool> CreateEmailChangeRequestAsync(PublicationOfEmailConfirmationDto publicationOfEmailConfirmationDto);
     Task<UserReadDto> VerifyEmail(VerifyEmailDto verifyEmailDto);
 }

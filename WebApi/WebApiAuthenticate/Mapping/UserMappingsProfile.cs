@@ -84,8 +84,8 @@ public class UserMappingsProfile : Profile
                 opt => opt.MapFrom(
                     src => src.NewPassword));
         #endregion
-        #region ChangeEmailModel=>ChangeEmailDto
-        CreateMap<ChangeEmailModel, ChangeEmailDto>()
+        #region ChangeEmailModel=>PublicationOfEmailConfirmationDto
+        CreateMap<ChangeEmailModel, PublicationOfEmailConfirmationDto>()
             //Id mapping
             .ForMember(
                 dest => dest.Id,

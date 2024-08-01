@@ -45,6 +45,9 @@ public class UserManagementService(
         var createdUser = await repository.AddAsync(user);
         if (createdUser == null)
             throw new Exception("the repository was unable to create an entity");// сделать кастомный эксепшн
+
+        var publishCreatedUser = mapper.Map<PublicationOfEmailConfirmationDto>(createdUser);
+        await publisher.PublishNewEmail(publishCreatedUser);
         
         return mapper.Map<UserReadDto>(user);
     }
@@ -93,22 +96,22 @@ public class UserManagementService(
         return mapper.Map<UserReadDto>(updatedUser);
     }
 
-    public async Task<bool> CreateEmailChangeRequestAsync(ChangeEmailDto changeEmailDto)
+    public async Task<bool> CreateEmailChangeRequestAsync(PublicationOfEmailConfirmationDto publicationOfEmailConfirmationDto)
     {
-        if (changeEmailDto == null ||
-            changeEmailDto.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(changeEmailDto.NewEmail))
-            throw new ArgumentNullException(nameof(changeEmailDto));
+        if (publicationOfEmailConfirmationDto == null ||
+            publicationOfEmailConfirmationDto.Id == Guid.Empty ||
+            string.IsNullOrWhiteSpace(publicationOfEmailConfirmationDto.NewEmail))
+            throw new ArgumentNullException(nameof(publicationOfEmailConfirmationDto));
 
-        var isAvailableEmail = await repository.CheckIsAvailableEmailAsync(changeEmailDto.NewEmail);
+        var isAvailableEmail = await repository.CheckIsAvailableEmailAsync(publicationOfEmailConfirmationDto.NewEmail);
         if (!isAvailableEmail)
             throw new Exception("The email is already taken");
 
-        var user = await repository.GetByIdAsync(changeEmailDto.Id);
+        var user = await repository.GetByIdAsync(publicationOfEmailConfirmationDto.Id);
         if (user == null)
             throw new Exception("The entity to change was not found in the repository");
 
-        await publisher.PublishNewEmail(changeEmailDto);
+        await publisher.PublishNewEmail(publicationOfEmailConfirmationDto);
 
         return true;
     }

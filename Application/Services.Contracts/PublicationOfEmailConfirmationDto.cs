@@ -1,5 +1,5 @@
 ﻿namespace Services.Contracts;
-public class ChangeEmailDto
+public class PublicationOfEmailConfirmationDto
 {
     public Guid Id { get; set; }
     public string? NewEmail { get; set; }

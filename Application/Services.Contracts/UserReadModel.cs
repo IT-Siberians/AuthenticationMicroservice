@@ -1,7 +1,7 @@
 ﻿using Domain.Entities.Enums;
 
 namespace Services.Contracts;
-public class UserReadDto
+public class UserReadModel
 {
     public Guid Id { get; set; }
     public string Username { get; set; }

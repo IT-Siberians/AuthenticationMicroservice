@@ -7,8 +7,8 @@ public class UserMappingsProfile : Profile
 {
     public UserMappingsProfile()
     {
-        #region User=>UserReadDto
-        CreateMap<User, UserReadDto>()
+        #region User=>UserReadModel
+        CreateMap<User, UserReadModel>()
             //Id mapping
             .ForMember(
                 dest=>dest.Id,
@@ -34,6 +34,19 @@ public class UserMappingsProfile : Profile
                 dest => dest.AccountStatus,
                 opt => opt.MapFrom(
                     src => src.AccountStatus));
+        #endregion
+
+        #region User=>PublicationOfEmailConfirmationModel
+
+        CreateMap<User, PublicationOfEmailConfirmationModel>()
+            .ForMember(dest => dest.Id,
+                opt => opt.MapFrom(
+                    src => src.Id))
+            .ForMember(dest => dest.NewEmail,
+                opt => opt.MapFrom(
+                    src => src.Email.Value));
+
+
         #endregion
     }
 }

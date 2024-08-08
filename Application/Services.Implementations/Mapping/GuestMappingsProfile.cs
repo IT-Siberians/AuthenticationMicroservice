@@ -8,7 +8,7 @@ public class GuestMappingsProfile : Profile
 {
     public GuestMappingsProfile(IPasswordHasher hasher) // учесть что инжектится hasher в аутомаппер
     {
-        CreateMap<CreateUserDto, Guest>()
+        CreateMap<CreateUserModel, Guest>()
             .ConstructUsing(src => new Guest(src.Username, hasher.GenerateHashPassword(src.Password), src.Email));
     }
 }

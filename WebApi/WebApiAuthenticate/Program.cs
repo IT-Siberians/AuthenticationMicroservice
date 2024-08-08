@@ -1,8 +1,10 @@
 using AutoMapper;
 using Domain.Entities;
+using EntityFramework;
 using Microsoft.Extensions.DependencyInjection;
 using PasswordHasher;
 using Repositories.Abstractions;
+using Repositories.Implementations.EntityFrameworkRepositories;
 using Repositories.Implementations.InMemoryRepository;
 using Services.Abstractions;
 using Services.Implementations;
@@ -18,8 +20,11 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         // Add services to the container.
         var services = builder.Services;
-        
-        services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+        var userDbConString = builder.Configuration.GetConnectionString("UsersDb");
+
+        services.ConfigureContext(userDbConString);
+
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddTransient<IMessageBusPublisher, MessageBusPublisher>();
         services.AddTransient<IUserManagementService, UserManagementService>();
 

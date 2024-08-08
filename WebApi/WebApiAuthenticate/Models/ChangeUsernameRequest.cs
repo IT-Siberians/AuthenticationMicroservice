@@ -1,7 +1,7 @@
 ﻿namespace WebApiAuthenticate.Models;
 
-public class ChangeEmailModel
+public class ChangeUsernameRequest
 {
     public Guid Id { get; set; }
-    public string? NewEmail { get; set; }
+    public string? Username { get; set; }
 }

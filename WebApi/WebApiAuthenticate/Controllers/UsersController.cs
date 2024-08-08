@@ -12,84 +12,84 @@ public class UsersController(
     IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserResponseModel>>> GetAll()
+    public async Task<ActionResult<IEnumerable<UserReadResponse>>> GetAll()
     {
         var users = await managementService.GetAllUsersAsync();
-        return Ok(mapper.Map<IEnumerable<UserResponseModel>>(users));
+        return Ok(mapper.Map<IEnumerable<UserReadResponse>>(users));
     }
     [HttpGet]
-    [Route("{id}", Name = "GetUserById")]
-    public async Task<ActionResult<UserResponseModel>> GetUserById(Guid id)
+    [Route("GetUser/{id}", Name = "GetUserById")]
+    public async Task<ActionResult<UserReadResponse>> GetUserById(Guid id)
     {
         if (id == Guid.Empty)
             return BadRequest($"Id is empty");
         var user = await managementService.GetUserByIdAsync(id);
         if (user == null) //объясните
             return NotFound("The user with this id was not found");
-        var userResponse = mapper.Map<UserResponseModel>(user);
+        var userResponse = mapper.Map<UserReadResponse>(user);
 
         return Ok(userResponse);
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserResponseModel>> CreateUser(CreatingUserModel creatingUserModel)
+    public async Task<ActionResult<UserReadResponse>> CreateUser(CreatingUserRequest creatingUserRequest)
     {
-        if (creatingUserModel == null ||
-            string.IsNullOrWhiteSpace(creatingUserModel.Username) ||
-            string.IsNullOrWhiteSpace(creatingUserModel.Password) ||
-            string.IsNullOrWhiteSpace(creatingUserModel.Email))
+        if (creatingUserRequest == null ||
+            string.IsNullOrWhiteSpace(creatingUserRequest.Username) ||
+            string.IsNullOrWhiteSpace(creatingUserRequest.Password) ||
+            string.IsNullOrWhiteSpace(creatingUserRequest.Email))
             return BadRequest("Empty input in required fields");// сделать валидацию ввода
-        var createUserDto = mapper.Map<CreateUserDto>(creatingUserModel);
+        var createUserDto = mapper.Map<CreateUserModel>(creatingUserRequest);
         var createdUser = await managementService.CreateUserAsync(createUserDto);
-        var userResponse = mapper.Map<UserResponseModel>(createdUser);
+        var userResponse = mapper.Map<UserReadResponse>(createdUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
     [HttpPut]
     [Route("ChangeUsername/")]
-    public async Task<ActionResult<UserResponseModel>> ChangeUsername([FromBody] ChangeUsernameModel changeUsernameModel)
+    public async Task<ActionResult<UserReadResponse>> ChangeUsername([FromBody] ChangeUsernameRequest changeUsernameRequest)
     {
-        if (changeUsernameModel == null ||
-            changeUsernameModel.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(changeUsernameModel.Username))
+        if (changeUsernameRequest == null ||
+            changeUsernameRequest.Id == Guid.Empty ||
+            string.IsNullOrWhiteSpace(changeUsernameRequest.Username))
             return BadRequest("Empty input in required fields");// сделать валидацию ввода
 
-        var changeUsernameDto = mapper.Map<ChangeUsernameDto>(changeUsernameModel);
+        var changeUsernameDto = mapper.Map<ChangeUsernameModel>(changeUsernameRequest);
 
         var updatedUser = await managementService.ChangeUsernameAsync(changeUsernameDto);
 
-        var userResponse = mapper.Map<UserResponseModel>(updatedUser);
+        var userResponse = mapper.Map<UserReadResponse>(updatedUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
     [HttpPut]
     [Route("ChangePassword/")]
-    public async Task<ActionResult<UserResponseModel>> ChangePassword([FromBody] ChangePasswordModel changePasswordModel)//атрибут from body?
+    public async Task<ActionResult<UserReadResponse>> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)//атрибут from body?
     {
-        if (changePasswordModel == null ||
-            changePasswordModel.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(changePasswordModel.Password) ||
-            string.IsNullOrWhiteSpace(changePasswordModel.NewPassword))
+        if (changePasswordRequest == null ||
+            changePasswordRequest.Id == Guid.Empty ||
+            string.IsNullOrWhiteSpace(changePasswordRequest.Password) ||
+            string.IsNullOrWhiteSpace(changePasswordRequest.NewPassword))
             return BadRequest("Empty input in required fields");// сделать валидацию ввода
 
-        var changePasswordDto = mapper.Map<ChangePasswordDto>(changePasswordModel);
+        var changePasswordDto = mapper.Map<ChangePasswordModel>(changePasswordRequest);
 
         var updatedUser = await managementService.ChangePasswordAsync(changePasswordDto);
 
-        var userResponse = mapper.Map<UserResponseModel>(updatedUser);
+        var userResponse = mapper.Map<UserReadResponse>(updatedUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
     [HttpPost]
     [Route("ChangeEmail/")]
-    public async Task<ActionResult<bool>> ChangeEmail([FromBody] ChangeEmailModel changeEmailModel)
+    public async Task<ActionResult<bool>> ChangeEmail([FromBody] ChangeEmailRequest changeEmailRequest)
     {
-        if (changeEmailModel == null ||
-            changeEmailModel.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(changeEmailModel.NewEmail))
+        if (changeEmailRequest == null ||
+            changeEmailRequest.Id == Guid.Empty ||
+            string.IsNullOrWhiteSpace(changeEmailRequest.NewEmail))
             return BadRequest("Empty input in required fields");// сделать валидацию ввода
 
-        var changeEmailDto = mapper.Map<PublicationOfEmailConfirmationDto>(changeEmailModel);
+        var changeEmailDto = mapper.Map<PublicationOfEmailConfirmationModel>(changeEmailRequest);
 
         var isCreated = await managementService.CreateEmailChangeRequestAsync(changeEmailDto);
         if (isCreated)
@@ -102,23 +102,37 @@ public class UsersController(
 
     [HttpPut]
     [Route("VerifyEmail/")]
-    public async Task<ActionResult<UserResponseModel>> VerifyEmail([FromBody]VerifyEmailModel verifyEmailModel)
+    public async Task<ActionResult<UserReadResponse>> VerifyEmail([FromBody]VerifyEmailRequest verifyEmailRequest)
     {
-        if (verifyEmailModel == null ||
-            verifyEmailModel.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(verifyEmailModel.NewEmail))
+        if (verifyEmailRequest == null ||
+            verifyEmailRequest.Id == Guid.Empty ||
+            string.IsNullOrWhiteSpace(verifyEmailRequest.NewEmail))
             return BadRequest("Empty input in required fields");// сделать валидацию ввода
 
-        var time = DateTime.Compare(DateTime.Now, verifyEmailModel.CreatedDateTime);
-        if (time > 15)
+        var time = DateTime.Now - verifyEmailRequest.CreatedDateTime;
+        if (time.TotalMinutes > 15)
             return BadRequest("The link expired");
 
-        var verifyEmailDto = mapper.Map<VerifyEmailDto>(verifyEmailModel);
+        var verifyEmailDto = mapper.Map<VerifyEmailModel>(verifyEmailRequest);
 
         var updatedUser = await managementService.VerifyEmail(verifyEmailDto);
 
-        var userResponse = mapper.Map<UserResponseModel>(updatedUser);
+        var userResponse = mapper.Map<UserReadResponse>(updatedUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
+    }
+
+    [HttpDelete]
+    [Route("DeleteUser/{id}")]
+    public async Task<ActionResult<bool>> DeleteUser(Guid id)
+    {
+        if (id == Guid.Empty)
+            return BadRequest($"Id is empty");
+        var deleteResult = await managementService.DeleteUserById(id);
+        if (deleteResult)
+        {
+            return Ok(deleteResult);
+        }
+        return NotFound(deleteResult);
     }
 
 }

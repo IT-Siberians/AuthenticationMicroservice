@@ -15,12 +15,12 @@ public class PasswordHash: ValueObject<string>
     /// </summary>
     /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
 
-    public PasswordHash(string? value) : base(value)
+    public PasswordHash(string value) : base(value)
     {
 
     }
 
-    public const int MaxPasswordHashLength = 256;
+    public const int MaxPasswordHashLength = 256;//TODO:выделить в отдельные статические файлы
 
     /// <summary>
     /// Метод проверки соответствия правилам базового хэшированного пароля
@@ -31,6 +31,6 @@ public class PasswordHash: ValueObject<string>
     {
         if ((value == null) ||
             (string.IsNullOrWhiteSpace(value)))
-            throw new ArgumentNullException(nameof(value), "PasswordHash cannot null or empty");
+            throw new ArgumentNullException(nameof(value), "PasswordHash cannot null or empty");//TODO:кастомные Exception
     }
 }

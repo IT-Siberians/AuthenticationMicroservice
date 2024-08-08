@@ -3,12 +3,13 @@
 namespace Services.Abstractions;
 public interface IUserManagementService
 {
-    public Task<IEnumerable<UserReadDto>> GetAllUsersAsync();
-    public Task<UserReadDto> GetUserByIdAsync(Guid id);
+    public Task<IEnumerable<UserReadModel>> GetAllUsersAsync();
+    public Task<UserReadModel> GetUserByIdAsync(Guid id);
 
-    Task<UserReadDto> CreateUserAsync(CreateUserDto createUserDto);
-    Task<UserReadDto> ChangeUsernameAsync(ChangeUsernameDto changeUsernameDto);
-    Task<UserReadDto> ChangePasswordAsync(ChangePasswordDto changePasswordDto);
-    Task<bool> CreateEmailChangeRequestAsync(PublicationOfEmailConfirmationDto publicationOfEmailConfirmationDto);
-    Task<UserReadDto> VerifyEmail(VerifyEmailDto verifyEmailDto);
+    public Task<UserReadModel> CreateUserAsync(CreateUserModel createUserModel);
+    public Task<UserReadModel> ChangeUsernameAsync(ChangeUsernameModel changeUsernameModel);
+    public Task<UserReadModel> ChangePasswordAsync(ChangePasswordModel changePasswordModel);
+    public Task<bool> CreateEmailChangeRequestAsync(PublicationOfEmailConfirmationModel publicationOfEmailConfirmationModel);
+    public Task<UserReadModel> VerifyEmail(VerifyEmailModel verifyEmailModel);
+    public Task<bool> DeleteUserById(Guid id);
 }

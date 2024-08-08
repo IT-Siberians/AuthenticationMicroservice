@@ -1,5 +1,5 @@
 ﻿namespace WebApiAuthenticate.Models;
-public class CreatingUserModel
+public class CreatingUserRequest
 {
     public string Username { get; set;}
     public string Password { get; set;}

@@ -3,8 +3,8 @@
 namespace Services.Implementations;
 public class MessageBusPublisher : IMessageBusPublisher
 {
-    public Task PublishNewEmail(PublicationOfEmailConfirmationDto publicationOfEmailConfirmationDto)
+    public Task PublishNewEmail(PublicationOfEmailConfirmationModel publicationOfEmailConfirmationModel)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }

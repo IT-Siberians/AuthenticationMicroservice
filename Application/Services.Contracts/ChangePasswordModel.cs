@@ -1,5 +1,5 @@
 ﻿namespace Services.Contracts;
-public class ChangePasswordDto
+public class ChangePasswordModel
 {
     public Guid Id { get; set; }
     public string? Password { get; set; }

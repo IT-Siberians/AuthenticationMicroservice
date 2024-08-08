@@ -11,6 +11,7 @@ namespace Repositories.Implementations.InMemoryRepository;
 public abstract class BaseInMemoryRepository<T, TId>(IEnumerable<T> entities) : IBaseRepository<T, TId> where T : IEntity<TId>
 {
     protected List<T> Entities = entities.ToList();
+
     /// <summary>
     /// Конструктор без параметров
     /// </summary>
@@ -18,14 +19,16 @@ public abstract class BaseInMemoryRepository<T, TId>(IEnumerable<T> entities) : 
     {
 
     }
+
     /// <summary>
     /// Получить все сущности репозитория
     /// </summary>
     /// <returns>Коллекция List сущностей репозитория</returns>
-    public Task<List<T>> GetAllAsync()
+    public Task<IEnumerable<T>> GetAllAsync()
     {
-        return Task.FromResult(Entities);
+        return Task.FromResult(Entities.AsEnumerable());
     }
+
     /// <summary>
     /// Получить сущность из репозитория по индектификатору
     /// </summary>
@@ -35,6 +38,7 @@ public abstract class BaseInMemoryRepository<T, TId>(IEnumerable<T> entities) : 
     {
         return Task.FromResult(Entities.FirstOrDefault(t => Equals(t.Id, id)));
     }
+
     /// <summary>
     /// Добавление сущности в репозиторий
     /// </summary>
@@ -45,6 +49,7 @@ public abstract class BaseInMemoryRepository<T, TId>(IEnumerable<T> entities) : 
         Entities.Add(entity);
         return Task.FromResult(entity);
     }
+
     /// <summary>
     /// Обновление сущности в репозитории по индентификатору
     /// </summary>
@@ -58,5 +63,17 @@ public abstract class BaseInMemoryRepository<T, TId>(IEnumerable<T> entities) : 
         var index = Entities.IndexOf(entityToUpdate);
         Entities[index] = newEntity;
         return Entities[index];
+    }
+
+    /// <summary>
+    /// Удалить сущность в репозитории по идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор обновляемой сущности</param>
+    /// <returns>true - удалено/false - не удалено(ошибка удаления)</returns>
+    public async Task<bool> DeleteAsync(TId id)
+    {
+        var entityToDelete = await GetByIdAsync(id) ?? throw new ArgumentNullException(nameof(id));
+        Entities.Remove(entityToDelete);
+        return await GetByIdAsync(id) == null;
     }
 }

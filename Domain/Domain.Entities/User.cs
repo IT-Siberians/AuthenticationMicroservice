@@ -9,6 +9,7 @@ public class User : IEntity<Guid>
     public PasswordHash PasswordHash { get; private set; }
     public Email Email { get; private set; }
     public AccountStatuses AccountStatus { get; private set; }
+
     /// <summary>
     /// Конструктор для EF
     /// </summary>
@@ -16,6 +17,7 @@ public class User : IEntity<Guid>
     {
 
     }
+
     /// <summary>
     /// Зарегистрированный пользователь
     /// </summary>
@@ -30,35 +32,39 @@ public class User : IEntity<Guid>
         Email = email;
         AccountStatus = AccountStatuses.UnconfirmedAccount;
     }
+
     /// <summary>
     /// Изменение имени пользователя(никнейма)
     /// </summary>
-    /// <param name="newUsername">Value object Username - новое имя пользователя</param>
-    public void ChangeUsername(string? newUsername)
+    /// <param name="newUsername">Новое имя пользователя</param>
+    public void ChangeUsername(string newUsername)
     {
         Username = new Username(newUsername);
     }
+
     /// <summary>
     /// Изменение хэшированного пароля
     /// </summary>
-    /// <param name="newPasswordHash">Value object PasswordHash - хэшированный пароль, на который заменяется</param>
-    public void ChangePassword(string? newPasswordHash)
+    /// <param name="newPasswordHash">Хэшированный пароль, на который заменяется</param>
+    public void ChangePassword(string newPasswordHash)
     {
         PasswordHash = new PasswordHash(newPasswordHash);
     }
+
     /// <summary>
     /// Изменение электронной почты
     /// </summary>
-    /// <param name="newEmail">Value object Email - новая электронная почта</param>
+    /// <param name="newEmail">Новая электронная почта</param>
     private void ChangeEmail(Email newEmail)
     {
         Email = newEmail;
     }
+
     /// <summary>
     /// Подтверждение и замена электронной почты
     /// </summary>
-    /// <param name="newEmail">Value object Email - новая электронная почта</param>
-    public void ConfirmNewEmail(string? newEmail)
+    /// <param name="newEmail">Новая электронная почта</param>
+    public void ConfirmNewEmail(string newEmail)
     {
         ChangeEmail(new Email(newEmail));
         if (AccountStatus == AccountStatuses.UnconfirmedAccount)
@@ -66,6 +72,12 @@ public class User : IEntity<Guid>
             AccountStatus = AccountStatuses.ConfirmedAccount;
         }
     }
+
+    public bool DeleteHimself()
+    {
+        return true;
+    }
+
     /// <summary>
     /// Вход пользователя в систему
     /// </summary>
@@ -74,6 +86,7 @@ public class User : IEntity<Guid>
     {
         return true;
     }
+
     /// <summary>
     /// Выход пользователя из системы
     /// </summary>

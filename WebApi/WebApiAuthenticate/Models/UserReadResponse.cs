@@ -2,7 +2,7 @@
 
 namespace WebApiAuthenticate.Models
 {
-    public class UserResponseModel
+    public class UserReadResponse
     {
         public string Id { get; set; }
         public string Username { get; set; }

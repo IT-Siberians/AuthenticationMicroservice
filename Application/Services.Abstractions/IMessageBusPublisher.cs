@@ -4,5 +4,5 @@ namespace Services.Implementations;
 
 public interface IMessageBusPublisher
 {
-    Task PublishNewEmail(PublicationOfEmailConfirmationDto publicationOfEmailConfirmationDto);
+    public Task PublishNewEmail(PublicationOfEmailConfirmationModel publicationOfEmailConfirmationModel);
 }

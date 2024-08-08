@@ -1,6 +1,6 @@
 ﻿namespace WebApiAuthenticate.Models;
 
-public class ChangePasswordModel
+public class ChangePasswordRequest
 {
     public Guid Id { get; set; }
     public string? Password { get; set; }

@@ -7,8 +7,8 @@ public class UserMappingsProfile : Profile
 {
     public UserMappingsProfile()
     {
-        #region CreatingUserModel=>CreateUserDto
-        CreateMap<CreatingUserModel, CreateUserDto>()
+        #region CreatingUserRequest=>CreateUserModel
+        CreateMap<CreatingUserRequest, CreateUserModel>()
             //Username mapping
             .ForMember(
                 dest => dest.Username,
@@ -25,8 +25,8 @@ public class UserMappingsProfile : Profile
                 opt => opt.MapFrom(
                     src => src.Email));
         #endregion
-        #region UserReadDto=>UserResponseModel
-        CreateMap<UserReadDto, UserResponseModel>()
+        #region UserReadModel=>UserReadResponse
+        CreateMap<UserReadModel, UserReadResponse>()
             //Id mapping
             .ForMember(
                 dest => dest.Id,
@@ -53,8 +53,8 @@ public class UserMappingsProfile : Profile
                 opt => opt.MapFrom(
                     src => src.AccountStatus));
         #endregion
-        #region ChangeUsernameModel=>ChangeUsernameDto
-        CreateMap<ChangeUsernameModel, ChangeUsernameDto>()
+        #region ChangeUsernameRequest=>ChangeUsernameRequest
+        CreateMap<Models.ChangeUsernameRequest, ChangeUsernameModel>()
             //Id mapping
             .ForMember(
                 dest => dest.Id,
@@ -66,8 +66,8 @@ public class UserMappingsProfile : Profile
                 opt => opt.MapFrom(
                     src => src.Username));
         #endregion
-        #region ChangePasswordModel=>ChangePasswordDto
-        CreateMap<ChangePasswordModel, ChangePasswordDto>()
+        #region ChangePasswordRequest=>ChangePasswordRequest
+        CreateMap<Models.ChangePasswordRequest, ChangePasswordModel>()
             //Id mapping
             .ForMember(
                 dest => dest.Id,
@@ -84,8 +84,8 @@ public class UserMappingsProfile : Profile
                 opt => opt.MapFrom(
                     src => src.NewPassword));
         #endregion
-        #region ChangeEmailModel=>PublicationOfEmailConfirmationDto
-        CreateMap<ChangeEmailModel, PublicationOfEmailConfirmationDto>()
+        #region ChangeEmailRequest=>PublicationOfEmailConfirmationModel
+        CreateMap<ChangeEmailRequest, PublicationOfEmailConfirmationModel>()
             //Id mapping
             .ForMember(
                 dest => dest.Id,
@@ -97,8 +97,8 @@ public class UserMappingsProfile : Profile
                 opt => opt.MapFrom(
                     src => src.NewEmail));
         #endregion
-        #region VerifyEmailModel=>VerifyEmailDto
-        CreateMap<VerifyEmailModel, VerifyEmailDto>()
+        #region VerifyEmailRequest=>VerifyEmailRequest
+        CreateMap<Models.VerifyEmailRequest, VerifyEmailModel>()
             //Id mapping
             .ForMember(
                 dest => dest.Id,

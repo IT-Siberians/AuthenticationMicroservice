@@ -1,4 +1,5 @@
 ﻿namespace Domain.Entities.Enums;
+
 public enum AccountStatuses
 {
     /// <summary>

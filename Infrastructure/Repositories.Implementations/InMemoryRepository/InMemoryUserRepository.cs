@@ -2,6 +2,7 @@
 using Repositories.Abstractions;
 
 namespace Repositories.Implementations.InMemoryRepository;
+
 public class InMemoryUserRepository : BaseInMemoryRepository<User, Guid>, IUserRepository
 {
 

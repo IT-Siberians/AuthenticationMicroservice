@@ -2,6 +2,7 @@
 using Repositories.Abstractions;
 
 namespace Repositories.Implementations.InMemoryRepository;
+
 /// <summary>
 /// Реализация конструктора базового InMemory репозитория
 /// </summary>
@@ -72,8 +73,14 @@ public abstract class BaseInMemoryRepository<T, TId>(IEnumerable<T> entities) : 
     /// <returns>true - удалено/false - не удалено(ошибка удаления)</returns>
     public async Task<bool> DeleteAsync(TId id)
     {
-        var entityToDelete = await GetByIdAsync(id) ?? throw new ArgumentNullException(nameof(id));
+        var entityToDelete = await GetByIdAsync(id);
+        if (entityToDelete is null)
+        {
+            return false;
+        }
+
         Entities.Remove(entityToDelete);
+
         return await GetByIdAsync(id) == null;
     }
 }

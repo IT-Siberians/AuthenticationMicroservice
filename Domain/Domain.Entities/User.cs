@@ -2,6 +2,10 @@
 using Domain.ValueObjects.ValueObjects;
 
 namespace Domain.Entities;
+
+/// <summary>
+/// Сущность пользователя
+/// </summary>
 public class User : IEntity<Guid>
 {
     public Guid Id { get; }
@@ -13,23 +17,21 @@ public class User : IEntity<Guid>
     /// <summary>
     /// Конструктор для EF
     /// </summary>
-    protected User()
+    protected User() 
     {
 
     }
 
     /// <summary>
-    /// Зарегистрированный пользователь
+    /// Регистрация гостя
     /// </summary>
-    /// <param name="username">Value object Username - имя пользователя</param>
-    /// <param name="passwordHash">Value object PasswordHash - хэшированный пароль</param>
-    /// <param name="email">Value object Email - электронная почта</param>
-    public User(Username username, PasswordHash passwordHash, Email email)
+    /// <param name="guest">Гость которого нужно зарегистрировать</param>
+    public User(Guest guest)
     {
         Id = Guid.NewGuid();
-        Username = username;
-        PasswordHash = passwordHash;
-        Email = email;
+        Username = guest.Username;
+        PasswordHash = guest.PasswordHash;
+        Email = guest.Email;
         AccountStatus = AccountStatuses.UnconfirmedAccount;
     }
 
@@ -73,6 +75,10 @@ public class User : IEntity<Guid>
         }
     }
 
+    /// <summary>
+    /// Удалить пользователя из проекта
+    /// </summary>
+    /// <returns>true - удален/false - не удален</returns>
     public bool DeleteHimself()
     {
         return true;

@@ -1,39 +1,28 @@
 ﻿using Services.Abstractions;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using BCrypt.Net;
 
 namespace PasswordHasher;
+
 public class CustomPasswordHasher : IPasswordHasher
 {
-    private const int SaltSize = 16;
-    private const int Iterations = 10000;
-    private const int KeySize = 32;
-    public string GenerateHashPassword(string? password)
+    private const HashType HashType = BCrypt.Net.HashType.SHA512; // указываю явно, потому что только одна
+                                                                  // перегрузка HashPassword предлагает выбрать способ шифрования
+    private const bool EnhancedEntropy = true; // указываю явно, потому что только одна
+                                               // перегрузка HashPassword предлагает выбрать способ шифрования
+    private const int WorkFactor = 12;// указываю явно, потому что только одна
+                                      // перегрузка HashPassword предлагает выбрать способ шифрования
+    public string GenerateHashPassword(string password)
     {
-        if (string.IsNullOrWhiteSpace(password))
-            throw new ArgumentNullException(nameof(password));
-        byte[] salt = new byte[SaltSize];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(salt);
-        }
+        var salt = BCrypt.Net.BCrypt.GenerateSalt(WorkFactor); // указываю явно, потому что только одна
+                                                               // перегрузка HashPassword предлагает выбрать способ шифрования
 
-        byte[] hash = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, Iterations, KeySize);
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt, EnhancedEntropy, HashType);
 
-        return $"{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
+        return hashedPassword;
     }
 
     public bool VerifyHashedPassword(string password, string hashedPassword)
     {
-        string[] parts = hashedPassword.Split('.', 2);
-        if (parts.Length != 2)
-        {
-            return false;
-        }
-
-        byte[] salt = Convert.FromBase64String(parts[0]);
-        byte[] hash = KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA512, Iterations, KeySize);
-
-        return parts[1].Equals(Convert.ToBase64String(hash));
+        return BCrypt.Net.BCrypt.Verify(password, hashedPassword, EnhancedEntropy, HashType);
     }
 }

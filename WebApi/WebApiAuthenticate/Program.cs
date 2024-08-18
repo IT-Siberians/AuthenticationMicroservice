@@ -1,75 +1,65 @@
-using AutoMapper;
-using Domain.Entities;
 using EntityFramework;
-using Microsoft.Extensions.DependencyInjection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using PasswordHasher;
 using Repositories.Abstractions;
 using Repositories.Implementations.EntityFrameworkRepositories;
-using Repositories.Implementations.InMemoryRepository;
 using Services.Abstractions;
 using Services.Implementations;
 using Services.Implementations.Mapping;
-using UserMappingsProfile = WebApiAuthenticate.Mapping.UserMappingsProfile;
+using WebApiAuthenticate.Mapping;
+using WebApiAuthenticate.ModelsValidators;
 
-namespace WebApiAuthenticate;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+var services = builder.Services;
+var configuration = builder.Configuration;
+var userDbConString = configuration.GetConnectionString("UsersDb");
+
+// Add DbContext to the container.
+services.ConfigureContext(userDbConString);
+
+//Add repositories to the container.
+services.AddScoped<IUserRepository, UserRepository>();
+
+// Add services to the container.
+services.AddTransient<IUserManagementService, UserManagementService>();
+
+// Add infrastructure to the container.
+services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
+services.AddAutoMapper(
+    cfg =>
+    {
+        cfg.AddProfile<UserMappingsPresentationProfile>();
+        cfg.AddProfile(new GuestMappingsProfile(services.BuildServiceProvider().GetService<IPasswordHasher>()));
+        cfg.AddProfile<UserMappingsApplicationProfile>();
+    });
+services.AddFluentValidationAutoValidation()
+    .AddValidatorsFromAssemblyContaining<ChangeEmailValidator>()
+    .AddValidatorsFromAssemblyContaining<ChangePasswordValidator>()
+    .AddValidatorsFromAssemblyContaining<ChangeUsernameValidator>()
+    .AddValidatorsFromAssemblyContaining<CreatingUserValidator>()
+    .AddValidatorsFromAssemblyContaining<VerifyEmailValidator>();
+//оформить Extension методом
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
-        // Add services to the container.
-        var services = builder.Services;
-        var userDbConString = builder.Configuration.GetConnectionString("UsersDb");
-
-        services.ConfigureContext(userDbConString);
-
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddTransient<IMessageBusPublisher, MessageBusPublisher>();
-        services.AddTransient<IUserManagementService, UserManagementService>();
-
-        services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
-        services.AddAutoMapper(
-            cfg =>
-            {
-                cfg.AddProfile<UserMappingsProfile>();
-                cfg.AddProfile(new GuestMappingsProfile(services.BuildServiceProvider().GetService<IPasswordHasher>()));
-                cfg.AddProfile<Services.Implementations.Mapping.UserMappingsProfile>();
-            });
-
-        builder.Services.AddControllers();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
-        var app = builder.Build();
-
-        // Configure the HTTP request pipeline.
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
-
-        app.UseHttpsRedirection();
-
-        app.UseAuthorization();
-
-
-        app.MapControllers();
-
-        app.Run();
-    }
-    private static MapperConfiguration GetMapperConfiguration(IPasswordHasher hasher)
-    {
-        var configuration = new MapperConfiguration(cfg =>
-        {
-            cfg.AddProfile<UserMappingsProfile>();
-            cfg.AddProfile(new GuestMappingsProfile(hasher));
-            cfg.AddProfile<Services.Implementations.Mapping.UserMappingsProfile>();
-        });
-        configuration.AssertConfigurationIsValid();
-        return configuration;
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

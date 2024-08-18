@@ -3,7 +3,7 @@
 /// <summary>
 /// Маркерный интерфейс сущности
 /// </summary>
-/// <typeparam name="TId"></typeparam>
+/// <typeparam name="TId">Идентификатор сущности</typeparam>
 public interface IEntity<out TId>
 {
 

@@ -5,72 +5,78 @@ using Services.Contracts;
 using WebApiAuthenticate.Models;
 
 namespace WebApiAuthenticate.Controllers;
+
+//поднять вопрос о разделении контроллера на несколько
 [ApiController]
-[Route("/api/[controller]")]
+[Route("/api/v1/[controller]")]
 public class UsersController(
     IUserManagementService managementService,
     IMapper mapper) : ControllerBase
 {
-    [HttpGet]
+
+    [HttpGet("GetAll/")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserReadResponse>))]
     public async Task<ActionResult<IEnumerable<UserReadResponse>>> GetAll()
     {
         var users = await managementService.GetAllUsersAsync();
         return Ok(mapper.Map<IEnumerable<UserReadResponse>>(users));
     }
-    [HttpGet]
-    [Route("GetUser/{id}", Name = "GetUserById")]
+
+    [HttpGet("GetUser/{id:guid}", Name = "GetUserById")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserReadResponse))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     public async Task<ActionResult<UserReadResponse>> GetUserById(Guid id)
     {
-        if (id == Guid.Empty)
-            return BadRequest($"Id is empty");
         var user = await managementService.GetUserByIdAsync(id);
-        if (user == null) //объясните
-            return NotFound("The user with this id was not found");
-        var userResponse = mapper.Map<UserReadResponse>(user);
+        if (user == null)
+            return NotFound($"The user with this id - \"{id}\" was not found");
 
+        var userResponse = mapper.Map<UserReadResponse>(user);
         return Ok(userResponse);
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserReadResponse>> CreateUser(CreatingUserRequest creatingUserRequest)
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserReadResponse))]
+    //При валидации используется ли возврат 400? надо ли делать атрибут?
+    public async Task<ActionResult<UserReadResponse>> CreateUser([FromBody] CreatingUserRequest creatingUserRequest)
     {
-        if (creatingUserRequest == null ||
-            string.IsNullOrWhiteSpace(creatingUserRequest.Username) ||
-            string.IsNullOrWhiteSpace(creatingUserRequest.Password) ||
-            string.IsNullOrWhiteSpace(creatingUserRequest.Email))
-            return BadRequest("Empty input in required fields");// сделать валидацию ввода
         var createUserDto = mapper.Map<CreateUserModel>(creatingUserRequest);
         var createdUser = await managementService.CreateUserAsync(createUserDto);
+
         var userResponse = mapper.Map<UserReadResponse>(createdUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
-    [HttpPut]
-    [Route("ChangeUsername/")]
+    [HttpPut("ChangeUsername/")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserReadResponse))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     public async Task<ActionResult<UserReadResponse>> ChangeUsername([FromBody] ChangeUsernameRequest changeUsernameRequest)
     {
-        if (changeUsernameRequest == null ||
-            changeUsernameRequest.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(changeUsernameRequest.Username))
-            return BadRequest("Empty input in required fields");// сделать валидацию ввода
+        var userToUpdate = await managementService.GetUserByIdAsync(changeUsernameRequest.Id);
+        if (userToUpdate is null)
+            return NotFound($"The user \"{changeUsernameRequest.Id}\" for the update does not exist");
 
-        var changeUsernameDto = mapper.Map<ChangeUsernameModel>(changeUsernameRequest);
+        var changeUsernameModel = mapper.Map<ChangeUsernameModel>(changeUsernameRequest);
+        var updateResult = await managementService.ChangeUsernameAsync(changeUsernameModel);
 
-        var updatedUser = await managementService.ChangeUsernameAsync(changeUsernameDto);
-
-        var userResponse = mapper.Map<UserReadResponse>(updatedUser);
+        var userResponse = mapper.Map<UserReadResponse>(updateResult);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
-    [HttpPut]
-    [Route("ChangePassword/")]
-    public async Task<ActionResult<UserReadResponse>> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)//атрибут from body?
+    [HttpPut("ChangePassword/")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserReadResponse))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    public async Task<ActionResult<UserReadResponse>> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
     {
-        if (changePasswordRequest == null ||
-            changePasswordRequest.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(changePasswordRequest.Password) ||
-            string.IsNullOrWhiteSpace(changePasswordRequest.NewPassword))
-            return BadRequest("Empty input in required fields");// сделать валидацию ввода
+        var userToUpdate = await managementService.GetUserByIdAsync(changePasswordRequest.Id);
+        if (userToUpdate is null)
+            return NotFound($"The user \"{changePasswordRequest.Id}\" for the update does not exist");
+
+        var validatePasswordModel = mapper.Map<ValidatePasswordModel>(changePasswordRequest);
+        var isValidPassword = await managementService.ValidatePassword(validatePasswordModel);
+        if (!isValidPassword)
+            return BadRequest($"Invalid password - {validatePasswordModel.Password}");
 
         var changePasswordDto = mapper.Map<ChangePasswordModel>(changePasswordRequest);
 
@@ -80,59 +86,71 @@ public class UsersController(
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
-    [HttpPost]
-    [Route("ChangeEmail/")]
-    public async Task<ActionResult<bool>> ChangeEmail([FromBody] ChangeEmailRequest changeEmailRequest)
+    [HttpPost("ChangeEmail/")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    public async Task<ActionResult> ChangeEmail([FromBody] ChangeEmailRequest changeEmailRequest)
     {
-        if (changeEmailRequest == null ||
-            changeEmailRequest.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(changeEmailRequest.NewEmail))
-            return BadRequest("Empty input in required fields");// сделать валидацию ввода
+        var userToUpdate = await managementService.GetUserByIdAsync(changeEmailRequest.Id);
+        if (userToUpdate is null)
+            return NotFound($"The user \"{changeEmailRequest.Id}\" for the update does not exist");
 
-        var changeEmailDto = mapper.Map<PublicationOfEmailConfirmationModel>(changeEmailRequest);
+        var changeEmailModel = mapper.Map<PublicationOfEmailConfirmationModel>(changeEmailRequest);
 
-        var isCreated = await managementService.CreateEmailChangeRequestAsync(changeEmailDto);
+        var isCreated = await managementService.CreateEmailChangeRequestAsync(changeEmailModel);
         if (isCreated)
         {
-            return Ok($"A request has been created to change the email address to {changeEmailDto.NewEmail}. Check your email for confirmation.");
+            return Ok($"A request has been created to change the email address to {changeEmailModel.NewEmail}. Check your email for confirmation.");
         }
 
-        return BadRequest();
+        return BadRequest(); //что вернуть? Если не создалось в целом исключительная ситуация?
     }
 
-    [HttpPut]
-    [Route("VerifyEmail/")]
-    public async Task<ActionResult<UserReadResponse>> VerifyEmail([FromBody]VerifyEmailRequest verifyEmailRequest)
+    [HttpPut("VerifyEmail/")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserReadResponse))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    public async Task<ActionResult<UserReadResponse>> VerifyEmail([FromBody] VerifyEmailRequest verifyEmailRequest)
     {
-        if (verifyEmailRequest == null ||
-            verifyEmailRequest.Id == Guid.Empty ||
-            string.IsNullOrWhiteSpace(verifyEmailRequest.NewEmail))
-            return BadRequest("Empty input in required fields");// сделать валидацию ввода
+        var userToUpdate = await managementService.GetUserByIdAsync(verifyEmailRequest.Id);
+        if (userToUpdate is null)
+            return NotFound($"The user \"{verifyEmailRequest.Id}\" for the update does not exist");
+
+        if (userToUpdate.Email != verifyEmailRequest.NewEmail)
+        {
+            var isAvailableEmail = await managementService.CheckAvailableEmailAsync(verifyEmailRequest.NewEmail);
+            if (!isAvailableEmail)
+                return BadRequest($"Email - {verifyEmailRequest.NewEmail} is reserved.");
+        }
 
         var time = DateTime.Now - verifyEmailRequest.CreatedDateTime;
         if (time.TotalMinutes > 15)
             return BadRequest("The link expired");
 
-        var verifyEmailDto = mapper.Map<VerifyEmailModel>(verifyEmailRequest);
+        var verifyEmailModel = mapper.Map<VerifyEmailModel>(verifyEmailRequest);
 
-        var updatedUser = await managementService.VerifyEmail(verifyEmailDto);
+        var updatedUser = await managementService.VerifyEmail(verifyEmailModel);
 
         var userResponse = mapper.Map<UserReadResponse>(updatedUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
-    [HttpDelete]
-    [Route("DeleteUser/{id}")]
+    [HttpDelete("DeleteUser/{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     public async Task<ActionResult<bool>> DeleteUser(Guid id)
     {
-        if (id == Guid.Empty)
-            return BadRequest($"Id is empty");
-        var deleteResult = await managementService.DeleteUserById(id);
-        if (deleteResult)
-        {
-            return Ok(deleteResult);
-        }
-        return NotFound(deleteResult);
-    }
+        var userToDelete = await managementService.GetUserByIdAsync(id);
+        if (userToDelete is null)
+            return NotFound($"The user \"{id}\" for the delete does not exist");
 
+        var deleteResult = await managementService.DeleteUserById(id);
+        if (!deleteResult)
+        {
+            return NotFound(deleteResult);
+        }
+
+        return NoContent();
+    }
 }

@@ -1,7 +1,5 @@
 ﻿using Domain.Entities;
-using Domain.ValueObjects.ValueObjects;
 using EntityFramework;
-using Microsoft.EntityFrameworkCore;
 using Repositories.Abstractions;
 
 namespace Repositories.Implementations.EntityFrameworkRepositories;

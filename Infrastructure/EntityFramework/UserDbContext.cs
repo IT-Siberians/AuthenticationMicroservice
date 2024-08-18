@@ -4,13 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EntityFramework;
 
-public class UserDbContext : DbContext
+public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(options)
 {
-    public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
-    {
-        
-    }
     public DbSet<User> Users { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()

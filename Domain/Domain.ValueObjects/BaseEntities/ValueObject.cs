@@ -1,7 +1,16 @@
 ﻿namespace Domain.ValueObjects.BaseEntities;
+
+/// <summary>
+/// Определение базового элемента
+/// </summary>
+/// <typeparam name="T">Тип-обобщение базового элемента</typeparam>
 public abstract class ValueObject<T>
 {
+    /// <summary>
+    /// значение базового элемента
+    /// </summary>
     public T Value { get; }
+
     /// <summary>
     /// Базовый элемент системы
     /// </summary>
@@ -11,6 +20,7 @@ public abstract class ValueObject<T>
         Validate(value);
         Value = value;
     }
+
     /// <summary>
     /// Метод валидации
     /// </summary>

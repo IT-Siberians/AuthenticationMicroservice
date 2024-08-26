@@ -1,7 +1,15 @@
-﻿namespace Services.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class ChangeUsernameModel
+namespace Services.Contracts;
+
+/// <summary>
+/// Модель смены имени пользователя(никнейма)
+/// </summary>
+public class ChangeUsernameModel : BaseModel<Guid>
 {
-    public Guid Id { get; set; }
-    public string Username { get; set; }
+    /// <summary>
+    /// Новое имя пользователя
+    /// </summary>
+    [Required]
+    public string NewUsername { get; set; }
 }

@@ -1,30 +1,37 @@
 ﻿using Domain.Entities;
+using Domain.ValueObjects.ValueObjects;
 using Repositories.Abstractions;
 
 namespace Repositories.Implementations.InMemoryRepository;
 
+/// <summary>
+/// Репозиторий с CRUD операциями
+/// </summary>
+/// <typeparam name="T">Сущность репозитория</typeparam>
+/// <typeparam name="TId">Идентификатор репозитория</typeparam>
 public class InMemoryUserRepository : BaseInMemoryRepository<User, Guid>, IUserRepository
 {
-
     /// <summary>
-    /// Проверить занят ли данное имя пользователя
+    /// Получить пользователя по имени пользователя(никнейму)
     /// </summary>
-    /// <param name="username">Имя пользователя</param>
-    /// <returns>true - если имя пользователя свободно, false - имя пользователя занято</returns>
-    public Task<bool> CheckIsAvailableUsernameAsync(string username)
+    /// <param name="username">Имя пользователя(никнейм) искомого пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Пользователь с указанным именем пользователя(никнеймом)</returns>
+    public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
-        var user = Entities.FirstOrDefault(u => u.Username.Value == username);
-        return Task.FromResult(user == null);
+        cancellationToken.ThrowIfCancellationRequested();
+        return await Task.Run(()=>Entities.FirstOrDefault(u => u.Username.Value == username), cancellationToken);
     }
 
     /// <summary>
-    /// Проверить занят ли данный Емейл
+    /// Получить пользователя по Email
     /// </summary>
-    /// <param name="email">Проверяемый Емейл</param>
-    /// <returns>true - если Емейл свободен, false - Емейл занят</returns>
-    public Task<bool> CheckIsAvailableEmailAsync(string email)
+    /// <param name="email">Email искомого пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Пользователь с указанным Email</returns>
+    public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var user = Entities.FirstOrDefault(u => u.Email.Value == email);
-        return Task.FromResult(user == null);
+        cancellationToken.ThrowIfCancellationRequested();
+        return await Task.Run(() => Entities.FirstOrDefault(u => u.Email.Value == email), cancellationToken);
     }
 }

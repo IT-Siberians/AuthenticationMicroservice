@@ -1,8 +1,15 @@
-﻿namespace Services.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class ChangePasswordModel
+namespace Services.Contracts;
+
+/// <summary>
+/// Модель для смены пароля
+/// </summary>
+public class ChangePasswordModel : BaseModel<Guid>
 {
-    public Guid Id { get; set; }
-    public string Password { get; set; }
+    /// <summary>
+    /// Пароль пользователя
+    /// </summary>
+    [Required]
     public string NewPassword { get; set; }
 }

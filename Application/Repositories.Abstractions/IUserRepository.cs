@@ -2,20 +2,24 @@
 
 namespace Repositories.Abstractions;
 
+/// <summary>
+/// Репозиторий пользователей
+/// </summary>
 public interface IUserRepository : IBaseRepository<User, Guid>
 {
+    /// <summary>
+    /// Получить пользователя по имени пользователя(никнейму)
+    /// </summary>
+    /// <param name="username">Имя пользователя(никнейм) искомого пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Пользователь с указанным именем пользователя(никнеймом)</returns>
+    Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Проверить занято ли данное Имя пользователя
+    /// Получить пользователя по Email
     /// </summary>
-    /// <param name="username">Проверяемое имя пользователя</param>
-    /// <returns>true - если имя свободно, false - имя занято</returns>
-    Task<bool> CheckIsAvailableUsernameAsync(string username);
-
-    /// <summary>
-    /// Проверить занят ли данный Емейл
-    /// </summary>
-    /// <param name="email">Проверяемый Емейл</param>
-    /// <returns>true - если Емейл свободен, false - Емейл занят</returns>
-    Task<bool> CheckIsAvailableEmailAsync(string email);
+    /// <param name="email">Email искомого пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Пользователь с указанным Email</returns>
+    Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken);
 }

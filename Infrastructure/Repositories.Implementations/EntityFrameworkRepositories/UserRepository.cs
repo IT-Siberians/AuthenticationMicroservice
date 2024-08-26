@@ -4,15 +4,32 @@ using Repositories.Abstractions;
 
 namespace Repositories.Implementations.EntityFrameworkRepositories;
 
+/// <summary>
+/// Репозиторий пользователей с использованием EF
+/// </summary>
 public class UserRepository(UserDbContext context) : BaseEntityFrameworkRepository<User, Guid>(context), IUserRepository
 {
-    public async Task<bool> CheckIsAvailableUsernameAsync(string username)
+    /// <summary>
+    /// Получить пользователя по имени пользователя(никнейму)
+    /// </summary>
+    /// <param name="username">Имя пользователя(никнейм) искомого пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Пользователь с указанным именем пользователя(никнеймом)</returns>
+    public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
-        return EntitySet.ToList().FirstOrDefault(u => u.Username.Value == username) == null;
+        var users = await GetAllAsync(cancellationToken);
+        return users.FirstOrDefault(u => u.Username.Value == username);
     }
 
-    public async Task<bool> CheckIsAvailableEmailAsync(string email)
+    /// <summary>
+    /// Получить пользователя по Email
+    /// </summary>
+    /// <param name="email">Email искомого пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Пользователь с указанным Email</returns>
+    public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        return EntitySet.ToList().FirstOrDefault(u => u.Email.Value == email) == null;
+        var users = await GetAllAsync(cancellationToken);
+        return users.FirstOrDefault(u => u.Email.Value == email);
     }
 }

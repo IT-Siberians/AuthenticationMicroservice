@@ -4,114 +4,145 @@ using Domain.ValueObjects.ValueObjects;
 using Repositories.Abstractions;
 using Services.Abstractions;
 using Services.Contracts;
+using Services.Implementations.Exceptions;
 
 namespace Services.Implementations;
 
+/// <summary>
+/// Интерфейс менеджера пользователей
+/// </summary>
+/// <param name="notificationService">Сервис оповещений</param>
+/// <param name="mapper">Автомаппер</param>
+/// <param name="repository">Репозиторий пользователей</param>
+/// <param name="hasher">Шифровальщик пароля</param>
 public class UserManagementService(
     IUserRepository repository,
+    INotificationService notificationService,
     IMapper mapper,
     IPasswordHasher hasher) : IUserManagementService
 {
-
-    public async Task<IEnumerable<UserReadModel>> GetAllUsersAsync()
+    /// <summary>
+    /// Получить весь список моделей пользователя для чтения
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Перечисляемая коллекция моделей пользователя для чтения</returns>
+    public async Task<IEnumerable<UserReadModel>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
-        var users = await repository.GetAllAsync();
+        var users = await repository.GetAllAsync(cancellationToken);
         return mapper.Map<IEnumerable<UserReadModel>>(users);
     }
 
-    public async Task<UserReadModel> GetUserByIdAsync(Guid id)
+    /// <summary>
+    /// Получить пользователя по его идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Модель пользователя для чтения</returns>
+    public async Task<UserReadModel?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await repository.GetByIdAsync(id);
+        var user = await repository.GetByIdAsync(id, cancellationToken);
         return mapper.Map<UserReadModel>(user);
     }
 
-    public async Task<UserReadModel> CreateUserAsync(CreateUserModel createUserModel)
+    /// <summary>
+    /// Создать пользователя
+    /// </summary>
+    /// <param name="createUserModel">Модель для создания пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <exception cref="UserNotCreatedException">Репозиторий не смог создать пользователя</exception>
+    /// <returns>Модель пользователя для чтения</returns>
+    public async Task<UserReadModel> CreateUserAsync(CreateUserModel createUserModel, CancellationToken cancellationToken)
     {
-        var guest = mapper.Map<Guest>(createUserModel);
+        var username = new Username(createUserModel.Username);
+        var passwordHash = new PasswordHash(hasher.GenerateHashPassword(createUserModel.Password));
+        var email = new Email(createUserModel.Email);
 
-        var user = guest.SignUp();
-        var createdUser = await repository.AddAsync(user);
+        var user = new User(username, passwordHash, email);
+        var createdUser = await repository.AddAsync(user, cancellationToken);
         if (createdUser == null)
-            throw new Exception("The repository was unable to create an entity");
+            throw new UserNotCreatedException();
+
+        var mailConfirmationGenerationModel = new MailConfirmationGenerationModel()
+        {
+            Id = createdUser.Id,
+            NewEmail = createdUser.Email.Value
+        };
+
+        await notificationService.CreateSetEmailRequest(mailConfirmationGenerationModel, cancellationToken);
 
         return mapper.Map<UserReadModel>(user);
     }
 
-    public async Task<UserReadModel> ChangeUsernameAsync(ChangeUsernameModel changeUsernameModel)
+    /// <summary>
+    /// Изменение имени пользователя(никнейм)
+    /// </summary>
+    /// <param name="changeUsernameModel">Модель для изменения имени пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Модель пользователя для чтения</returns>
+    public async Task<bool> ChangeUsernameAsync(ChangeUsernameModel changeUsernameModel, CancellationToken cancellationToken)
     {
-        var user = await repository.GetByIdAsync(changeUsernameModel.Id);
+        var user = await repository.GetByIdAsync(changeUsernameModel.Id, cancellationToken);
         if (user is null)
-            throw new ArgumentNullException(nameof(changeUsernameModel)); // Вопрос уместно ли здесь исключение или лучше вернуть false?
-                                                                          // Сама ситуация исключительна
-                                                                          // так как перед обновлением я проверяю что пользователь найден
-        user.ChangeUsername(changeUsernameModel.Username);
+            return false;
 
-        var updatedUser = await repository.UpdateAsync(changeUsernameModel.Id, user);
-        return mapper.Map<UserReadModel>(updatedUser);
+        user.ChangeUsername(changeUsernameModel.NewUsername);
+
+        var updatedUser = await repository.UpdateAsync(changeUsernameModel.Id, user, cancellationToken);
+        return updatedUser.Username.Value == changeUsernameModel.NewUsername;
     }
 
-    public async Task<UserReadModel> ChangePasswordAsync(ChangePasswordModel changePasswordModel)
+    /// <summary>
+    /// Смена пароля пользователя
+    /// </summary>
+    /// <param name="changePasswordModel">Модель смены пароля</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - смена пароля прошла успешно/ false - пароль не изменен</returns>
+    public async Task<bool> ChangePasswordAsync(ChangePasswordModel changePasswordModel, CancellationToken cancellationToken)
     {
-        var user = await repository.GetByIdAsync(changePasswordModel.Id);
+        var user = await repository.GetByIdAsync(changePasswordModel.Id, cancellationToken);
         if (user is null)
-            throw new ArgumentNullException(nameof(changePasswordModel)); // Вопрос уместно ли здесь исключение или лучше вернуть false?
-                                                                          // Сама ситуация исключительна
-                                                                          // так как перед обновлением я проверяю что пользователь найден
+            return false;
+
         var newPassword = hasher.GenerateHashPassword(changePasswordModel.NewPassword);
-        user.ChangePassword(newPassword);
+        user.ChangePasswordHash(newPassword);
 
-        var updatedUser = await repository.UpdateAsync(changePasswordModel.Id, user);
-        return mapper.Map<UserReadModel>(updatedUser);
+        var updatedUser = await repository.UpdateAsync(changePasswordModel.Id, user, cancellationToken);
+        return updatedUser.PasswordHash.Value == newPassword;
     }
 
-    public async Task<bool> CreateEmailChangeRequestAsync(
-        PublicationOfEmailConfirmationModel publicationOfEmailConfirmationModel)
+    /// <summary>
+    /// Смена имени пользователя(никнейм)
+    /// </summary>
+    /// <param name="setUserEmailModel">Модель смены имени пользователя(никнейма)</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - смена имени пользователя прошла успешно/ false - имя пользователя не изменено</returns>
+    public async Task<bool> SetUserEmailAsync(SetUserEmailModel setUserEmailModel, CancellationToken cancellationToken)
     {
-        var user = await repository.GetByIdAsync(publicationOfEmailConfirmationModel.Id);
-        if (user == null)
-            return false;
-
-        var newEmail = new Email(publicationOfEmailConfirmationModel.NewEmail); //здесь это нужно чтобы провалидировать эмейл
-        //здесь будет логика отправки в почту
-
-        return true;
-    }
-
-    public async Task<UserReadModel> VerifyEmail(VerifyEmailModel verifyEmailModel)
-    {
-        var user = await repository.GetByIdAsync(verifyEmailModel.Id);
+        var user = await repository.GetByIdAsync(setUserEmailModel.Id, cancellationToken);
         if (user is null)
-            throw new ArgumentNullException(nameof(verifyEmailModel)); // Вопрос уместно ли здесь исключение или лучше вернуть false?
-                                                                       // Сама ситуация исключительна
-                                                                       // так как перед обновлением я проверяю что пользователь найден
-        user.ConfirmNewEmail(verifyEmailModel.NewEmail);
-
-        var updatedUser = await repository.UpdateAsync(verifyEmailModel.Id, user);
-        return mapper.Map<UserReadModel>(updatedUser);
-    }
-
-    public async Task<bool> DeleteUserById(Guid id)
-    {
-        return await repository.DeleteAsync(id);
-    }
-
-    public async Task<bool> CheckAvailableUsernameAsync(string username)
-    {
-        return await repository.CheckIsAvailableUsernameAsync(username);
-    }
-
-    public async Task<bool> CheckAvailableEmailAsync(string email)
-    {
-        return await repository.CheckIsAvailableEmailAsync(email);
-
-    }
-
-    public async Task<bool> ValidatePassword(ValidatePasswordModel validatePasswordModel)
-    {
-        var user = await repository.GetByIdAsync(validatePasswordModel.Id);
-        if (user == null)
             return false;
 
-        return hasher.VerifyHashedPassword(validatePasswordModel.Password, user.PasswordHash.Value);
+        user.ConfirmNewEmail(setUserEmailModel.NewEmail);
+
+        var updatedUser = await repository.UpdateAsync(setUserEmailModel.Id, user, cancellationToken);
+        return updatedUser.Email.Value == setUserEmailModel.NewEmail;
+    }
+
+    /// <summary>
+    /// Удалить пользователя по идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
+    public async Task<bool> SoftDeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await repository.GetByIdAsync(id, cancellationToken);
+        if (user is null)
+            return false;
+
+        user.MakeDeleted();
+
+        var updatedUser = await repository.UpdateAsync(id, user, cancellationToken);
+        return updatedUser.IsDeleted;
     }
 }

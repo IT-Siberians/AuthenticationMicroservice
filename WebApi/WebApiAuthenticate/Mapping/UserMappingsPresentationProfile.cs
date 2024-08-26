@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Services.Contracts;
-using WebApiAuthenticate.Models;
+using WebApiAuthenticate.Requests;
+using WebApiAuthenticate.Responses;
 
 namespace WebApiAuthenticate.Mapping;
 
@@ -19,16 +20,20 @@ public class UserMappingsPresentationProfile : Profile
         CreateMap<ChangeUsernameRequest, ChangeUsernameModel>();
         #endregion
         #region ChangePasswordRequest=>ChangePasswordRequest
+
         CreateMap<ChangePasswordRequest, ChangePasswordModel>();
         #endregion
-        #region ChangeEmailRequest=>PublicationOfEmailConfirmationModel
-        CreateMap<ChangeEmailRequest, PublicationOfEmailConfirmationModel>();
+        #region ChangeEmailRequest=>MailConfirmationGenerationModel
+        CreateMap<ChangeEmailRequest, MailConfirmationGenerationModel>();
         #endregion
         #region VerifyEmailRequest=>VerifyEmailRequest
-        CreateMap<VerifyEmailRequest, VerifyEmailModel>();
+        CreateMap<VerifyEmailRequest, SetUserEmailModel>();
         #endregion
         #region ChangePasswordRequest=>ValidatePasswordModel
-        CreateMap<ChangePasswordRequest, ValidatePasswordModel>();
+        CreateMap<ChangePasswordRequest, ValidatePasswordModel>()
+            .ForMember(dest=>dest.Password,
+                opt=>opt.MapFrom(
+                    src=>src.OldPassword));
         #endregion
     }
 }

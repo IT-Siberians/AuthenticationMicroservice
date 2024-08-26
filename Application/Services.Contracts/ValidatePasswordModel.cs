@@ -1,7 +1,16 @@
-﻿namespace Services.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class ValidatePasswordModel
+namespace Services.Contracts;
+
+
+/// <summary>
+/// Модель валидации пароля
+/// </summary>
+public class ValidatePasswordModel : BaseModel<Guid>
 {
-    public Guid Id { get; set; }
+    /// <summary>
+    /// Проверяемый пароль
+    /// </summary>
+    [Required]
     public string Password { get; set; }
 }

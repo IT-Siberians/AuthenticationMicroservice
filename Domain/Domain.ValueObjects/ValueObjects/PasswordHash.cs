@@ -1,4 +1,5 @@
 ﻿using Domain.ValueObjects.BaseEntities;
+using Domain.ValueObjects.Exceptions.PasswordHashExceptions;
 
 namespace Domain.ValueObjects.ValueObjects;
 
@@ -8,8 +9,6 @@ namespace Domain.ValueObjects.ValueObjects;
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
 public class PasswordHash(string value) : ValueObject<string>(value)
 {
-    public const int MaxPasswordHashLength = 256;
-
     /// <summary>
     /// Метод проверки соответствия правилам базового хэшированного пароля
     /// </summary>
@@ -18,6 +17,6 @@ public class PasswordHash(string value) : ValueObject<string>(value)
     protected override void Validate(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentNullException(nameof(value), "PasswordHash cannot null or empty");
+            throw new PasswordHashEmptyException(value);
     }
 }

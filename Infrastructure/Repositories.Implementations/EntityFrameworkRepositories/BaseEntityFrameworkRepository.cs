@@ -4,62 +4,90 @@ using Repositories.Abstractions;
 
 namespace Repositories.Implementations.EntityFrameworkRepositories;
 
-public abstract class BaseEntityFrameworkRepository<T, TId> : IBaseRepository<T, TId> where T : class, IEntity<TId>
+/// <summary>
+/// Репозиторий с CRUD операциями с использованием EF
+/// </summary>
+/// <typeparam name="T">Сущность репозитория</typeparam>
+/// <typeparam name="TId">Идентификатор репозитория</typeparam>
+public abstract class BaseEntityFrameworkRepository<T, TId> : IBaseRepository<T, TId> where T : class, IEntity<TId> where TId : struct
 {
+    /// <summary>
+    /// Контекст базы данных
+    /// </summary>
     protected readonly DbContext Context;
+
+    /// <summary>
+    /// Коллекция-хранилище сущностей
+    /// </summary>
     protected DbSet<T> EntitySet;
 
+    /// <summary>
+    /// Репозиторий с CRUD операциями с использованием EF
+    /// </summary>
+    /// <param name="context">Контекст базы данных</param>
     protected BaseEntityFrameworkRepository(DbContext context)
     {
         Context = context;
         EntitySet = Context.Set<T>();
     }
-    public virtual async Task<IEnumerable<T>> GetAllAsync()
+
+    /// <summary>
+    /// Получить все сущности репозитория
+    /// </summary>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Перечисляемая коллекция сущностей репозитория</returns>
+    public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
+        => await EntitySet.Where(u=>u.IsDeleted == false).ToListAsync(cancellationToken);
+    
+
+    /// <summary>
+    /// Получить сущность по её идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор сущности</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Сущность репозитория</returns>
+    public virtual async Task<T?> GetByIdAsync(TId id, CancellationToken cancellationToken)
     {
-        return EntitySet;
+        var users = await GetAllAsync(cancellationToken);
+        return users.FirstOrDefault(u => u.Id.Equals(id));
     }
 
-    public virtual async Task<T?> GetByIdAsync(TId id)
-    {
-        return await EntitySet.FindAsync(id);
-    }
-
-    public virtual async Task<T> AddAsync(T entity)
+    /// <summary>
+    /// Добавить сущность в репозиторий
+    /// </summary>
+    /// <param name="entity">Сущность репозитория</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Добавляемая сущность репозитория</returns>
+    /// <exception cref="ArgumentNullException">Исключительная ситуация: передача null в параметры</exception>
+    public virtual async Task<T> AddAsync(T entity, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
         var addedEntity = EntitySet.Add(entity);
-        await Context.SaveChangesAsync();
+        await Context.SaveChangesAsync(cancellationToken);
 
         return addedEntity.Entity;
     }
 
-    public virtual async Task<T> UpdateAsync(TId id, T newEntity)
+    /// <summary>
+    /// Обновить сущность по идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор обновляемой сущности</param>
+    /// <param name="newEntity">Сущность, которой обновляют</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Обновившаяся сущность</returns>
+    /// <exception cref="ArgumentNullException">Исключительная ситуация: передача null в параметры</exception>
+    public virtual async Task<T> UpdateAsync(TId id, T newEntity, CancellationToken cancellationToken)
     {
-        var entityToUpdate = await GetByIdAsync(id);
+        var entityToUpdate = await GetByIdAsync(id, cancellationToken);
         if (entityToUpdate == null)
             throw new ArgumentNullException(nameof(id));
 
         entityToUpdate = newEntity;
         EntitySet.Update(entityToUpdate);
-        await Context.SaveChangesAsync();
+        await Context.SaveChangesAsync(cancellationToken);
 
-        return await GetByIdAsync(id);
-    }
-
-    public virtual async Task<bool> DeleteAsync(TId id)
-    {
-        var entityToDelete = await GetByIdAsync(id);
-
-        if (entityToDelete == null)
-        {
-            return false;
-        }
-
-        EntitySet.Remove(entityToDelete);
-        await Context.SaveChangesAsync();
-
-        return true;
+        return entityToUpdate;
     }
 }

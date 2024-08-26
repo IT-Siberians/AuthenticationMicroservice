@@ -24,15 +24,5 @@ public class UserMappingsApplicationProfile : Profile
                 opt => opt.MapFrom(
                     src => src.Email.Value));
         #endregion
-
-        #region User=>PublicationOfEmailConfirmationModel
-
-        CreateMap<User, PublicationOfEmailConfirmationModel>()
-            .ForMember(dest => dest.NewEmail,
-                opt => opt.MapFrom(
-                    src => src.Email.Value));
-
-
-        #endregion
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Enums;
 using Domain.ValueObjects.ValueObjects;
 
+
 namespace Domain.Entities;
 
 /// <summary>

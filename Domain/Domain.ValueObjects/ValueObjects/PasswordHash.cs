@@ -1,5 +1,4 @@
-﻿using Domain.ValueObjects.BaseEntities;
-using Domain.ValueObjects.Exceptions.PasswordHashExceptions;
+﻿using Domain.ValueObjects.Exceptions.PasswordHashExceptions;
 
 namespace Domain.ValueObjects.ValueObjects;
 

@@ -1,5 +1,4 @@
-﻿using Domain.ValueObjects.BaseEntities;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Domain.ValueObjects.Exceptions.UsernameExceptions;
 
 namespace Domain.ValueObjects.ValueObjects;

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Services.Contracts;
+﻿namespace Services.Contracts;
 
 /// <summary>
 /// Модель для смены пароля
@@ -10,6 +8,5 @@ public class ChangePasswordModel : BaseModel<Guid>
     /// <summary>
     /// Пароль пользователя
     /// </summary>
-    [Required]
-    public string NewPassword { get; set; }
+    public required string NewPassword { get; set; }
 }

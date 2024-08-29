@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities.Enums;
+﻿namespace Common.Helpers.Domain.Enums;
 
 public enum AccountStatuses
 {

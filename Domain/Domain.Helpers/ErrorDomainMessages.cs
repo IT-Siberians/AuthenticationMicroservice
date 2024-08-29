@@ -20,10 +20,7 @@ internal static class ErrorDomainMessages
     /// </summary>
     public const string USERNAME_SHORTER_MIN_LENGTH_ERROR = "The Username is shorter than the allowed length of the user name.";
 
-    /// <summary>
-    /// Текст ошибки при попытке создать Username с недопустимым символом
-    /// </summary>
-    public const string USERNAME_INVALID_CHARACTER_ERROR = "The Username contains invalid characters.";
+    public const string USERNAME_INVALID_CHARACTER_ERROR = "The Username contains invalid characters. {0} not correct";
 
     /// <summary>
     /// Текст ошибки при попытке создать пустом Email
@@ -38,7 +35,7 @@ internal static class ErrorDomainMessages
     /// <summary>
     /// Текст ошибки при попытке создать Email в недопустимом формате
     /// </summary>
-    public const string EMAIL_FORMAT_ERROR = "Invalid Email address format.";
+    public const string EMAIL_FORMAT_ERROR = "Invalid Email address format. {0} not correct";
 
     /// <summary>
     /// Текст ошибки при попытке создать пустом PasswordHash

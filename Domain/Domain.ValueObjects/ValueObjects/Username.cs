@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
+using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.UsernameExceptions;
+using static Common.Helpers.UsernameHelpers.UsernameConstants;
 
 namespace Domain.ValueObjects.ValueObjects;
 
@@ -9,12 +11,10 @@ namespace Domain.ValueObjects.ValueObjects;
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
 public class Username(string value) : ValueObject<string>(value)
 {
-    private const int MIN_USERNAME_LENGTH = 3;
-    private const int MAX_USERNAME_LENGTH = 30;
-    private const string VALID_USERNAME_PATTERN = "(^[a-zA-Z_-]+$)";
-
+    private static readonly Regex ValidationRegex = new Regex(USERNAME_VALID_PATTERN,
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
     /// <summary>
-    /// Метод проверки соответствия правилам базового имени пользователя(никнейма)
+    /// Проверяет строку на соответствие формату  имени пользователя(никнейма)
     /// </summary>
     /// <param name="value"></param>
     /// <exception cref="ArgumentNullException">Нулевая или пустая строка в параметрах метода</exception>
@@ -23,18 +23,18 @@ public class Username(string value) : ValueObject<string>(value)
     protected override void Validate(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new UsernameEmptyException(value);
+            throw new UsernameEmptyException(nameof(value));
 
         switch (value.Length)
         {
-            case > MAX_USERNAME_LENGTH:
-                throw new UsernameMaxLengthException(value.Length);
-            case < MIN_USERNAME_LENGTH:
-                throw new UsernameMinLengthException(value.Length);
+            case > USERNAME_MAX_LENGTH:
+                throw new UsernameMaxLengthException(value.Length, nameof(value));
+            case < USERNAME_MIN_LENGTH:
+                throw new UsernameMinLengthException(value.Length, nameof(value));
         }
 
-        var match = Regex.Match(value, VALID_USERNAME_PATTERN, RegexOptions.IgnoreCase);
+        var match = ValidationRegex.Match(value);
         if (!match.Success)
-            throw new UsernameInvalidCharacterException();
+            throw new UsernameInvalidCharacterException(value); ;
     }
 }

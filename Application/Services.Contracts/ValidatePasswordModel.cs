@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Services.Contracts;
+﻿namespace Services.Contracts;
 
 
 /// <summary>
@@ -11,6 +9,5 @@ public class ValidatePasswordModel : BaseModel<Guid>
     /// <summary>
     /// Проверяемый пароль
     /// </summary>
-    [Required]
-    public string Password { get; set; }
+    public required string Password { get; set; }
 }

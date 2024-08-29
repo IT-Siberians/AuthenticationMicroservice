@@ -1,34 +1,26 @@
 ﻿using FluentValidation;
-using Services.Abstractions;
-using Services.Contracts;
 using WebApiAuthenticate.Requests;
 using WebApiAuthenticate.RequestsValidators.ObjectsValidators;
+using static Common.Helpers.RequestHelpers.RequestValidationMessages;
+using static Common.Helpers.PasswordHelpers.OldPasswordValidationMessages;
 
 namespace WebApiAuthenticate.RequestsValidators;
 
 public class ChangePasswordValidator : AbstractValidator<ChangePasswordRequest>
 {
-    private readonly IUserChangeValidationService _service;
 
-    public ChangePasswordValidator(IUserChangeValidationService service)
+    public ChangePasswordValidator()
     {
-        _service = service;
         RuleFor(request => request)
-            .NotEmpty().WithMessage("Request should not be empty.");
+            .NotEmpty().WithMessage(REQUEST_EMPTY_ERROR);
 
         RuleFor(request => request.Id)
             .SetValidator(new IdValidator());
 
         RuleFor(request => request.OldPassword)
-            .MustAsync(ValidatePassword).WithMessage($"Invalid password");
+            .NotEmpty().WithMessage(OLD_PASSWORD_EMPTY_ERROR);
 
         RuleFor(request => request.NewPassword)
             .SetValidator(new NewPasswordValidator());
-    }
-
-    private async Task<bool> ValidatePassword(ChangePasswordRequest request, string oldPassword, CancellationToken cancellationToken)
-    {
-        var model = new ValidatePasswordModel() { Id = request.Id, Password = oldPassword };
-        return  await _service.ValidatePasswordAsync(model, cancellationToken); // это должно выполняться синхронно так как FluentValidation не поддерживает асинхронные вызовы
     }
 }

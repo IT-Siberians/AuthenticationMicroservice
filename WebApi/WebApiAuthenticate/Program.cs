@@ -17,7 +17,7 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 var userDbConString = configuration.GetConnectionString("UsersDb");
 if (string.IsNullOrWhiteSpace(userDbConString))
-    throw new InvalidOperationException("Строка подключения 'UsersDb' не может быть null или пустой.");
+    throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
 
 // Add DbContext to the container.
 services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,

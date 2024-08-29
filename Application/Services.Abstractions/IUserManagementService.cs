@@ -12,7 +12,7 @@ public interface IUserManagementService
     /// </summary>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Перечисляемая коллекция моделей пользователя для чтения</returns>
-    public Task<IEnumerable<UserReadModel>> GetAllUsersAsync(CancellationToken cancellationToken);
+    public Task<IEnumerable<UserModel>> GetAllUsersAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить пользователя по его идентификатору
@@ -20,7 +20,7 @@ public interface IUserManagementService
     /// <param name="id">Идентификатор пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Модель пользователя для чтения</returns>
-    public Task<UserReadModel?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken);
+    public Task<UserModel?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
     /// Создать пользователя
@@ -28,7 +28,7 @@ public interface IUserManagementService
     /// <param name="createUserModel">Модель для создания пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Модель пользователя для чтения</returns>
-    public Task<UserReadModel> CreateUserAsync(CreateUserModel createUserModel, CancellationToken cancellationToken);
+    public Task<UserModel> CreateUserAsync(CreateUserModel createUserModel, CancellationToken cancellationToken);
 
     /// <summary>
     /// Изменение имени пользователя(никнейм)

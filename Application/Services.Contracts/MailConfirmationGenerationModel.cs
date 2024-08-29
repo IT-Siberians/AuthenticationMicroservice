@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Services.Contracts;
+﻿namespace Services.Contracts;
 
 /// <summary>
 /// Модель формирования подтверждения почты
@@ -10,6 +8,5 @@ public class MailConfirmationGenerationModel : BaseModel<Guid>
     /// <summary>
     /// Новый Email пользователя
     /// </summary>
-    [Required]
-    public string NewEmail { get; set; }
+    public required string NewEmail { get; set; }
 }

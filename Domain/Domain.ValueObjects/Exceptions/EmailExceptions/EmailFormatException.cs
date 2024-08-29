@@ -1,6 +1,11 @@
-﻿namespace Domain.ValueObjects.Exceptions.EmailExceptions;
+﻿using static Common.Helpers.EmailHelpers.EmailDomainMessages;
+
+namespace Domain.ValueObjects.Exceptions.EmailExceptions;
 
 /// <summary>
 /// Исключительная ситуация создание Email с некорректным форматом
 /// </summary>
-internal class EmailFormatException() : FormatException(ErrorDomainMessages.EMAIL_FORMAT_ERROR);
+/// <param name="emailValue">Значение создаваемого Email</param>
+internal class EmailFormatException(string emailValue) 
+    : FormatException(
+        string.Format(EMAIL_FORMAT_ERROR, emailValue));

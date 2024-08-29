@@ -7,7 +7,8 @@ namespace Repositories.Implementations.EntityFrameworkRepositories;
 /// <summary>
 /// Репозиторий пользователей с использованием EF
 /// </summary>
-public class UserRepository(UserDbContext context) : BaseEntityFrameworkRepository<User, Guid>(context), IUserRepository
+public class UserRepository(UserDbContext databaseContext) : BaseEntityFrameworkRepository<User, Guid>(databaseContext),
+    IUserRepository
 {
     /// <summary>
     /// Получить пользователя по имени пользователя(никнейму)
@@ -30,6 +31,6 @@ public class UserRepository(UserDbContext context) : BaseEntityFrameworkReposito
     public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var users = await GetAllAsync(cancellationToken);
-        return users.FirstOrDefault(u => u.Email.Value == email);
+        return users.FirstOrDefault(u => u.Email.Value == email); //если что добавил приведение к LowerCase и Trim в маппинг(после принятия PR удалю коммент)
     }
 }

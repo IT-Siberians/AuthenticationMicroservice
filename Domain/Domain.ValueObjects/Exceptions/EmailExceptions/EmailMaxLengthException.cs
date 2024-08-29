@@ -1,8 +1,14 @@
-﻿namespace Domain.ValueObjects.Exceptions.EmailExceptions;
+﻿using static Common.Helpers.EmailHelpers.EmailDomainMessages;
+using static Common.Helpers.EmailHelpers.EmailConstants;
+
+namespace Domain.ValueObjects.Exceptions.EmailExceptions;
 
 /// <summary>
 /// Исключительная ситуация создание Email длиннее допустимого
 /// </summary>
-/// <param name="value">Длина создаваемого Email</param>
-internal class EmailMaxLengthException(int value) : ArgumentOutOfRangeException(paramName: nameof(value), value,
-    ErrorDomainMessages.EMAIL_LONGER_MAX_LENGTH_ERROR);
+/// <param name="valueLength">Длина создаваемого Email</param>
+/// <param name="paramName">Название параметра, в котором произошло исключение</param>
+internal class EmailMaxLengthException(int valueLength, string paramName)
+    : ArgumentOutOfRangeException(
+        paramName: paramName,
+        string.Format(EMAIL_LONGER_MAX_LENGTH_ERROR, EMAIL_MAX_LENGTH, valueLength));

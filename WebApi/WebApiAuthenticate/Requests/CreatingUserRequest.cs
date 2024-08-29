@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebApiAuthenticate.Requests;
+﻿namespace WebApiAuthenticate.Requests;
 
 /// <summary>
 /// Запрос на создание пользователя
@@ -10,18 +8,16 @@ public class CreatingUserRequest
     /// <summary>
     /// Имя пользователя(никнейм)
     /// </summary>
-    [Required]
-    public string Username { get; init; }
+    public required string Username { get; init; }
 
     /// <summary>
     /// Пароль
     /// </summary>
-    [Required]
-    public string Password { get; init; }
+    public required string Password { get; init; }
 
     /// <summary>
     /// Email
     /// </summary>
-    [Required]
-    public string Email { get; init; }
+
+    public required string Email { get; init; }
 }

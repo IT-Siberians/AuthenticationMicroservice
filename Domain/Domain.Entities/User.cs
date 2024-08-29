@@ -1,6 +1,5 @@
-﻿using Domain.Entities.Enums;
+﻿using Common.Helpers.Domain.Enums;
 using Domain.ValueObjects.ValueObjects;
-
 
 namespace Domain.Entities;
 
@@ -53,7 +52,7 @@ public class User : IEntity<Guid>
     }
 
     /// <summary>
-    /// Сущность пользователя
+    /// Конструктор для создания нового пользователя
     /// </summary>
     /// <param name="username">Базовый элемент имя пользователя(никнейм)</param>
     /// <param name="passwordHash">Базовый элемент Хэш пароля</param>
@@ -65,7 +64,6 @@ public class User : IEntity<Guid>
         PasswordHash = passwordHash;
         Email = email;
         AccountStatus = AccountStatuses.UnconfirmedAccount;
-        IsDeleted = false;
     }
 
     /// <summary>
@@ -109,10 +107,10 @@ public class User : IEntity<Guid>
     }
 
     /// <summary>
-    /// Удалить пользователя из проекта
+    /// Удалить пользователя
     /// </summary>
     /// <returns>true - удален/false - не удален</returns>
-    public bool MakeDeleted() => IsDeleted = true;
+    public bool SoftDelete() => IsDeleted = true;
 
     /// <summary>
     /// Вход пользователя в систему

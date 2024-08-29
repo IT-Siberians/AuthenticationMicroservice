@@ -1,29 +1,23 @@
 ﻿using System.Text.RegularExpressions;
+using Common.Helpers.EmailHelpers;
+using Common.Helpers.UsernameHelpers;
 using FluentValidation;
-using Services.Abstractions;
+using static Common.Helpers.EmailHelpers.EmailValidationMessages;
+using static Common.Helpers.EmailHelpers.EmailConstants;
 
 namespace WebApiAuthenticate.RequestsValidators.ObjectsValidators;
 
 public class EmailValidator : AbstractValidator<string>
 {
-    private readonly IUserChangeValidationService _service;
-    private const int MaxEmailLength = 255;
-    private const string ValidEmailPattern = @"[.\-_a-z0-9]+@([a-z0-9][\-a-z0-9]+\.)+[a-z]{2,6}";
-    public EmailValidator(IUserChangeValidationService service)
+    private static readonly Regex ValidateRegex = new(EMAIL_VALID_PATTERN,
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    public EmailValidator()
     {
-        _service = service;
         RuleFor(email => email)
-            .NotEmpty().WithMessage("The email cannot be empty.")
-            .MaximumLength(MaxEmailLength)
-            .WithMessage($"The email should be no more than {MaxEmailLength}.")
-            .EmailAddress().WithMessage("Invalid email address format.")
-            .Matches(ValidEmailPattern, RegexOptions.IgnoreCase).WithMessage("Invalid email address format.")
-            .MustAsync(CheckIsAvailableEmail).WithMessage("The email is already taken.");
+            .NotEmpty().WithMessage(EMAIL_EMPTY_ERROR)
+            .MaximumLength(UsernameConstants.USERNAME_MAX_LENGTH)
+            .WithMessage(string.Format(EMAIL_LONGER_MAX_LENGTH_ERROR,EMAIL_MAX_LENGTH))
+            .EmailAddress().WithMessage(EMAIL_FORMAT_ERROR)
+            .Must(email=>ValidateRegex.Match(email).Success).WithMessage(EMAIL_FORMAT_ERROR);
     }
-    private async Task<bool> CheckIsAvailableEmail(string email, CancellationToken cancellationToken)
-    {
-        return await _service.IsAvailableEmailAsync(email, cancellationToken);// это должно выполняться синхронно так как FluentValidation не поддерживает синхронные вызовы
-    }
-
-
 }

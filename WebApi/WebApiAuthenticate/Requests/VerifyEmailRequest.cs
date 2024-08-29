@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebApiAuthenticate.Requests;
+﻿namespace WebApiAuthenticate.Requests;
 
 /// <summary>
 /// Запрос подтверждения Email
@@ -10,12 +8,10 @@ public class VerifyEmailRequest : BaseRequest<Guid>
     /// <summary>
     /// Новый Email, который подтверждают
     /// </summary>
-    [Required]
-    public string NewEmail { get; init; }
+    public required string NewEmail { get; init; }
 
     /// <summary>
     /// Дата создания запроса
     /// </summary>
-    [Required]
-    public DateTime CreatedDateTime { get; init; }
+    public required DateTime CreatedDateTime { get; init; }
 }

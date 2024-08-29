@@ -8,9 +8,9 @@ public class UserMappingsApplicationProfile : Profile
 {
     public UserMappingsApplicationProfile()
     {
-        #region User=>UserReadModel
+        #region User=>UserModel
 
-        CreateMap<User, UserReadModel>()
+        CreateMap<User, UserModel>()
             .ForMember(
                 dest => dest.Username,
                 opt => opt.MapFrom(

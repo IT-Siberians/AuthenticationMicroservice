@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebApiAuthenticate.Requests;
+﻿namespace WebApiAuthenticate.Requests;
 
 /// <summary>
 /// Запрос смены почты
@@ -10,6 +8,5 @@ public class ChangeEmailRequest : BaseRequest<Guid>
     /// <summary>
     /// Email на который создается запрос на смену
     /// </summary>
-    [Required]
-    public string NewEmail { get; init; }
+    public required string NewEmail { get; init; }
 }

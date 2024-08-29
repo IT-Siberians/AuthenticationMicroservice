@@ -9,7 +9,9 @@ namespace Services.Implementations;
 /// </summary>
 /// <param name="repository">Репозиторий пользователей</param>
 /// <param name="hasher">Шифровальщик пароля</param>
-public class UserChangeValidationService(IUserRepository repository, IPasswordHasher hasher) : IUserChangeValidationService
+public class UserChangeValidationService(
+    IUserRepository repository,
+    IPasswordHasher hasher) : IUserChangeValidationService
 {
     /// <summary>
     /// Проверка свободно ли имя пользователя
@@ -43,5 +45,17 @@ public class UserChangeValidationService(IUserRepository repository, IPasswordHa
     {
         var user = await repository.GetByIdAsync(validatePasswordModel.Id, cancellationToken);
         return user != null && hasher.VerifyHashedPassword(validatePasswordModel.Password, user.PasswordHash.Value);
+    }
+
+    /// <summary>
+    /// Проверяет срок жизни ссылки
+    /// </summary>
+    /// <param name="createdTime">Время создания ссылки</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - срок не истек/ false - срок истек</returns>
+    public Task<bool> IsLinkExpiredAsync(DateTime createdTime, CancellationToken cancellationToken)
+    {
+        var time = DateTime.Now - createdTime;
+        return Task.FromResult(time.TotalMinutes > 15);
     }
 }

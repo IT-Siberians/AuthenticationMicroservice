@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
+using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.EmailExceptions;
+using static Common.Helpers.EmailHelpers.EmailConstants;
 
 namespace Domain.ValueObjects.ValueObjects;
 
@@ -9,11 +11,10 @@ namespace Domain.ValueObjects.ValueObjects;
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Электронной почты</param>
 public class Email(string value) : ValueObject<string>(value)
 {
-    private const int MAX_EMAIL_LENGTH = 255;
-    private const string VALID_EMAIL_PATTERN = @"[.\-_a-z0-9]+@([a-z0-9][\-a-z0-9]+\.)+[a-z]{2,6}";
-
+    private static readonly Regex ValidationRegex = new(EMAIL_VALID_PATTERN,
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
     /// <summary>
-    /// Метод проверки соответствия правилам базовой электронной почты
+    /// Проверяет строку на соответствие формату электронной почты
     /// </summary>
     /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Электронной почты</param>
     /// <exception cref="ArgumentNullException">Нулевая или пустая строка в параметрах метода</exception>
@@ -22,13 +23,13 @@ public class Email(string value) : ValueObject<string>(value)
     protected override void Validate(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            throw new EmailEmptyException(value);
+            throw new EmailEmptyException(nameof(value));
 
-        if (value.Length > MAX_EMAIL_LENGTH)
-            throw new EmailMaxLengthException(value.Length);
+        if (value.Length > EMAIL_MAX_LENGTH)
+            throw new EmailMaxLengthException(value.Length, nameof(value));
 
-        var match = Regex.Match(value, VALID_EMAIL_PATTERN, RegexOptions.IgnoreCase);
+        var match = ValidationRegex.Match(value);
         if (!match.Success)
-            throw new EmailFormatException();
+            throw new EmailFormatException(value);
     }
 }

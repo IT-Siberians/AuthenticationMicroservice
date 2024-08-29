@@ -11,23 +11,43 @@ public class UserMappingsPresentationProfile : Profile
     {
         #region CreatingUserRequest=>CreateUserModel
 
-        CreateMap<CreatingUserRequest, CreateUserModel>();
+        CreateMap<CreatingUserRequest, CreateUserModel>()
+            .ForMember(
+                dest=>dest.Username,
+                opt=>opt.MapFrom(
+                    src=>src.Username.Trim().ToLower()))
+            .ForMember(
+                dest => dest.Email,
+                opt => opt.MapFrom(
+                    src => src.Email.Trim().ToLower()));
         #endregion
-        #region UserReadModel=>UserReadResponse
-        CreateMap<UserReadModel, UserReadResponse>();
+        #region UserModel=>UserResponse
+        CreateMap<UserModel, UserResponse>();
         #endregion
         #region ChangeUsernameRequest=>ChangeUsernameRequest
-        CreateMap<ChangeUsernameRequest, ChangeUsernameModel>();
+        CreateMap<ChangeUsernameRequest, ChangeUsernameModel>()
+            .ForMember(
+                dest=>dest.NewUsername,
+                opt=>opt.MapFrom(
+                    src=>src.NewUsername.Trim().ToLower()));
         #endregion
         #region ChangePasswordRequest=>ChangePasswordRequest
 
         CreateMap<ChangePasswordRequest, ChangePasswordModel>();
         #endregion
         #region ChangeEmailRequest=>MailConfirmationGenerationModel
-        CreateMap<ChangeEmailRequest, MailConfirmationGenerationModel>();
+        CreateMap<ChangeEmailRequest, MailConfirmationGenerationModel>()
+            .ForMember(
+                dest=>dest.NewEmail,
+                opt=>opt.MapFrom(
+                    src=>src.NewEmail.Trim().ToLower()));
         #endregion
         #region VerifyEmailRequest=>VerifyEmailRequest
-        CreateMap<VerifyEmailRequest, SetUserEmailModel>();
+        CreateMap<VerifyEmailRequest, SetUserEmailModel>()
+            .ForMember(
+                dest => dest.NewEmail,
+                opt => opt.MapFrom(
+                    src => src.NewEmail.Trim().ToLower()));
         #endregion
         #region ChangePasswordRequest=>ValidatePasswordModel
         CreateMap<ChangePasswordRequest, ValidatePasswordModel>()

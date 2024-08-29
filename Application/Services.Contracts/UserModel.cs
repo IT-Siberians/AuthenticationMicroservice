@@ -1,11 +1,11 @@
-﻿using Domain.Entities.Enums;
+﻿using Common.Helpers.Domain.Enums;
 
 namespace Services.Contracts;
 
 /// <summary>
 /// Модель пользователя для чтения
 /// </summary>
-public class UserReadModel : BaseModel<Guid>
+public class UserModel : BaseModel<Guid>
 {
     /// <summary>
     /// Имя пользователя

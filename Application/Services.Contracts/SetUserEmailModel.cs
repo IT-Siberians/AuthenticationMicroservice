@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Services.Contracts;
+﻿namespace Services.Contracts;
 
 /// <summary>
 /// Модель верификации Email
@@ -10,6 +8,5 @@ public class SetUserEmailModel : BaseModel<Guid>
     /// <summary>
     /// Подтверждаемый Email
     /// </summary>
-    [Required]
-    public string NewEmail { get; set; }
+    public required string NewEmail { get; set; }
 }

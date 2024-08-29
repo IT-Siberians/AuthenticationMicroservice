@@ -26,10 +26,10 @@ public class UserManagementService(
     /// </summary>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Перечисляемая коллекция моделей пользователя для чтения</returns>
-    public async Task<IEnumerable<UserReadModel>> GetAllUsersAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<UserModel>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
         var users = await repository.GetAllAsync(cancellationToken);
-        return mapper.Map<IEnumerable<UserReadModel>>(users);
+        return mapper.Map<IEnumerable<UserModel>>(users);
     }
 
     /// <summary>
@@ -38,10 +38,10 @@ public class UserManagementService(
     /// <param name="id">Идентификатор пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Модель пользователя для чтения</returns>
-    public async Task<UserReadModel?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<UserModel?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(id, cancellationToken);
-        return mapper.Map<UserReadModel>(user);
+        return mapper.Map<UserModel>(user);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public class UserManagementService(
     /// <param name="cancellationToken">Токен отмены</param>
     /// <exception cref="UserNotCreatedException">Репозиторий не смог создать пользователя</exception>
     /// <returns>Модель пользователя для чтения</returns>
-    public async Task<UserReadModel> CreateUserAsync(CreateUserModel createUserModel, CancellationToken cancellationToken)
+    public async Task<UserModel> CreateUserAsync(CreateUserModel createUserModel, CancellationToken cancellationToken)
     {
         var username = new Username(createUserModel.Username);
         var passwordHash = new PasswordHash(hasher.GenerateHashPassword(createUserModel.Password));
@@ -70,7 +70,7 @@ public class UserManagementService(
 
         await notificationService.CreateSetEmailRequest(mailConfirmationGenerationModel, cancellationToken);
 
-        return mapper.Map<UserReadModel>(user);
+        return mapper.Map<UserModel>(user);
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class UserManagementService(
 
         user.ChangeUsername(changeUsernameModel.NewUsername);
 
-        var updatedUser = await repository.UpdateAsync(changeUsernameModel.Id, user, cancellationToken);
+        var updatedUser = await repository.UpdateAsync(user, cancellationToken);
         return updatedUser.Username.Value == changeUsernameModel.NewUsername;
     }
 
@@ -106,7 +106,7 @@ public class UserManagementService(
         var newPassword = hasher.GenerateHashPassword(changePasswordModel.NewPassword);
         user.ChangePasswordHash(newPassword);
 
-        var updatedUser = await repository.UpdateAsync(changePasswordModel.Id, user, cancellationToken);
+        var updatedUser = await repository.UpdateAsync(user, cancellationToken);
         return updatedUser.PasswordHash.Value == newPassword;
     }
 
@@ -124,7 +124,7 @@ public class UserManagementService(
 
         user.ConfirmNewEmail(setUserEmailModel.NewEmail);
 
-        var updatedUser = await repository.UpdateAsync(setUserEmailModel.Id, user, cancellationToken);
+        var updatedUser = await repository.UpdateAsync(user, cancellationToken);
         return updatedUser.Email.Value == setUserEmailModel.NewEmail;
     }
 
@@ -140,9 +140,9 @@ public class UserManagementService(
         if (user is null)
             return false;
 
-        user.MakeDeleted();
+        user.SoftDelete();
 
-        var updatedUser = await repository.UpdateAsync(id, user, cancellationToken);
+        var updatedUser = await repository.UpdateAsync(user, cancellationToken);
         return updatedUser.IsDeleted;
     }
 }

@@ -1,13 +1,13 @@
 ﻿namespace Domain.ValueObjects.BaseEntities;
 
 /// <summary>
-/// Определение базового элемента
+/// Базовый класс объекта значения
 /// </summary>
 /// <typeparam name="T">Тип-обобщение базового элемента</typeparam>
 public abstract class ValueObject<T>
 {
     /// <summary>
-    /// значение базового элемента
+    /// Значение базового элемента
     /// </summary>
     public T Value { get; }
 
@@ -22,7 +22,7 @@ public abstract class ValueObject<T>
     }
 
     /// <summary>
-    /// Метод валидации
+    /// Валидирует значение переданное в конструктор
     /// </summary>
     /// <param name="value">Значение, которое хранится в элементе и проходит валидацию</param>
     protected abstract void Validate(T value);

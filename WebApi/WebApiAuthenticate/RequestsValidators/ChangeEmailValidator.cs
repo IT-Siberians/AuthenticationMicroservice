@@ -1,21 +1,21 @@
 ﻿using FluentValidation;
-using Services.Abstractions;
 using WebApiAuthenticate.Requests;
 using WebApiAuthenticate.RequestsValidators.ObjectsValidators;
+using static Common.Helpers.RequestHelpers.RequestValidationMessages;
 
 namespace WebApiAuthenticate.RequestsValidators;
 
 public class ChangeEmailValidator : AbstractValidator<ChangeEmailRequest>
 {
-    public ChangeEmailValidator(IUserChangeValidationService service)
+    public ChangeEmailValidator()
     {
         RuleFor(request=> request)
-            .NotEmpty().WithMessage("Request should not be empty.");
+            .NotEmpty().WithMessage(REQUEST_EMPTY_ERROR);
 
         RuleFor(request => request.Id)
             .SetValidator(new IdValidator());
 
         RuleFor(request => request.NewEmail)
-            .SetValidator(new EmailValidator(service));
+            .SetValidator(new EmailValidator());
     }
 }

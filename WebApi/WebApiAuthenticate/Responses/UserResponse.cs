@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Domain.Entities.Enums;
+using Common.Helpers.Domain.Enums;
 
 namespace WebApiAuthenticate.Responses;
 
 /// <summary>
-/// Ответ приложения Пользователь чтения
+/// Ответ приложения Пользователь
 /// </summary>
-public class UserReadResponse
+public class UserResponse
 {
     /// <summary>
     /// Идентификатор пользователя

@@ -4,7 +4,8 @@
 /// Маркерный интерфейс сущности
 /// </summary>
 /// <typeparam name="TId">Идентификатор сущности</typeparam>
-public interface IEntity<out TId> where TId : struct
+public interface IEntity<out TId> 
+    where TId : struct
 {
 
     /// <summary>

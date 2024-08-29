@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Services.Contracts;
+﻿namespace Services.Contracts;
 
 /// <summary>
 /// Модель смены имени пользователя(никнейма)
@@ -10,6 +8,5 @@ public class ChangeUsernameModel : BaseModel<Guid>
     /// <summary>
     /// Новое имя пользователя
     /// </summary>
-    [Required]
-    public string NewUsername { get; set; }
+    public required string NewUsername { get; set; }
 }

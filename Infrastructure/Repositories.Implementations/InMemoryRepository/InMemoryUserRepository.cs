@@ -9,7 +9,8 @@ namespace Repositories.Implementations.InMemoryRepository;
 /// </summary>
 /// <typeparam name="T">Сущность репозитория</typeparam>
 /// <typeparam name="TId">Идентификатор репозитория</typeparam>
-public class InMemoryUserRepository : BaseInMemoryRepository<User, Guid>, IUserRepository
+public class InMemoryUserRepository : BaseInMemoryRepository<User, Guid>,
+    IUserRepository
 {
     /// <summary>
     /// Получить пользователя по имени пользователя(никнейму)

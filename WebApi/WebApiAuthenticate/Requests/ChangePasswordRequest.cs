@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace WebApiAuthenticate.Requests;
+﻿namespace WebApiAuthenticate.Requests;
 
 /// <summary>
 /// Запрос на смену пароля
@@ -10,12 +8,10 @@ public class ChangePasswordRequest : BaseRequest<Guid>
     /// <summary>
     /// Проверяемый пароль
     /// </summary>
-    [Required]
-    public string OldPassword { get; init; }
+    public required string OldPassword { get; init; }
 
     /// <summary>
     /// Новый пароль, на который происходит смена
     /// </summary>
-    [Required]
-    public string NewPassword { get; init; }
+    public required string NewPassword { get; init; }
 }

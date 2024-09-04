@@ -1,6 +1,5 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Repositories.Abstractions;
 
 namespace Repositories.Implementations.EntityFrameworkRepositories;
@@ -11,7 +10,7 @@ namespace Repositories.Implementations.EntityFrameworkRepositories;
 /// <typeparam name="TEntity">Сущность репозитория</typeparam>
 /// <typeparam name="TId">Идентификатор репозитория</typeparam>
 public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseRepository<TEntity, TId>
-    where TEntity : class, IEntity<TId>
+    where TEntity : class, IEntity<TId>, IDeletableSoftly
     where TId : struct
 {
     /// <summary>
@@ -90,5 +89,24 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
         await DatabaseContext.SaveChangesAsync(cancellationToken);
 
         return entityToUpdate;
+    }
+
+    /// <summary>
+    /// Удалить пользователя по идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
+    public virtual async Task<bool> SoftDeleteUserAsync(TId id, CancellationToken cancellationToken)
+    {
+        var entityToDelete = await GetByIdAsync(id, cancellationToken);
+        if (entityToDelete is null)
+            return false;
+
+        entityToDelete.MarkAsDeletedSoftly();
+        EntitySet.Update(entityToDelete);
+        await DatabaseContext.SaveChangesAsync(cancellationToken);
+
+        return entityToDelete.IsDeleted;
     }
 }

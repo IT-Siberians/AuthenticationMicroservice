@@ -6,7 +6,7 @@ namespace Domain.Entities;
 /// <summary>
 /// Сущность пользователя
 /// </summary>
-public class User : IEntity<Guid>
+public class User : IEntity<Guid>, IDeletableSoftly
 {
     /// <summary>
     /// Идентификатор пользователя
@@ -110,7 +110,7 @@ public class User : IEntity<Guid>
     /// Удалить пользователя
     /// </summary>
     /// <returns>true - удален/false - не удален</returns>
-    public bool SoftDelete() => IsDeleted = true;
+    public bool MarkAsDeletedSoftly() => IsDeleted = true;
 
     /// <summary>
     /// Вход пользователя в систему

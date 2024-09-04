@@ -135,14 +135,5 @@ public class UserManagementService(
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
     public async Task<bool> SoftDeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var user = await repository.GetByIdAsync(id, cancellationToken);
-        if (user is null)
-            return false;
-
-        user.SoftDelete();
-
-        var updatedUser = await repository.UpdateAsync(user, cancellationToken);
-        return updatedUser.IsDeleted;
-    }
+        => await repository.SoftDeleteUserAsync(id, cancellationToken);
 }

@@ -8,7 +8,7 @@ namespace Repositories.Abstractions;
 /// <typeparam name="TEntity">Обобщение сущности репозитория</typeparam>
 /// <typeparam name="TId">Идентификатор репозитория</typeparam>
 public interface IBaseRepository<TEntity, in TId>
-    where TEntity : IEntity<TId>
+    where TEntity : IEntity<TId>, IDeletableSoftly
     where TId : struct
 {
     /// <summary>
@@ -41,4 +41,12 @@ public interface IBaseRepository<TEntity, in TId>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Сущность репозитория</returns>
     Task<TEntity?> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Удалить пользователя по идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
+    Task<bool> SoftDeleteUserAsync(TId id, CancellationToken cancellationToken);
 }

@@ -12,9 +12,4 @@ public interface IEntity<out TId>
     /// Идентификатор
     /// </summary>
     public TId Id { get;  }
-
-    /// <summary>
-    /// Метка удаления
-    /// </summary>
-    public bool IsDeleted { get; }
 }

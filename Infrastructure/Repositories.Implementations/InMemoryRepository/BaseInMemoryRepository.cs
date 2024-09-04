@@ -10,7 +10,7 @@ namespace Repositories.Implementations.InMemoryRepository;
 /// <typeparam name="TId">Уникальный идентификатор сущности репозитория</typeparam>
 /// <param name="entities">Перечисляемая коллекция сущностей репозитория</param>
 public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity?> entities) : IBaseRepository<TEntity, TId>
-    where TEntity : IEntity<TId>
+    where TEntity : IEntity<TId>, IDeletableSoftly
     where TId : struct
 {
     /// <summary>
@@ -45,7 +45,7 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity?>
     /// <returns>Сущность репозитория</returns>
     public Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
     {
-        return cancellationToken.IsCancellationRequested 
+        return cancellationToken.IsCancellationRequested
             ? default
             : Task.FromResult(Entities.FirstOrDefault(t => Equals(t.Id, id)));
     }
@@ -77,10 +77,30 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity?>
         if (cancellationToken.IsCancellationRequested)
             return default;
 
-        var entityToUpdate = await GetByIdAsync(newEntity.Id, cancellationToken) 
+        var entityToUpdate = await GetByIdAsync(newEntity.Id, cancellationToken)
                              ?? throw new ArgumentNullException(nameof(newEntity.Id));
         var index = Entities.IndexOf(entityToUpdate);
         Entities[index] = newEntity;
         return Entities[index];
+    }
+
+    /// <summary>
+    /// Удалить пользователя по идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
+    public virtual async Task<bool> SoftDeleteUserAsync(TId id, CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+            return false;
+
+        var entityToDelete = await GetByIdAsync(id, cancellationToken);
+        if (entityToDelete is null)
+            return false;
+
+        entityToDelete.MarkAsDeletedSoftly();
+
+        return entityToDelete.IsDeleted;
     }
 }

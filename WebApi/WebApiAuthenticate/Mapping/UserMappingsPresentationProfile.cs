@@ -24,26 +24,12 @@ public class UserMappingsPresentationProfile : Profile
         #region UserModel=>UserResponse
         CreateMap<UserModel, UserResponse>();
         #endregion
-        #region ChangeUsernameRequest=>ChangeUsernameRequest
-        CreateMap<ChangeUsernameRequest, ChangeUsernameModel>()
-            .ForMember(
-                dest=>dest.NewUsername,
-                opt=>opt.MapFrom(
-                    src=>src.NewUsername.Trim().ToLower()));
-        #endregion
         #region ChangePasswordRequest=>ChangePasswordRequest
 
         CreateMap<ChangePasswordRequest, ChangePasswordModel>();
         #endregion
-        #region ChangeEmailRequest=>MailConfirmationGenerationModel
-        CreateMap<ChangeEmailRequest, MailConfirmationGenerationModel>()
-            .ForMember(
-                dest=>dest.NewEmail,
-                opt=>opt.MapFrom(
-                    src=>src.NewEmail.Trim().ToLower()));
-        #endregion
-        #region VerifyEmailRequest=>VerifyEmailRequest
-        CreateMap<VerifyEmailRequest, SetUserEmailModel>()
+        #region VerifyEmailRequestWithId=>VerifyEmailRequestWithId
+        CreateMap<VerifyEmailRequestWithId, SetUserEmailModel>()
             .ForMember(
                 dest => dest.NewEmail,
                 opt => opt.MapFrom(

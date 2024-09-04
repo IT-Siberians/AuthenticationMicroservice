@@ -1,5 +1,5 @@
-﻿using static Common.Helpers.UsernameHelpers.UsernameConstants;
-using static Common.Helpers.UsernameHelpers.UsernameDomainMessages;
+﻿using static Common.Helpers.Constants.UsernameConstants;
+using static Domain.Helpers.UsernameHelpers.UsernameDomainMessages;
 
 namespace Domain.ValueObjects.Exceptions.UsernameExceptions;
 

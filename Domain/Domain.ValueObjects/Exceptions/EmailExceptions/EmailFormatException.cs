@@ -1,4 +1,4 @@
-﻿using static Common.Helpers.EmailHelpers.EmailDomainMessages;
+﻿using static Domain.Helpers.EmailHelpers.EmailDomainMessages;
 
 namespace Domain.ValueObjects.Exceptions.EmailExceptions;
 

@@ -45,8 +45,9 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity?>
     /// <returns>Сущность репозитория</returns>
     public Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        return Task.FromResult(Entities.FirstOrDefault(t => Equals(t.Id, id)));
+        return cancellationToken.IsCancellationRequested 
+            ? default
+            : Task.FromResult(Entities.FirstOrDefault(t => Equals(t.Id, id)));
     }
 
     /// <summary>
@@ -57,7 +58,9 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity?>
     /// <returns>Добавляемая сущность репозитория</returns>
     public Task<TEntity?> AddAsync(TEntity? entity, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        if (cancellationToken.IsCancellationRequested)
+            return default;
+
         Entities.Add(entity);
         return Task.FromResult(entity);
     }
@@ -71,8 +74,11 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity?>
     /// <exception cref="ArgumentNullException">Исключительная ситуация: передача null в параметры</exception>
     public async Task<TEntity?> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var entityToUpdate = await GetByIdAsync(newEntity.Id, cancellationToken) ?? throw new ArgumentNullException(nameof(newEntity.Id));
+        if (cancellationToken.IsCancellationRequested)
+            return default;
+
+        var entityToUpdate = await GetByIdAsync(newEntity.Id, cancellationToken) 
+                             ?? throw new ArgumentNullException(nameof(newEntity.Id));
         var index = Entities.IndexOf(entityToUpdate);
         Entities[index] = newEntity;
         return Entities[index];

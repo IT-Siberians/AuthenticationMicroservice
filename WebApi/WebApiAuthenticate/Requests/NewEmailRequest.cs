@@ -3,10 +3,10 @@
 /// <summary>
 /// Запрос смены почты
 /// </summary>
-public class ChangeEmailRequest : BaseRequest<Guid>
+public class NewEmailRequest
 {
     /// <summary>
     /// Email на который создается запрос на смену
     /// </summary>
-    public required string NewEmail { get; init; }
+    public required string EmailValue { get; init; }
 }

@@ -1,5 +1,5 @@
-﻿using static Common.Helpers.EmailHelpers.EmailDomainMessages;
-using static Common.Helpers.EmailHelpers.EmailConstants;
+﻿using static Domain.Helpers.EmailHelpers.EmailDomainMessages;
+using static Common.Helpers.Constants.EmailConstants;
 
 namespace Domain.ValueObjects.Exceptions.EmailExceptions;
 

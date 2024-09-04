@@ -1,7 +1,6 @@
-﻿using Common.Helpers.EmailHelpers;
-using Common.Helpers.PasswordHashHelpers;
-using Common.Helpers.UsernameHelpers;
+﻿using Common.Helpers.Constants;
 using Domain.Entities;
+using Domain.Helpers.PasswordHashHelpers;
 using Domain.ValueObjects.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.UsernameExceptions;
-using static Common.Helpers.UsernameHelpers.UsernameConstants;
+using static Common.Helpers.Constants.UsernameConstants;
 
 namespace Domain.ValueObjects.ValueObjects;
 

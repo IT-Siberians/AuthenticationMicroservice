@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.EmailExceptions;
-using static Common.Helpers.EmailHelpers.EmailConstants;
+using static Common.Helpers.Constants.EmailConstants;
 
 namespace Domain.ValueObjects.ValueObjects;
 

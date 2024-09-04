@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using static Common.Helpers.PasswordHelpers.NewPasswordConstants;
-using static Common.Helpers.PasswordHelpers.NewPasswordValidationMessages;
+using static Common.Helpers.Constants.NewPasswordConstants;
+using static WebApiAuthenticate.RequestsValidators.Helpers.PasswordHelpers.NewPasswordValidationMessages;
 
 namespace WebApiAuthenticate.RequestsValidators.ObjectsValidators;
 

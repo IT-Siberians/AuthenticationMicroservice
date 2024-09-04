@@ -4,7 +4,7 @@
 /// Базовая сущность запроса
 /// </summary>
 /// <typeparam name="TId">Идентификатор запроса</typeparam>
-public abstract class BaseRequest<TId> 
+public abstract class BaseRequestWithId<TId> 
     where TId : struct
 {
     /// <summary>

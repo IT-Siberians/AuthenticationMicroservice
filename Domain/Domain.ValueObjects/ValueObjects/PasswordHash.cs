@@ -1,6 +1,6 @@
 ﻿using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.PasswordHashExceptions;
-using static Common.Helpers.PasswordHashHelpers.PasswordHashConstants;
+using static Common.Helpers.Constants.PasswordHashConstants;
 
 namespace Domain.ValueObjects.ValueObjects;
 

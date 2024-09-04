@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using WebApiAuthenticate.Requests;
 using WebApiAuthenticate.RequestsValidators.ObjectsValidators;
-using static Common.Helpers.RequestHelpers.RequestValidationMessages;
+using static WebApiAuthenticate.RequestsValidators.Helpers.RequestHelpers.RequestValidationMessages;
 
 namespace WebApiAuthenticate.RequestsValidators;
 

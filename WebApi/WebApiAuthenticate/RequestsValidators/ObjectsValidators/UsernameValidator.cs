@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using static Common.Helpers.UsernameHelpers.UsernameConstants;
-using static Common.Helpers.UsernameHelpers.UsernameValidationMessages;
+using static Common.Helpers.Constants.UsernameConstants;
+using static WebApiAuthenticate.RequestsValidators.Helpers.UsernameHelpers.UsernameValidationMessages;
 
 namespace WebApiAuthenticate.RequestsValidators.ObjectsValidators;
 

@@ -3,10 +3,10 @@
 /// <summary>
 /// Запрос на смену имени пользователя(никнейма)
 /// </summary>
-public class ChangeUsernameRequest : BaseRequest<Guid>
+public class NewUsernameRequest
 {
     /// <summary>
     /// Имя пользователя(никнейм), на которое будет смена имени пользователя(никнейма)
     /// </summary>
-    public required string NewUsername { get; init; }
+    public required string UsernameValue { get; init; }
 }

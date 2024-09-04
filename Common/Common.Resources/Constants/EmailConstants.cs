@@ -1,4 +1,4 @@
-﻿namespace Common.Helpers.EmailHelpers;
+﻿namespace Common.Helpers.Constants;
 
 /// <summary>
 /// Статический класс содержащий константы параметров исключений в Email

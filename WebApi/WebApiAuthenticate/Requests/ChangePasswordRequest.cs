@@ -3,7 +3,7 @@
 /// <summary>
 /// Запрос на смену пароля
 /// </summary>
-public class ChangePasswordRequest : BaseRequest<Guid>
+public class ChangePasswordRequest
 {
     /// <summary>
     /// Проверяемый пароль

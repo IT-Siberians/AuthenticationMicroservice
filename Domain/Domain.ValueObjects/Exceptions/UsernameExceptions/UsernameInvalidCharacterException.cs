@@ -1,4 +1,4 @@
-﻿using static Common.Helpers.UsernameHelpers.UsernameDomainMessages;
+﻿using static Domain.Helpers.UsernameHelpers.UsernameDomainMessages;
 
 namespace Domain.ValueObjects.Exceptions.UsernameExceptions;
 

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using static Common.Helpers.IdHelpers.IdValidationMessages;
+using static WebApiAuthenticate.RequestsValidators.Helpers.IdHelpers.IdValidationMessages;
 
 namespace WebApiAuthenticate.RequestsValidators.ObjectsValidators;
 

@@ -1,4 +1,5 @@
-﻿using static Common.Helpers.PasswordHashHelpers.PasswordHashDomainMessages;
+﻿using static Domain.Helpers.PasswordHashHelpers.PasswordHashDomainMessages;
+
 
 namespace Domain.ValueObjects.Exceptions.PasswordHashExceptions;
 

@@ -15,7 +15,7 @@ public class UsersController(
     INotificationService notificationService,
     IMapper mapper) : ControllerBase
 {
-    [HttpGet("GetAll")]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserResponse>))]
     public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll(CancellationToken cancellationToken)
     {
@@ -23,7 +23,7 @@ public class UsersController(
         return Ok(mapper.Map<IEnumerable<UserResponse>>(users));
     }
 
-    [HttpGet("GetUser/{id:guid}", Name = "GetUserById")]
+    [HttpGet("{id:guid}", Name = "GetUserById")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     public async Task<ActionResult<UserResponse>> GetUserById(Guid id, CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ public class UsersController(
         return Ok(userResponse);
     }
 
-    [HttpPost("RegisterUser")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     public async Task<ActionResult<UserResponse>> CreateUser([FromBody] CreatingUserRequest request, CancellationToken cancellationToken)
@@ -62,23 +62,28 @@ public class UsersController(
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
-    [HttpPatch("ChangeUsername")]
+    [HttpPatch("{id:guid}/ChangeUsername")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> ChangeUsername([FromBody] ChangeUsernameRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> ChangeUsername(Guid id, [FromBody] NewUsernameRequest newUsername, CancellationToken cancellationToken)
     {
-        var isAvailableUsername = await validationService.IsAvailableUsernameAsync(request.NewUsername, cancellationToken);
+        var isAvailableUsername = await validationService.IsAvailableUsernameAsync(newUsername.UsernameValue, cancellationToken);
         if (!isAvailableUsername)
         {
             return BadRequest("Username is reserved.");
         }
 
-        var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
+        var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
-            return NotFound($"The user \"{request.Id}\" for the update does not exist");
+            return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changeUsernameModel = mapper.Map<ChangeUsernameModel>(request);
+        var changeUsernameModel = new ChangeUsernameModel()
+        {
+            Id = id,
+            NewUsername = newUsername.UsernameValue
+        };
+
         var updateResult = await managementService.ChangeUsernameAsync(changeUsernameModel, cancellationToken);
         if (!updateResult)
             return NotFound();
@@ -86,49 +91,55 @@ public class UsersController(
         return NoContent();
     }
 
-    [HttpPatch("ChangePasswordHash")]
+    [HttpPatch("{id:guid}/ChangePassword")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
     {
-        var validateModel = mapper.Map<ValidatePasswordModel>(request);
+        var validateModel = new ValidatePasswordModel() { Id = id, Password = request.OldPassword };
         var isOldPasswordValid = await validationService.ValidatePasswordAsync(validateModel, cancellationToken);
         if (!isOldPasswordValid)
         {
             return BadRequest("Old password not valid");
         }
 
-        var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
+        var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
-            return NotFound($"The user \"{request.Id}\" for the update does not exist");
+            return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changePasswordDto = mapper.Map<ChangePasswordModel>(request);
+        var changePasswordModel = new ChangePasswordModel()
+        {
+            Id = id, NewPassword = request.NewPassword
+        };
 
-        var updateResult = await managementService.ChangePasswordAsync(changePasswordDto, cancellationToken);
+        var updateResult = await managementService.ChangePasswordAsync(changePasswordModel, cancellationToken);
         if (!updateResult)
             return NotFound();
 
         return NoContent();
     }
 
-    [HttpPost("CreateEmailChangeRequest")]
+    [HttpPost("{id:guid}/ChangeEmail")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> CreateEmailChangeRequest([FromBody] ChangeEmailRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateEmailChangeRequest(Guid id, [FromBody] NewEmailRequest newEmail, CancellationToken cancellationToken)
     {
-        var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
+        var isAvailableEmail = await validationService.IsAvailableEmailAsync(newEmail.EmailValue, cancellationToken);
         if (!isAvailableEmail)
         {
             return BadRequest("Email is reserved");
         }
 
-        var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
+        var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
-            return NotFound($"The user \"{request.Id}\" for the update does not exist");
+            return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changeEmailModel = mapper.Map<MailConfirmationGenerationModel>(request);
+        var changeEmailModel = new MailConfirmationGenerationModel()
+        {
+            Id = id, NewEmail = newEmail.EmailValue
+        };
 
         var isCreated = await notificationService.CreateSetEmailRequest(changeEmailModel, cancellationToken);
         if (isCreated)
@@ -143,23 +154,23 @@ public class UsersController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> VerifyEmail([FromBody] VerifyEmailRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult> VerifyEmail([FromBody] VerifyEmailRequestWithId requestWithId, CancellationToken cancellationToken)
     {
-        var isLinkExpired = await validationService.IsLinkExpiredAsync(request.CreatedDateTime, cancellationToken);
+        var isLinkExpired = await validationService.IsLinkExpiredAsync(requestWithId.CreatedDateTime, cancellationToken);
         if (!isLinkExpired)
             return BadRequest("Link is Expired");
 
-        var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
+        var isAvailableEmail = await validationService.IsAvailableEmailAsync(requestWithId.NewEmail, cancellationToken);
         if (!isAvailableEmail)
         {
             return BadRequest("Email is reserved");
         }
 
-        var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
+        var userToUpdate = await managementService.GetUserByIdAsync(requestWithId.Id, cancellationToken);
         if (userToUpdate is null)
-            return NotFound($"The user \"{request.Id}\" for the update does not exist");
+            return NotFound($"The user \"{requestWithId.Id}\" for the update does not exist");
 
-        var verifyEmailModel = mapper.Map<SetUserEmailModel>(request);
+        var verifyEmailModel = mapper.Map<SetUserEmailModel>(requestWithId);
 
         var updateResult = await managementService.SetUserEmailAsync(verifyEmailModel, cancellationToken);
 
@@ -169,7 +180,7 @@ public class UsersController(
         return NoContent();
     }
 
-    [HttpDelete("DeleteUser/{id}")]
+    [HttpDelete("{id:guid}/Delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     public async Task<ActionResult<bool>> DeleteUser(Guid id, CancellationToken cancellationToken)

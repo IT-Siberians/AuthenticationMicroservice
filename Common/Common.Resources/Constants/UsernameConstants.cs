@@ -1,4 +1,4 @@
-﻿namespace Common.Helpers.UsernameHelpers;
+﻿namespace Common.Helpers.Constants;
 
 /// <summary>
 /// Статический класс содержащий константы параметров исключений в Username

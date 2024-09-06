@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using Domain.ValueObjects.BaseEntities;
+﻿using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.EmailExceptions;
+using System.Text.RegularExpressions;
 using static Common.Helpers.Constants.EmailConstants;
 
 namespace Domain.ValueObjects.ValueObjects;

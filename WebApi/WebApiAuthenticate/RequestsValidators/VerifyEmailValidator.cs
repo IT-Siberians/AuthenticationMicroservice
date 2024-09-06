@@ -5,7 +5,7 @@ using static WebApiAuthenticate.RequestsValidators.Helpers.RequestHelpers.Reques
 
 namespace WebApiAuthenticate.RequestsValidators;
 
-public class VerifyEmailValidator : AbstractValidator<VerifyEmailRequestWithId>
+public class VerifyEmailValidator : AbstractValidator<ConfirmEmailRequest>
 {
     public VerifyEmailValidator()
     {

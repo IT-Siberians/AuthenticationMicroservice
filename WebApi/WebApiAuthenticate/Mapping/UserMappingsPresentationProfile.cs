@@ -13,9 +13,9 @@ public class UserMappingsPresentationProfile : Profile
 
         CreateMap<CreatingUserRequest, CreateUserModel>()
             .ForMember(
-                dest=>dest.Username,
-                opt=>opt.MapFrom(
-                    src=>src.Username.Trim().ToLower()))
+                dest => dest.Username,
+                opt => opt.MapFrom(
+                    src => src.Username.Trim().ToLower()))
             .ForMember(
                 dest => dest.Email,
                 opt => opt.MapFrom(
@@ -28,8 +28,8 @@ public class UserMappingsPresentationProfile : Profile
 
         CreateMap<ChangePasswordRequest, ChangePasswordModel>();
         #endregion
-        #region VerifyEmailRequestWithId=>VerifyEmailRequestWithId
-        CreateMap<VerifyEmailRequestWithId, SetUserEmailModel>()
+        #region ConfirmEmailRequest=>SetUserEmailModel
+        CreateMap<ConfirmEmailRequest, SetUserEmailModel>()
             .ForMember(
                 dest => dest.NewEmail,
                 opt => opt.MapFrom(
@@ -37,9 +37,10 @@ public class UserMappingsPresentationProfile : Profile
         #endregion
         #region ChangePasswordRequest=>ValidatePasswordModel
         CreateMap<ChangePasswordRequest, ValidatePasswordModel>()
-            .ForMember(dest=>dest.Password,
-                opt=>opt.MapFrom(
-                    src=>src.OldPassword));
+            .ForMember(
+                dest => dest.Password,
+                opt => opt.MapFrom(
+                    src => src.OldPassword));
         #endregion
     }
 }

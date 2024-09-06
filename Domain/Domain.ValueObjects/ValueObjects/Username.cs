@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
-using Domain.ValueObjects.BaseEntities;
+﻿using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.UsernameExceptions;
+using System.Text.RegularExpressions;
 using static Common.Helpers.Constants.UsernameConstants;
 
 namespace Domain.ValueObjects.ValueObjects;

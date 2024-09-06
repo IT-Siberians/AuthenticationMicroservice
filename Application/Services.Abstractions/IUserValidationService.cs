@@ -5,7 +5,7 @@ namespace Services.Abstractions;
 /// <summary>
 /// Интерфейс валидации изменений пользователей
 /// </summary>
-public interface IUserChangeValidationService
+public interface IUserValidationService
 {
     /// <summary>
     /// Проверка свободно ли имя пользователя

@@ -11,7 +11,7 @@ namespace WebApiAuthenticate.Controllers;
 [Route("/api/v1/[controller]")]
 public class UsersController(
     IUserManagementService managementService,
-    IUserChangeValidationService validationService,
+    IUserValidationService validationService,
     INotificationService notificationService,
     IMapper mapper) : ControllerBase
 {
@@ -110,7 +110,8 @@ public class UsersController(
 
         var changePasswordModel = new ChangePasswordModel()
         {
-            Id = id, NewPassword = request.NewPassword
+            Id = id,
+            NewPassword = request.NewPassword
         };
 
         var updateResult = await managementService.ChangePasswordAsync(changePasswordModel, cancellationToken);
@@ -138,7 +139,8 @@ public class UsersController(
 
         var changeEmailModel = new MailConfirmationGenerationModel()
         {
-            Id = id, NewEmail = newEmail.EmailValue
+            Id = id,
+            NewEmail = newEmail.EmailValue
         };
 
         var isCreated = await notificationService.CreateSetEmailRequest(changeEmailModel, cancellationToken);
@@ -150,29 +152,29 @@ public class UsersController(
         return BadRequest();
     }
 
-    [HttpPatch("VerifyEmail")]
+    [HttpPatch("ConfirmEmail")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> VerifyEmail([FromBody] VerifyEmailRequestWithId requestWithId, CancellationToken cancellationToken)
+    public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
     {
-        var isLinkExpired = await validationService.IsLinkExpiredAsync(requestWithId.CreatedDateTime, cancellationToken);
+        var isLinkExpired = await validationService.IsLinkExpiredAsync(request.CreatedDateTime, cancellationToken);
         if (!isLinkExpired)
             return BadRequest("Link is Expired");
 
-        var isAvailableEmail = await validationService.IsAvailableEmailAsync(requestWithId.NewEmail, cancellationToken);
+        var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
         if (!isAvailableEmail)
         {
             return BadRequest("Email is reserved");
         }
 
-        var userToUpdate = await managementService.GetUserByIdAsync(requestWithId.Id, cancellationToken);
+        var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
         if (userToUpdate is null)
-            return NotFound($"The user \"{requestWithId.Id}\" for the update does not exist");
+            return NotFound($"The user \"{request.Id}\" for the update does not exist");
 
-        var verifyEmailModel = mapper.Map<SetUserEmailModel>(requestWithId);
+        var confirmEmailModel = mapper.Map<SetUserEmailModel>(request);
 
-        var updateResult = await managementService.SetUserEmailAsync(verifyEmailModel, cancellationToken);
+        var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
 
         if (!updateResult)
             return NotFound();
@@ -189,7 +191,7 @@ public class UsersController(
         if (userToDelete is null)
             return NotFound($"The user \"{id}\" for the delete does not exist");
 
-        var deleteResult = await managementService.SoftDeleteUserByIdAsync(id, cancellationToken);
+        var deleteResult = await managementService.DeleteUserSoftlyByIdAsync(id, cancellationToken);
         if (!deleteResult)
             return NotFound(deleteResult);
 

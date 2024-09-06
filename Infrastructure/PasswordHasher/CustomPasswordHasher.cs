@@ -1,5 +1,5 @@
-﻿using Services.Abstractions;
-using BCrypt.Net;
+﻿using BCrypt.Net;
+using Services.Abstractions;
 
 namespace PasswordHasher;
 

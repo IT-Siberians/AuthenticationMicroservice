@@ -4,7 +4,7 @@ namespace WebApiAuthenticate.Extensions;
 
 public static class MigrationManager
 {
-    public static IHost MigrateDatabase<T>(this IHost host) 
+    public static IHost MigrateDatabase<T>(this IHost host)
         where T : DbContext
     {
         var scope = host.Services.CreateScope();

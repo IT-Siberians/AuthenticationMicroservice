@@ -21,7 +21,7 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <summary>
     /// Коллекция-хранилище сущностей
     /// </summary>
-    protected DbSet<TEntity?> EntitySet;
+    protected DbSet<TEntity> EntitySet;
 
     /// <summary>
     /// Репозиторий с CRUD операциями с использованием EF
@@ -38,9 +38,9 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// </summary>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Перечисляемая коллекция сущностей репозитория</returns>
-    public virtual async Task<IEnumerable<TEntity?>> GetAllAsync(CancellationToken cancellationToken)
-        => await EntitySet.Where(u=>u.IsDeleted == false).ToListAsync(cancellationToken);
-    
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken)
+        => await EntitySet.Where(u => u.IsDeleted == false).ToListAsync(cancellationToken);
+
 
     /// <summary>
     /// Получить сущность по её идентификатору
@@ -50,8 +50,9 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <returns>Сущность репозитория</returns>
     public virtual async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
     {
-        var users = await GetAllAsync(cancellationToken);
-        return users.FirstOrDefault(u => u.Id.Equals(id));
+        return await EntitySet
+            .Where(u => u.IsDeleted == false)
+            .FirstOrDefaultAsync(u => u.Id.Equals(id), cancellationToken);
     }
 
     /// <summary>
@@ -61,15 +62,15 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Добавляемая сущность репозитория</returns>
     /// <exception cref="ArgumentNullException">Исключительная ситуация: передача null в параметры</exception>
-    public virtual async Task<TEntity?> AddAsync(TEntity? entity, CancellationToken cancellationToken)
+    public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        var addedEntity = EntitySet.Add(entity);
+        var addedEntityEntry = EntitySet.Add(entity);
         await DatabaseContext.SaveChangesAsync(cancellationToken);
 
-        return addedEntity.Entity;
+        return addedEntityEntry.Entity;
     }
 
     /// <summary>
@@ -78,7 +79,7 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <param name="newEntity">Сущность, которой обновляют</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Обновившаяся сущность</returns>
-    public virtual async Task<TEntity?> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken)
+    public virtual async Task<TEntity> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken)
     {
         var entityToUpdate = await GetByIdAsync(newEntity.Id, cancellationToken);
         if (entityToUpdate == null)
@@ -97,7 +98,7 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <param name="id">Идентификатор пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
-    public virtual async Task<bool> SoftDeleteUserAsync(TId id, CancellationToken cancellationToken)
+    public virtual async Task<bool> DeleteSoftlyAsync(TId id, CancellationToken cancellationToken)
     {
         var entityToDelete = await GetByIdAsync(id, cancellationToken);
         if (entityToDelete is null)

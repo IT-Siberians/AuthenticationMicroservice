@@ -14,5 +14,5 @@ public interface IDeletableSoftly
     /// Удалить пользователя
     /// </summary>
     /// <returns>true - удален/false - не удален</returns>
-    public bool MarkAsDeletedSoftly();
+    public void MarkAsDeletedSoftly();
 }

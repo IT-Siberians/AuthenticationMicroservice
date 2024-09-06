@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using EntityFramework;
+using Microsoft.EntityFrameworkCore;
 using Repositories.Abstractions;
 
 namespace Repositories.Implementations.EntityFrameworkRepositories;
@@ -18,8 +19,8 @@ public class UserRepository(UserDbContext databaseContext) : BaseEntityFramework
     /// <returns>Пользователь с указанным именем пользователя(никнеймом)</returns>
     public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
-        var users = await GetAllAsync(cancellationToken);
-        return users.FirstOrDefault(u => u.Username.Value == username);
+        return await EntitySet.Where(u => u.IsDeleted == false)
+            .FirstOrDefaultAsync(u => u.Username.Value == username, cancellationToken);
     }
 
     /// <summary>
@@ -30,7 +31,7 @@ public class UserRepository(UserDbContext databaseContext) : BaseEntityFramework
     /// <returns>Пользователь с указанным Email</returns>
     public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var users = await GetAllAsync(cancellationToken);
-        return users.FirstOrDefault(u => u.Email.Value == email); //если что добавил приведение к LowerCase и Trim в маппинг(после принятия PR удалю коммент)
+        return await EntitySet.Where(u => u.IsDeleted == false)
+            .FirstOrDefaultAsync(u => u.Username.Value == email, cancellationToken);
     }
 }

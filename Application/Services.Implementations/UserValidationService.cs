@@ -9,9 +9,9 @@ namespace Services.Implementations;
 /// </summary>
 /// <param name="repository">Репозиторий пользователей</param>
 /// <param name="hasher">Шифровальщик пароля</param>
-public class UserChangeValidationService(
+public class UserValidationService(
     IUserRepository repository,
-    IPasswordHasher hasher) : IUserChangeValidationService
+    IPasswordHasher hasher) : IUserValidationService
 {
     /// <summary>
     /// Проверка свободно ли имя пользователя

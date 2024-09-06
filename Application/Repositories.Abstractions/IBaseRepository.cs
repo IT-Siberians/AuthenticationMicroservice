@@ -16,7 +16,7 @@ public interface IBaseRepository<TEntity, in TId>
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>Перечисляемая коллекция сущностей репозитория</returns>
-    Task<IEnumerable<TEntity?>> GetAllAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить сущность из репозитория по идентификатору
@@ -32,7 +32,7 @@ public interface IBaseRepository<TEntity, in TId>
     /// <param name="entity">Добавляемая сущность</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Сущность репозитория</returns>
-    Task<TEntity?> AddAsync(TEntity? entity, CancellationToken cancellationToken);
+    Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken);
 
     /// <summary>
     /// Обновить сущность в репозитории по идентификатору
@@ -40,7 +40,7 @@ public interface IBaseRepository<TEntity, in TId>
     /// <param name="newEntity">Сущность репозитория, которой обновляют сущность </param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Сущность репозитория</returns>
-    Task<TEntity?> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken);
+    Task<TEntity> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken);
 
     /// <summary>
     /// Удалить пользователя по идентификатору
@@ -48,5 +48,5 @@ public interface IBaseRepository<TEntity, in TId>
     /// <param name="id">Идентификатор пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
-    Task<bool> SoftDeleteUserAsync(TId id, CancellationToken cancellationToken);
+    Task<bool> DeleteSoftlyAsync(TId id, CancellationToken cancellationToken);
 }

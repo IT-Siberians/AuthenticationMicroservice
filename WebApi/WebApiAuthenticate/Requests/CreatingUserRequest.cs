@@ -18,6 +18,5 @@ public class CreatingUserRequest
     /// <summary>
     /// Email
     /// </summary>
-
     public required string Email { get; init; }
 }

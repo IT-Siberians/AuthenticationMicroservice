@@ -8,7 +8,7 @@ namespace Domain.ValueObjects.Exceptions.UsernameExceptions;
 /// </summary>
 /// <param name="valueLength">Длина создаваемого Имени пользователя</param>
 /// <param name="paramName">Название параметра, в котором произошло исключение</param>
-internal class UsernameMinLengthException(int valueLength, string paramName) 
+internal class UsernameMinLengthException(int valueLength, string paramName)
     : ArgumentOutOfRangeException(
         paramName: paramName,
         string.Format(USERNAME_SHORTER_MIN_LENGTH_ERROR, USERNAME_MAX_LENGTH, valueLength));

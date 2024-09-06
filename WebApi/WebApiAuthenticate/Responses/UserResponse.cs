@@ -10,7 +10,7 @@ public class UserResponse
     /// <summary>
     /// Идентификатор пользователя
     /// </summary>
-    public Guid Id {get; init; }
+    public Guid Id { get; init; }
 
     /// <summary>
     /// Имя пользователя

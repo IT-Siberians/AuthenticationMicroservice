@@ -134,6 +134,6 @@ public class UserManagementService(
     /// <param name="id">Идентификатор пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
-    public async Task<bool> SoftDeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
-        => await repository.SoftDeleteUserAsync(id, cancellationToken);
+    public async Task<bool> DeleteUserSoftlyByIdAsync(Guid id, CancellationToken cancellationToken)
+        => await repository.DeleteSoftlyAsync(id, cancellationToken);
 }

@@ -1,6 +1,5 @@
 ﻿using Common.Helpers.Constants;
 using Domain.Entities;
-using Domain.Helpers.PasswordHashHelpers;
 using Domain.ValueObjects.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

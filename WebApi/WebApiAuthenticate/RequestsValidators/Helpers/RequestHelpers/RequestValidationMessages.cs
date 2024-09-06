@@ -8,6 +8,6 @@ public static class RequestValidationMessages
     /// <summary>
     /// Текст ошибки при попытке передать null в Request
     /// </summary>
-    public const string REQUEST_EMPTY_ERROR = 
+    public const string REQUEST_EMPTY_ERROR =
         "Request should not be empty.";
 }

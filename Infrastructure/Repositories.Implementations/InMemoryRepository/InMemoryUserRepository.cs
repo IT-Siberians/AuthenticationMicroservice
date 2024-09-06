@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Domain.ValueObjects.ValueObjects;
 using Repositories.Abstractions;
 
 namespace Repositories.Implementations.InMemoryRepository;
@@ -21,7 +20,7 @@ public class InMemoryUserRepository : BaseInMemoryRepository<User, Guid>,
     public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        return await Task.Run(()=>Entities.FirstOrDefault(u => u.Username.Value == username), cancellationToken);
+        return await Task.Run(() => Entities.FirstOrDefault(u => u.Username.Value == username), cancellationToken);
     }
 
     /// <summary>

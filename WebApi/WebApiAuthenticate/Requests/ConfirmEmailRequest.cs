@@ -3,7 +3,7 @@
 /// <summary>
 /// Запрос подтверждения Email
 /// </summary>
-public class VerifyEmailRequestWithId : BaseRequestWithId<Guid>
+public class ConfirmEmailRequest : BaseRequest<Guid>
 {
     /// <summary>
     /// Новый Email, который подтверждают

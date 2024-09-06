@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using FluentValidation;
-using static WebApiAuthenticate.RequestsValidators.Helpers.EmailHelpers.EmailValidationMessages;
+﻿using FluentValidation;
+using System.Text.RegularExpressions;
 using static Common.Helpers.Constants.EmailConstants;
+using static WebApiAuthenticate.RequestsValidators.Helpers.EmailHelpers.EmailValidationMessages;
 
 namespace WebApiAuthenticate.RequestsValidators.ObjectsValidators;
 
@@ -14,8 +14,8 @@ public class EmailValidator : AbstractValidator<string>
         RuleFor(email => email)
             .NotEmpty().WithMessage(EMAIL_EMPTY_ERROR)
             .MaximumLength(EMAIL_MAX_LENGTH)
-            .WithMessage(string.Format(EMAIL_LONGER_MAX_LENGTH_ERROR,EMAIL_MAX_LENGTH))
+            .WithMessage(string.Format(EMAIL_LONGER_MAX_LENGTH_ERROR, EMAIL_MAX_LENGTH))
             .EmailAddress().WithMessage(EMAIL_FORMAT_ERROR)
-            .Must(email=>ValidateRegex.Match(email).Success).WithMessage(EMAIL_FORMAT_ERROR);
+            .Must(email => ValidateRegex.Match(email).Success).WithMessage(EMAIL_FORMAT_ERROR);
     }
 }

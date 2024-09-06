@@ -29,7 +29,7 @@ services.AddScoped<IUserRepository, UserRepository>();
 // Add services to the container.
 services.AddTransient<IUserManagementService, UserManagementService>();
 services.AddTransient<INotificationService, NotificationService>();
-services.AddTransient<IUserChangeValidationService, UserChangeValidationService>();
+services.AddTransient<IUserValidationService, UserValidationService>();
 
 // Add infrastructure to the container.
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();

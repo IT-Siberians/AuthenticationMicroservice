@@ -36,17 +36,17 @@ public class User : IEntity<Guid>, IDeletableSoftly
     /// <summary>
     /// Маркер помечен ли пользователь как удаленный
     /// </summary>
-    public bool IsDeleted {get; private set; }
+    public bool IsDeleted { get; private set; }
 
     /// <summary>
     /// Маркер помечен ли пользователь как авторизованный
     /// </summary>
-    public bool IsSignIn {get; private set; }
+    public bool IsSignIn { get; private set; }
 
     /// <summary>
     /// Конструктор для EF
     /// </summary>
-    protected User() 
+    protected User()
     {
 
     }
@@ -109,8 +109,7 @@ public class User : IEntity<Guid>, IDeletableSoftly
     /// <summary>
     /// Удалить пользователя
     /// </summary>
-    /// <returns>true - удален/false - не удален</returns>
-    public bool MarkAsDeletedSoftly() => IsDeleted = true;
+    public void MarkAsDeletedSoftly() => IsDeleted = true;
 
     /// <summary>
     /// Вход пользователя в систему

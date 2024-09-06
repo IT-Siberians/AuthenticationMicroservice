@@ -38,6 +38,6 @@ public static class NewPasswordValidationMessages
     /// <summary>
     /// Текст ошибки при попытке создать NewPassword без спецсимвола
     /// </summary>
-    public const string NEW_PASSWORD_NOT_EXIST_SPECIAL_SYMBOL_ERROR = 
+    public const string NEW_PASSWORD_NOT_EXIST_SPECIAL_SYMBOL_ERROR =
         "The password must contain at least one special character.";
 }

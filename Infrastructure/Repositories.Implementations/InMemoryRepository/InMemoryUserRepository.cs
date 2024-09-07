@@ -19,7 +19,9 @@ public class InMemoryUserRepository : BaseInMemoryRepository<User, Guid>,
     /// <returns>Пользователь с указанным именем пользователя(никнеймом)</returns>
     public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        if (cancellationToken.IsCancellationRequested)
+            return default;
+
         return await Task.Run(() => Entities.FirstOrDefault(u => u.Username.Value == username), cancellationToken);
     }
 
@@ -31,7 +33,9 @@ public class InMemoryUserRepository : BaseInMemoryRepository<User, Guid>,
     /// <returns>Пользователь с указанным Email</returns>
     public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        if (cancellationToken.IsCancellationRequested)
+            return default;
+
         return await Task.Run(() => Entities.FirstOrDefault(u => u.Email.Value == email), cancellationToken);
     }
 }

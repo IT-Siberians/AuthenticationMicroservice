@@ -33,8 +33,13 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity> 
     /// <returns>Перечисляемая коллекция сущностей репозитория</returns>
     public Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        return Task.FromResult(Entities.AsEnumerable());
+        if (cancellationToken.IsCancellationRequested)
+            return default;
+        
+        return Task.FromResult(
+            Entities
+                .Where(e=>!e.IsDeleted)
+                .AsEnumerable());
     }
 
     /// <summary>
@@ -45,9 +50,12 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity> 
     /// <returns>Сущность репозитория</returns>
     public Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
     {
-        return cancellationToken.IsCancellationRequested
-            ? default
-            : Task.FromResult(Entities.FirstOrDefault(t => Equals(t.Id, id)));
+        if (cancellationToken.IsCancellationRequested)
+            return default;
+
+        return Task.FromResult(
+            Entities
+                .FirstOrDefault(e=>!e.IsDeleted && e.Id.Equals(id)));
     }
 
     /// <summary>
@@ -68,19 +76,19 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity> 
     /// <summary>
     /// Обновить сущность по идентификатору
     /// </summary>
-    /// <param name="newEntity">Сущность, которой обновляют</param>
+    /// <param name="entity">Сущность, которой обновляют</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Обновившаяся сущность</returns>
     /// <exception cref="ArgumentNullException">Исключительная ситуация: передача null в параметры</exception>
-    public async Task<TEntity> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken)
+    public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
             return default;
 
-        var entityToUpdate = await GetByIdAsync(newEntity.Id, cancellationToken)
-                             ?? throw new ArgumentNullException(nameof(newEntity.Id));
+        var entityToUpdate = await GetByIdAsync(entity.Id, cancellationToken)
+                             ?? throw new ArgumentNullException(nameof(entity.Id));
         var index = Entities.IndexOf(entityToUpdate);
-        Entities[index] = newEntity;
+        Entities[index] = entity;
         return Entities[index];
     }
 

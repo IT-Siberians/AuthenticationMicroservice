@@ -37,10 +37,10 @@ public interface IBaseRepository<TEntity, in TId>
     /// <summary>
     /// Обновить сущность в репозитории по идентификатору
     /// </summary>
-    /// <param name="newEntity">Сущность репозитория, которой обновляют сущность </param>
+    /// <param name="entity">Сущность репозитория, которой обновляют сущность </param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Сущность репозитория</returns>
-    Task<TEntity> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken);
+    Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken);
 
     /// <summary>
     /// Удалить пользователя по идентификатору

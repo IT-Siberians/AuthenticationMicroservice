@@ -39,7 +39,8 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Перечисляемая коллекция сущностей репозитория</returns>
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken)
-        => await EntitySet.Where(u => u.IsDeleted == false).ToListAsync(cancellationToken);
+        => await EntitySet.Where(u => !u.IsDeleted)
+            .ToListAsync(cancellationToken);
 
 
     /// <summary>
@@ -49,11 +50,7 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Сущность репозитория</returns>
     public virtual async Task<TEntity?> GetByIdAsync(TId id, CancellationToken cancellationToken)
-    {
-        return await EntitySet
-            .Where(u => u.IsDeleted == false)
-            .FirstOrDefaultAsync(u => u.Id.Equals(id), cancellationToken);
-    }
+        => await EntitySet.FirstOrDefaultAsync(u => u.Id.Equals(id) && !u.IsDeleted, cancellationToken);
 
     /// <summary>
     /// Добавить сущность в репозиторий
@@ -76,20 +73,18 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <summary>
     /// Обновить сущность по идентификатору
     /// </summary>
-    /// <param name="newEntity">Сущность, которой обновляют</param>
+    /// <param name="entity">Сущность, которой обновляют</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Обновившаяся сущность</returns>
-    public virtual async Task<TEntity> UpdateAsync(TEntity? newEntity, CancellationToken cancellationToken)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        var entityToUpdate = await GetByIdAsync(newEntity.Id, cancellationToken);
-        if (entityToUpdate == null)
+        if (!await EntitySet.AnyAsync(u => u.Id.Equals(entity.Id),cancellationToken))
             return null;
 
-        entityToUpdate = newEntity;
-        EntitySet.Update(entityToUpdate);
+        EntitySet.Update(entity);
         await DatabaseContext.SaveChangesAsync(cancellationToken);
 
-        return entityToUpdate;
+        return entity;
     }
 
     /// <summary>

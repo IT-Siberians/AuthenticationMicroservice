@@ -111,11 +111,11 @@ public class UserManagementService(
     }
 
     /// <summary>
-    /// Смена имени пользователя(никнейм)
+    /// Смена Email
     /// </summary>
-    /// <param name="setUserEmailModel">Модель смены имени пользователя(никнейма)</param>
+    /// <param name="setUserEmailModel">Модель смены Email</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - смена имени пользователя прошла успешно/ false - имя пользователя не изменено</returns>
+    /// <returns>Возвращает true - смена Email прошла успешно/ false - Email не изменено</returns>
     public async Task<bool> SetUserEmailAsync(SetUserEmailModel setUserEmailModel, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(setUserEmailModel.Id, cancellationToken);

@@ -9,6 +9,7 @@ using Services.Abstractions;
 using Services.Implementations;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Enums;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
+using TokenProvider;
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,9 @@ services.AddFluentValidationAutoValidation(configuration =>
 {
     configuration.ValidationStrategy = ValidationStrategy.All;
 }).AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+services.AddTransient<IJwtProvider, JwtProvider>();
+services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -58,11 +62,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    //c =>
-    //{
-    //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    //    c.RoutePrefix = string.Empty; // Доступ к Swagger UI по корневому URL
-    //});
 }
 
 app.UseHttpsRedirection();

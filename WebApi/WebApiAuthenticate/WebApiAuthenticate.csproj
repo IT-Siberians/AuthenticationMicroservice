@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\Application\Services.Implementations\Services.Implementations.csproj" />
     <ProjectReference Include="..\..\Infrastructure\PasswordHasher\PasswordHasher.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Repositories.Implementations\Repositories.Implementations.csproj" />
+    <ProjectReference Include="..\..\TokenProvider\TokenProvider.csproj" />
   </ItemGroup>
 
 </Project>

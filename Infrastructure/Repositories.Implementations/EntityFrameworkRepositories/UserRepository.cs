@@ -18,8 +18,10 @@ public class UserRepository(UserDbContext databaseContext) : BaseEntityFramework
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Пользователь с указанным именем пользователя(никнеймом)</returns>
     public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
-        => await EntitySet.FirstOrDefaultAsync(u => u.Username.Value == username, cancellationToken);
-
+    {
+        var users = await EntitySet.ToListAsync(cancellationToken);
+        return users.FirstOrDefault(u => u.Username.Value == username);
+    }
     /// <summary>
     /// Получить пользователя по Email
     /// </summary>
@@ -27,5 +29,8 @@ public class UserRepository(UserDbContext databaseContext) : BaseEntityFramework
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Пользователь с указанным Email</returns>
     public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
-        => await EntitySet.FirstOrDefaultAsync(u => u.Username.Value == email, cancellationToken);
+    {
+        var users = await EntitySet.ToListAsync(cancellationToken);
+        return users.FirstOrDefault(u=>u.Email.Value == email);
+    }
 }

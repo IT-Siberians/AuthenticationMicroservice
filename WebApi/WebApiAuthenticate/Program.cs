@@ -1,46 +1,18 @@
 using EntityFramework;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using PasswordHasher;
-using Repositories.Abstractions;
-using Repositories.Implementations.EntityFrameworkRepositories;
-using Services.Abstractions;
-using Services.Implementations;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Enums;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
-using TokenProvider;
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 var configuration = builder.Configuration;
-var userDbConString = configuration.GetConnectionString("UsersDb");
-if (string.IsNullOrWhiteSpace(userDbConString))
-    throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
-
-// Add DbContext to the container.
-services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,
-    opt => opt.MigrationsAssembly("EntityFramework")));
 
 // Add repositories to the container.
-services.AddScoped<IUserRepository, UserRepository>();
-
+services.InstallRepositories();
 // Add services to the container.
-services.AddTransient<IUserManagementService, UserManagementService>();
-services.AddTransient<INotificationService, NotificationService>();
-services.AddTransient<IUserValidationService, UserValidationService>();
-
+services.InstallApplicationServices();
 // Add infrastructure to the container.
-services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
-services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-services.AddFluentValidationAutoValidation(configuration =>
-{
-    configuration.ValidationStrategy = ValidationStrategy.All;
-}).AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
-services.AddTransient<IJwtProvider, JwtProvider>();
-services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+services.InstallInfrastructureServices(configuration);
 
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,12 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Domain.Entities;
-using Domain.Entities.Domain.Enums;
+﻿using Domain.Entities.Domain.Enums;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Services.Abstractions;
 using Services.Contracts;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace TokenProvider;
 public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider

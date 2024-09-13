@@ -31,6 +31,6 @@ public class UserRepository(UserDbContext databaseContext) : BaseEntityFramework
     public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
         var users = await EntitySet.ToListAsync(cancellationToken);
-        return users.FirstOrDefault(u=>u.Email.Value == email);
+        return users.FirstOrDefault(u => u.Email.Value == email);
     }
 }

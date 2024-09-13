@@ -1,5 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Entities.Domain.Enums;
+﻿using Domain.Entities.Domain.Enums;
 using Services.Contracts;
 
 namespace Services.Abstractions;

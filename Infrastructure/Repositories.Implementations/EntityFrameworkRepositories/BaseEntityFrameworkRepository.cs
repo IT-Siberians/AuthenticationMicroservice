@@ -78,7 +78,7 @@ public abstract class BaseEntityFrameworkRepository<TEntity, TId> : IBaseReposit
     /// <returns>Обновившаяся сущность</returns>
     public virtual async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        if (!await EntitySet.AnyAsync(u => u.Id.Equals(entity.Id),cancellationToken))
+        if (!await EntitySet.AnyAsync(u => u.Id.Equals(entity.Id), cancellationToken))
             return null;
 
         EntitySet.Update(entity);

@@ -29,7 +29,6 @@ public class UserValidationService(
     /// </summary>
     /// <param name="email">Проверяемый Email</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    /// <param name="id"></param>
     /// <returns>Возвращает true - Email свободен/ false - Email занят</returns>
     public async Task<bool> IsAvailableEmailAsync(string email, CancellationToken cancellationToken)
     {
@@ -63,7 +62,7 @@ public class UserValidationService(
     /// <summary>
     /// Проверяет срок жизни ссылки
     /// </summary>
-    /// <param name="expirationTime">Время создания ссылки</param>
+    /// <param name="expirationTime">Время истечения срока жизни ссылки</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - срок не истек/ false - срок истек</returns>
     public Task<bool> IsLinkExpiredAsync(DateTime expirationTime, CancellationToken cancellationToken)

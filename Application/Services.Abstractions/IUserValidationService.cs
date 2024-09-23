@@ -1,5 +1,4 @@
-﻿/// <param name="cancellationToken">Токен отмены</param>
-using Services.Contracts;
+﻿using Services.Contracts;
 
 namespace Services.Abstractions;
 

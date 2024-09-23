@@ -29,10 +29,23 @@ public class UserValidationService(
     /// </summary>
     /// <param name="email">Проверяемый Email</param>
     /// <param name="cancellationToken">Токен отмены</param>
+    /// <param name="id"></param>
     /// <returns>Возвращает true - Email свободен/ false - Email занят</returns>
     public async Task<bool> IsAvailableEmailAsync(string email, CancellationToken cancellationToken)
     {
         return await repository.GetUserByEmailAsync(email, cancellationToken) == null;
+    }
+
+    /// <summary>
+    /// Проверка свободен ли Email, через модель установки Email
+    /// </summary>
+    /// <param name="model">Модель установки Email</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Возвращает true - Email свободен/ false - Email занят</returns>
+    public async Task<bool> IsAvailableEmailAsync(SetUserEmailModel model, CancellationToken cancellationToken)
+    {
+        var user = await repository.GetUserByEmailAsync(model.NewEmail, cancellationToken);
+        return user is null || user.Id == model.Id;
     }
 
     /// <summary>
@@ -50,12 +63,11 @@ public class UserValidationService(
     /// <summary>
     /// Проверяет срок жизни ссылки
     /// </summary>
-    /// <param name="createdTime">Время создания ссылки</param>
+    /// <param name="expirationTime">Время создания ссылки</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - срок не истек/ false - срок истек</returns>
-    public Task<bool> IsLinkExpiredAsync(DateTime createdTime, CancellationToken cancellationToken)
+    public Task<bool> IsLinkExpiredAsync(DateTime expirationTime, CancellationToken cancellationToken)
     {
-        var time = DateTime.Now - createdTime;
-        return Task.FromResult(time.TotalMinutes > 15);
+        return Task.FromResult(expirationTime < DateTime.UtcNow);
     }
 }

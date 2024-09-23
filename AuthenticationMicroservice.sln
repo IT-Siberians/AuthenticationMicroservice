@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.ValueObjects", "Doma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Helpers", "Common\Common.Resources\Common.Helpers.csproj", "{D4AA3864-5C42-49E0-8960-AA66847EFC71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Helpers", "Domain\Domain.Helpers\Domain.Helpers.csproj", "{7051BA39-6118-4E33-B59A-B48D85D9C2D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Helpers", "Domain\Domain.Helpers\Domain.Helpers.csproj", "{7051BA39-6118-4E33-B59A-B48D85D9C2D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailTokenGenerator", "Infrastructure\LinkHasher\EmailTokenGenerator.csproj", "{34C285AC-54E9-479F-BDB9-2B44D0DC9EBC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,10 @@ Global
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34C285AC-54E9-479F-BDB9-2B44D0DC9EBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34C285AC-54E9-479F-BDB9-2B44D0DC9EBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34C285AC-54E9-479F-BDB9-2B44D0DC9EBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34C285AC-54E9-479F-BDB9-2B44D0DC9EBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +114,7 @@ Global
 		{C8A9A871-692D-4981-8C4E-16AA43494F92} = {C7671538-88CB-46EF-AB09-B44CD32B22CA}
 		{D4AA3864-5C42-49E0-8960-AA66847EFC71} = {352817C6-F7A1-4F43-8647-2CE8372B7595}
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1} = {C7671538-88CB-46EF-AB09-B44CD32B22CA}
+		{34C285AC-54E9-479F-BDB9-2B44D0DC9EBC} = {46395E52-BFA9-4494-8EA0-91FF5217EBC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {64E118D0-8E3B-4902-AFBF-296BB0F7D329}

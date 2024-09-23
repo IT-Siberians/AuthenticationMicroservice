@@ -9,22 +9,35 @@ namespace Services.Implementations;
 /// Сервис оповещений
 /// </summary>
 /// <param name="repository">Репозиторий пользователей</param>
-public class NotificationService(IUserRepository repository) : INotificationService
+public class NotificationService(IUserRepository repository,
+    ILinkGeneratorService linkGeneratorService) : INotificationService
 {
     /// <summary>
     /// Создать запрос на установку почты
     /// </summary>
-    /// <param name="mailConfirmationGenerationModel">Модель генерации подтверждения Email</param>
+    /// <param name="model">Модель генерации подтверждения Email</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - запрос создан/ false - запрос не создан</returns>
-    public async Task<bool> CreateSetEmailRequest(MailConfirmationGenerationModel mailConfirmationGenerationModel, CancellationToken cancellationToken)
+    public async Task<bool> CreateSetEmailRequestAsync(MailConfirmationGenerationModel model, CancellationToken cancellationToken)
     {
-        var user = await repository.GetByIdAsync(mailConfirmationGenerationModel.Id, cancellationToken);
-        if (user == null)
-            return false;
+        var newEmail = new Email(model.NewEmail);
 
-        var newEmail = new Email(mailConfirmationGenerationModel.NewEmail); //здесь это нужно чтобы провалидировать эмейл
-        //здесь будет логика отправки в почту
+        var confirmationLink = await linkGeneratorService.GenerateLinkAsync(model, cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(confirmationLink))
+            return false;//это нужно пока не прикрутил паблишер, для сохранения логики, будет буль возвращаться после паблиша
+
+        var emailConfirmModel = new PublishEmailConfirmModel()
+        {
+            Id = model.Id,
+            NewEmail = newEmail.Value,
+            Link = confirmationLink
+        };
+
+        if (emailConfirmModel is null)
+            return false;//это нужно пока не прикрутил паблишер, для сохранения логики, будет буль возвращаться после паблиша
+
+        //здесь осталось опубликовать в шину
 
         return true;
     }

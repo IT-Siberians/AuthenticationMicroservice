@@ -1,4 +1,4 @@
-﻿using Common.Helpers.Domain.Enums;
+﻿using Domain.Entities.Domain.Enums;
 
 namespace Services.Contracts;
 
@@ -10,21 +10,21 @@ public class UserModel : BaseModel<Guid>
     /// <summary>
     /// Имя пользователя
     /// </summary>
-    public string Username { get; set; }
+    public string Username { get; init; }
 
     /// <summary>
     /// Хэш пароля пользователя
     /// </summary>
-    public string PasswordHash { get; set; }
+    public string PasswordHash { get; init; }
 
     /// <summary>
     /// Email пользователя
     /// </summary>
-    public string Email { get; set; }
+    public string Email { get; init; }
 
     /// <summary>
     /// Статус аккаунта пользователя
     /// </summary>
-    public AccountStatuses AccountStatus { get; set; }
+    public AccountStatuses AccountStatus { get; init; }
 
 }

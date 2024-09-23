@@ -58,17 +58,21 @@ public class UserManagementService(
         var email = new Email(createUserModel.Email);
 
         var user = new User(username, passwordHash, email);
-        var createdUser = await repository.AddAsync(user, cancellationToken);
-        if (createdUser == null)
-            throw new UserNotCreatedException();
 
         var mailConfirmationGenerationModel = new MailConfirmationGenerationModel()
         {
-            Id = createdUser.Id,
-            NewEmail = createdUser.Email.Value
+            Id = user.Id,
+            NewEmail = user.Email.Value
         };
 
-        await notificationService.CreateSetEmailRequest(mailConfirmationGenerationModel, cancellationToken);
+        var linkIsPublished = await notificationService.CreateSetEmailRequestAsync(mailConfirmationGenerationModel, cancellationToken);
+
+        if (!linkIsPublished)
+            return null;
+
+        var createdUser = await repository.AddAsync(user, cancellationToken);
+        if (createdUser == null)
+            throw new UserNotCreatedException();
 
         return mapper.Map<UserModel>(user);
     }

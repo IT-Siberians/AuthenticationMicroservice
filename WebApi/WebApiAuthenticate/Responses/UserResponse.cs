@@ -1,4 +1,4 @@
-﻿using Common.Helpers.Domain.Enums;
+﻿using Domain.Entities.Domain.Enums;
 
 namespace WebApiAuthenticate.Responses;
 

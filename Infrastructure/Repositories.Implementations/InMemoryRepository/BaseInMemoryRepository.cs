@@ -35,10 +35,10 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity> 
     {
         if (cancellationToken.IsCancellationRequested)
             return default;
-        
+
         return Task.FromResult(
             Entities
-                .Where(e=>!e.IsDeleted)
+                .Where(e => !e.IsDeleted)
                 .AsEnumerable());
     }
 
@@ -55,7 +55,7 @@ public abstract class BaseInMemoryRepository<TEntity, TId>(IEnumerable<TEntity> 
 
         return Task.FromResult(
             Entities
-                .FirstOrDefault(e=>!e.IsDeleted && e.Id.Equals(id)));
+                .FirstOrDefault(e => !e.IsDeleted && e.Id.Equals(id)));
     }
 
     /// <summary>

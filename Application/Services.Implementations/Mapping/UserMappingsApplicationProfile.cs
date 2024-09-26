@@ -16,10 +16,6 @@ public class UserMappingsApplicationProfile : Profile
                 opt => opt.MapFrom(
                     src => src.Username.Value))
             .ForMember(
-                dest => dest.PasswordHash,
-                opt => opt.MapFrom(
-                    src => src.PasswordHash.Value))
-            .ForMember(
                 dest => dest.Email,
                 opt => opt.MapFrom(
                     src => src.Email.Value));

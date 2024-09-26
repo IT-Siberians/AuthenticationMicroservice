@@ -8,5 +8,5 @@ public class SetUserEmailModel : BaseModel<Guid>
     /// <summary>
     /// Подтверждаемый Email
     /// </summary>
-    public required string NewEmail { get; set; }
+    public required string NewEmail { get; init; }
 }

@@ -1,3 +1,4 @@
+using AsyncDataServices;
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -18,6 +19,10 @@ var userDbConString = configuration.GetConnectionString("UsersDb");
 if (string.IsNullOrWhiteSpace(userDbConString))
     throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
 
+// Configure services
+services.Configure<MessageBusClientOptions>(
+    configuration.GetSection(nameof(MessageBusClientOptions)));
+
 // Add DbContext to the container.
 services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,
     opt => opt.MigrationsAssembly("EntityFramework")));
@@ -29,12 +34,15 @@ services.AddScoped<IUserRepository, UserRepository>();
 services.AddTransient<IUserManagementService, UserManagementService>();
 services.AddTransient<INotificationService, NotificationService>();
 services.AddTransient<IUserValidationService, UserValidationService>();
+services.AddTransient<IMessageBusPublisher, MessageBusPublisher>();
 
 // Add infrastructure to the container.
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+services.AddTransient<IMessageBusClient, MessageBusClient>();
+
 services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

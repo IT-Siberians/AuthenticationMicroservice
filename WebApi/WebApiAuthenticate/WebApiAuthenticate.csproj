@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\Application\Repositories.Abstractions\Repositories.Abstractions.csproj" />
     <ProjectReference Include="..\..\Application\Services.Abstractions\Services.Abstractions.csproj" />
     <ProjectReference Include="..\..\Application\Services.Implementations\Services.Implementations.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\MessageBusClient\AsyncDataServices.csproj" />
     <ProjectReference Include="..\..\Infrastructure\PasswordHasher\PasswordHasher.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Repositories.Implementations\Repositories.Implementations.csproj" />
   </ItemGroup>

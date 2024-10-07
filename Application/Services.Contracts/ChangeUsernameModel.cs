@@ -8,5 +8,5 @@ public class ChangeUsernameModel : BaseModel<Guid>
     /// <summary>
     /// Новое имя пользователя
     /// </summary>
-    public required string NewUsername { get; set; }
+    public required string NewUsername { get; init; }
 }

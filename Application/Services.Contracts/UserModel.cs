@@ -10,21 +10,16 @@ public class UserModel : BaseModel<Guid>
     /// <summary>
     /// Имя пользователя
     /// </summary>
-    public string Username { get; set; }
-
-    /// <summary>
-    /// Хэш пароля пользователя
-    /// </summary>
-    public string PasswordHash { get; set; }
+    public required string Username { get; init; }
 
     /// <summary>
     /// Email пользователя
     /// </summary>
-    public string Email { get; set; }
+    public required string Email { get; init; }
 
     /// <summary>
     /// Статус аккаунта пользователя
     /// </summary>
-    public AccountStatuses AccountStatus { get; set; }
+    public required AccountStatuses AccountStatus { get; init; }
 
 }

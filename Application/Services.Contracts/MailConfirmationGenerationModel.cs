@@ -8,5 +8,5 @@ public class MailConfirmationGenerationModel : BaseModel<Guid>
     /// <summary>
     /// Новый Email пользователя
     /// </summary>
-    public required string NewEmail { get; set; }
+    public required string NewEmail { get; init; }
 }

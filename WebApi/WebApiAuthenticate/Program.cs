@@ -1,5 +1,6 @@
 using EntityFramework;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;
@@ -7,8 +8,6 @@ using Repositories.Abstractions;
 using Repositories.Implementations.EntityFrameworkRepositories;
 using Services.Abstractions;
 using Services.Implementations;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Enums;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,11 +33,10 @@ services.AddTransient<IUserValidationService, UserValidationService>();
 // Add infrastructure to the container.
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-services.AddFluentValidationAutoValidation(configuration =>
-{
-    configuration.ValidationStrategy = ValidationStrategy.All;
-}).AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+services.AddFluentValidationAutoValidation()
+    .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(

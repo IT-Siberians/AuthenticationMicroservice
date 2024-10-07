@@ -9,5 +9,5 @@ public class ValidatePasswordModel : BaseModel<Guid>
     /// <summary>
     /// Проверяемый пароль
     /// </summary>
-    public required string Password { get; set; }
+    public required string Password { get; init; }
 }

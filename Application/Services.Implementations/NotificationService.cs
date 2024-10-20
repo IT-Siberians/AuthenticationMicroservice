@@ -1,4 +1,5 @@
 ﻿using Domain.ValueObjects.ValueObjects;
+using Otus.QueueDto.Notification;
 using Repositories.Abstractions;
 using Services.Abstractions;
 using Services.Contracts;
@@ -9,9 +10,10 @@ namespace Services.Implementations;
 /// Сервис оповещений
 /// </summary>
 /// <param name="repository">Репозиторий пользователей</param>
+/// <param name="messageBusProducer">Продюсер в шину сообщений</param>
 public class NotificationService(
     IUserRepository repository,
-    IMessageBusPublisher messageBusPublisher) : INotificationService
+    IMessageBusProducer messageBusProducer) : INotificationService
 {
     /// <summary>
     /// Создать запрос на установку почты
@@ -26,14 +28,12 @@ public class NotificationService(
             return false;
 
         var newEmail = new Email(model.NewEmail);
-        var link = string.Empty; // здесь пока нет реализации ссылки
+        var link = new Uri("https://localhost"); // здесь пока нет реализации ссылки
 
-        var publishModel = new PublishEmailConfirmationModel()
-        {
-            Email = newEmail.Value,
-            Link = link
-        };
-        await messageBusPublisher.PublishEmailConfirmation(publishModel);
+        const string culture = "ru"; // надо придумать как прошить культуру
+
+        var publishModel = new ConfirmationEmailEvent(newEmail.Value, user.Username.Value, link, culture);
+        await messageBusProducer.PublishData(publishModel, cancellationToken);
 
         return true;
     }

@@ -33,7 +33,7 @@ public class NotificationService(
         const string culture = "ru"; // надо придумать как прошить культуру
 
         var publishModel = new ConfirmationEmailEvent(newEmail.Value, user.Username.Value, link, culture);
-        await messageBusProducer.PublishData(publishModel, cancellationToken);
+        await messageBusProducer.PublishDataAsync(publishModel, cancellationToken);
 
         return true;
     }

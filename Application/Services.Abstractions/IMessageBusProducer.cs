@@ -11,6 +11,5 @@ public interface IMessageBusProducer
     /// <typeparam name="T">Обобщение отправляемых данных</typeparam>
     /// <param name="publishModel">Публикуемая модель</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Асинхронная задача</returns>
-    Task PublishData<T>(T publishModel, CancellationToken cancellationToken);
+    Task PublishDataAsync<T>(T publishModel, CancellationToken cancellationToken);
 }

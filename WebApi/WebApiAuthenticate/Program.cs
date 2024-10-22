@@ -1,6 +1,8 @@
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
+using MassTransitClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;
@@ -14,9 +16,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 var configuration = builder.Configuration;
-var userDbConString = configuration.GetConnectionString("UsersDb");
+var userDbConString = configuration.GetConnectionString(nameof(UserDbContext));
+var rmqConString = configuration.GetConnectionString(nameof(MassTransitProducer));
 if (string.IsNullOrWhiteSpace(userDbConString))
-    throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
+    throw new InvalidOperationException($"The connection string '{nameof(UserDbContext)}' cannot be null or empty.");
+if (string.IsNullOrWhiteSpace(rmqConString))
+    throw new InvalidOperationException($"The connection string '{nameof(MassTransitProducer)}' cannot be null or empty.");
+// Configure services
 
 // Add DbContext to the container.
 services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,
@@ -35,6 +41,17 @@ services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+services.AddMassTransit(
+    opt =>
+    {
+        opt.UsingRabbitMq(
+            (context, cfg) =>
+            {
+                cfg.Host(rmqConString);
+            });
+    });
+services.AddTransient<IMessageBusProducer, MassTransitProducer>();
+
 services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

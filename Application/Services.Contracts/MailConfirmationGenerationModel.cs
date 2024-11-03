@@ -3,10 +3,8 @@
 /// <summary>
 /// Модель формирования подтверждения почты
 /// </summary>
-public class MailConfirmationGenerationModel : BaseModel<Guid>
-{
-    /// <summary>
-    /// Новый Email пользователя
-    /// </summary>
-    public required string NewEmail { get; init; }
-}
+/// <param name="Id">Идентификатор модели</param>
+/// <param name="NewEmail">Новый Email пользователя</param>
+public record MailConfirmationGenerationModel(
+    Guid Id,
+    string NewEmail) : BaseModel<Guid>(Id);

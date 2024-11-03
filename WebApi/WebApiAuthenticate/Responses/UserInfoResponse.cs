@@ -3,16 +3,14 @@
 namespace WebApiAuthenticate.Responses;
 
 /// <summary>
-/// Сущность пользователя(ответ на запрос), нужно только для проверки
+/// Информация о пользователе(ответ на запрос)
 /// </summary>
 /// <param name="Id">Идентификатор пользователя</param>
 /// <param name="Username">Имя пользователя</param>
-/// <param name="PasswordHash"></param>
 /// <param name="Email">Email пользователя</param>
 /// <param name="AccountStatus">Статус аккаунта пользователя</param>
-public record UserResponse(
+public record UserInfoResponse(
     Guid Id,
     string Username,
-    string PasswordHash,
     string Email,
     AccountStatuses AccountStatus);

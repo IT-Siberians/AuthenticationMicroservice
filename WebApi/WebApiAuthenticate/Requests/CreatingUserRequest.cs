@@ -3,20 +3,10 @@
 /// <summary>
 /// Запрос на создание пользователя
 /// </summary>
-public class CreatingUserRequest
-{
-    /// <summary>
-    /// Имя пользователя(никнейм)
-    /// </summary>
-    public required string Username { get; init; }
-
-    /// <summary>
-    /// Пароль
-    /// </summary>
-    public required string Password { get; init; }
-
-    /// <summary>
-    /// Email
-    /// </summary>
-    public required string Email { get; init; }
-}
+/// <param name="Username">Имя создаваемого пользователя (никнейм)</param>
+/// <param name="Password">Пароль создаваемого пользователя</param>
+/// <param name="Email">Email создаваемого пользователя</param>
+public record CreatingUserRequest(
+    string Username,
+    string Password,
+    string Email);

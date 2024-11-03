@@ -3,10 +3,8 @@
 /// <summary>
 /// Модель верификации Email
 /// </summary>
-public class SetUserEmailModel : BaseModel<Guid>
-{
-    /// <summary>
-    /// Подтверждаемый Email
-    /// </summary>
-    public required string NewEmail { get; init; }
-}
+/// <param name="Id">Идентификатор модели</param>
+/// <param name="NewEmail">Подтверждаемый Email</param>
+public record SetUserEmailModel(
+    Guid Id,
+    string NewEmail) : BaseModel<Guid>(Id);

@@ -3,10 +3,5 @@
 /// <summary>
 /// Запрос на смену имени пользователя(никнейма)
 /// </summary>
-public class NewUsernameRequest
-{
-    /// <summary>
-    /// Имя пользователя(никнейм), на которое будет смена имени пользователя(никнейма)
-    /// </summary>
-    public required string UsernameValue { get; init; }
-}
+/// <param name="UsernameValue">Имя пользователя(никнейм), на которое будет смена имени пользователя(никнейма)</param>
+public record NewUsernameRequest(string UsernameValue);

@@ -39,7 +39,7 @@ public class UsersController(
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-    public async Task<ActionResult<UserResponse>> CreateUser([FromBody] CreatingUserRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserInfoResponse>> CreateUser([FromBody] CreatingUserRequest request, CancellationToken cancellationToken)
     {
         var isAvailableUsername = await validationService.IsAvailableUsernameAsync(request.Username, cancellationToken);
         if (!isAvailableUsername)
@@ -78,11 +78,7 @@ public class UsersController(
         if (userToUpdate is null)
             return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changeUsernameModel = new ChangeUsernameModel()
-        {
-            Id = id,
-            NewUsername = newUsername.UsernameValue
-        };
+        var changeUsernameModel = new ChangeUsernameModel(id, newUsername.UsernameValue);
 
         var updateResult = await managementService.ChangeUsernameAsync(changeUsernameModel, cancellationToken);
         if (!updateResult)
@@ -97,7 +93,7 @@ public class UsersController(
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     public async Task<ActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
     {
-        var validateModel = new ValidatePasswordModel() { Id = id, Password = request.OldPassword };
+        var validateModel = new ValidatePasswordModel(id, request.OldPassword);
         var isOldPasswordValid = await validationService.ValidatePasswordAsync(validateModel, cancellationToken);
         if (!isOldPasswordValid)
         {
@@ -108,11 +104,7 @@ public class UsersController(
         if (userToUpdate is null)
             return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changePasswordModel = new ChangePasswordModel()
-        {
-            Id = id,
-            NewPassword = request.NewPassword
-        };
+        var changePasswordModel = new ChangePasswordModel(id, request.NewPassword);
 
         var updateResult = await managementService.ChangePasswordAsync(changePasswordModel, cancellationToken);
         if (!updateResult)
@@ -137,11 +129,7 @@ public class UsersController(
         if (userToUpdate is null)
             return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changeEmailModel = new MailConfirmationGenerationModel()
-        {
-            Id = id,
-            NewEmail = newEmail.EmailValue
-        };
+        var changeEmailModel = new MailConfirmationGenerationModel(id, newEmail.EmailValue);
 
         var isCreated = await notificationService.CreateSetEmailRequest(changeEmailModel, cancellationToken);
         if (isCreated)

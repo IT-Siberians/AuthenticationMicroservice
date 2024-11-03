@@ -22,7 +22,7 @@ public class UserMappingsPresentationProfile : Profile
                     src => src.Email.Trim().ToLower()));
         #endregion
         #region UserModel=>UserResponse
-        CreateMap<UserModel, UserResponse>();
+        CreateMap<UserModel, UserInfoResponse>();
         #endregion
         #region ChangePasswordRequest=>ChangePasswordRequest
 

@@ -16,28 +16,28 @@ public class UsersController(
     IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserResponse>))]
-    public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserInfoResponse>))]
+    public async Task<ActionResult<IEnumerable<UserInfoResponse>>> GetAll(CancellationToken cancellationToken)
     {
         var users = await managementService.GetAllUsersAsync(cancellationToken);
-        return Ok(mapper.Map<IEnumerable<UserResponse>>(users));
+        return Ok(mapper.Map<IEnumerable<UserInfoResponse>>(users));
     }
 
     [HttpGet("{id:guid}", Name = "GetUserById")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserInfoResponse))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult<UserResponse>> GetUserById(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserInfoResponse>> GetUserById(Guid id, CancellationToken cancellationToken)
     {
         var user = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (user == null)
             return NotFound($"The user with this id - \"{id}\" was not found");
 
-        var userResponse = mapper.Map<UserResponse>(user);
+        var userResponse = mapper.Map<UserInfoResponse>(user);
         return Ok(userResponse);
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserResponse))]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserInfoResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     public async Task<ActionResult<UserInfoResponse>> CreateUser([FromBody] CreatingUserRequest request, CancellationToken cancellationToken)
     {
@@ -58,7 +58,7 @@ public class UsersController(
         if (createdUser == null)
             return BadRequest("The user has not been created");
 
-        var userResponse = mapper.Map<UserResponse>(createdUser);
+        var userResponse = mapper.Map<UserInfoResponse>(createdUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 

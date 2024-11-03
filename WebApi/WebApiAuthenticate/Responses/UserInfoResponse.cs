@@ -3,7 +3,7 @@
 namespace WebApiAuthenticate.Responses;
 
 /// <summary>
-/// Информация о пользователе(ответ на запрос)
+/// Сущность пользователя(ответ на запрос), нужно только для проверки
 /// </summary>
 /// <param name="Id">Идентификатор пользователя</param>
 /// <param name="Username">Имя пользователя</param>

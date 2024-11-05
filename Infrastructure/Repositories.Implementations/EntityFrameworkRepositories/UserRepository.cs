@@ -21,7 +21,7 @@ public class UserRepository(UserDbContext databaseContext) : BaseEntityFramework
     public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
         return await EntitySet.FirstOrDefaultAsync(
-            u=>new Username(username) == u.Username, 
+            u => new Username(username) == u.Username,
             cancellationToken: cancellationToken);
     }
     /// <summary>

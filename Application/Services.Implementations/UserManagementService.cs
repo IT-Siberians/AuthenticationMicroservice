@@ -132,4 +132,11 @@ public class UserManagementService(
     /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
     public async Task<bool> DeleteUserSoftlyByIdAsync(Guid id, CancellationToken cancellationToken)
         => await repository.DeleteSoftlyAsync(id, cancellationToken);
+
+    public async Task<UserModel> GetUserByLoginAsync(string requestLogin, CancellationToken cancellationToken)
+    {
+        var user = await repository.GetUserByEmailAsync(requestLogin, cancellationToken)
+                   ?? await repository.GetUserByUsernameAsync(requestLogin, cancellationToken);
+        return mapper.Map<UserModel>(user);
+    }
 }

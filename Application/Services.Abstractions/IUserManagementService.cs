@@ -61,4 +61,6 @@ public interface IUserManagementService
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
     public Task<bool> DeleteUserSoftlyByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    public Task<UserModel> GetUserByLoginAsync(string requestLogin, CancellationToken cancellationToken);
 }

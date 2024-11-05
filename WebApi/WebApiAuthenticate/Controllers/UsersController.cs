@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
@@ -62,6 +63,7 @@ public class UsersController(
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
+    [Authorize]
     [HttpPatch("{id:guid}/ChangeUsername")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]

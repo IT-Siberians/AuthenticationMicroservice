@@ -13,12 +13,12 @@ public class UserMappingsApplicationProfile : Profile
         CreateMap<User, UserModel>()
             .ForCtorParam(
                 nameof(UserModel.Username),
-                opt => 
-                    opt.MapFrom(src => 
+                opt =>
+                    opt.MapFrom(src =>
                         src.Username.Value))
             .ForCtorParam(
                 nameof(UserModel.Email),
-                opt => 
+                opt =>
                     opt.MapFrom(src =>
                         src.Email.Value));
 

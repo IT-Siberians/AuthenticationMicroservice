@@ -37,6 +37,9 @@ services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 services.AddControllers();
 
+
+services.AddHealthChecks();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(
@@ -62,6 +65,8 @@ if (app.Environment.IsDevelopment())
     //    c.RoutePrefix = string.Empty; // Доступ к Swagger UI по корневому URL
     //});
 }
+
+app.MapHealthChecks("health");
 
 app.UseHttpsRedirection();
 

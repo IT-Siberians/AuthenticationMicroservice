@@ -1,6 +1,8 @@
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;
@@ -37,8 +39,10 @@ services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 services.AddControllers();
 
-
-services.AddHealthChecks();
+services.AddHealthChecks()
+    .AddNpgSql(userDbConString)
+    //.AddRabbitMQ(rabbitConnectionString: rmqConnectionString)
+    .AddDbContextCheck<UserDbContext>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -66,7 +70,10 @@ if (app.Environment.IsDevelopment())
     //});
 }
 
-app.MapHealthChecks("health");
+app.MapHealthChecks("health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.UseHttpsRedirection();
 

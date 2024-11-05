@@ -12,20 +12,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["WebApi/WebApiAuthenticate/WebApiAuthenticate.csproj", "WebApi/WebApiAuthenticate/"]
-COPY ["Application/Repositories.Abstractions/Repositories.Abstractions.csproj", "Application/Repositories.Abstractions/"]
-COPY ["Domain/Domain.Entities/Domain.Entities.csproj", "Domain/Domain.Entities/"]
-COPY ["Domain/Domain.ValueObjects/Domain.ValueObjects.csproj", "Domain/Domain.ValueObjects/"]
-COPY ["Common/Common.Resources/Common.Helpers.csproj", "Common/Common.Resources/"]
-COPY ["Domain/Domain.Helpers/Domain.Helpers.csproj", "Domain/Domain.Helpers/"]
-COPY ["Application/Services.Abstractions/Services.Abstractions.csproj", "Application/Services.Abstractions/"]
-COPY ["Application/Services.Contracts/Services.Contracts.csproj", "Application/Services.Contracts/"]
-COPY ["Application/Services.Implementations/Services.Implementations.csproj", "Application/Services.Implementations/"]
-COPY ["Infrastructure/PasswordHasher/PasswordHasher.csproj", "Infrastructure/PasswordHasher/"]
-COPY ["Infrastructure/Repositories.Implementations/Repositories.Implementations.csproj", "Infrastructure/Repositories.Implementations/"]
-COPY ["Infrastructure/EntityFramework/EntityFramework.csproj", "Infrastructure/EntityFramework/"]
-RUN dotnet restore "./WebApi/WebApiAuthenticate/WebApiAuthenticate.csproj"
+
+# Копируем весь проект в рабочую директорию
 COPY . .
+
 WORKDIR "/src/WebApi/WebApiAuthenticate"
 RUN dotnet build "./WebApiAuthenticate.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

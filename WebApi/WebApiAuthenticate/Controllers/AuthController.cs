@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
+using System.Security.Claims;
 using WebApiAuthenticate.Requests;
 
 namespace WebApiAuthenticate.Controllers;
@@ -10,32 +13,42 @@ namespace WebApiAuthenticate.Controllers;
 [Route("api/v1/[controller]")]
 public class AuthController(
     IUserManagementService managementService,
-    IUserValidationService validationService,
-    ITokenService tokenService) : ControllerBase
+    IUserValidationService validationService) : ControllerBase
 {
     [HttpPost("Login")]
     public async Task<ActionResult> Login(UserLoginRequest request, CancellationToken cancellationToken)
     {
         var user = await managementService.GetUserByLoginAsync(request.Login, cancellationToken);
         if (user == null)
-            return NotFound("Invalid pair login and password");
+            return Unauthorized("Invalid pair login and password");
 
         var validationModel = new ValidatePasswordModel(user.Id, request.Password);
         var isValidPassword = await validationService.ValidatePasswordAsync(validationModel, cancellationToken);
         if (!isValidPassword)
-            return NotFound("Invalid pair login and password");
+            return Unauthorized("Invalid pair login and password");
 
-        var token = await tokenService.GetTokenAsync(user, cancellationToken);
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.AccountStatus.ToString())
+        };
 
-        HttpContext.Response.Cookies.Append(token.TokenCookieName, token.Token);
+        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
         return NoContent();
     }
+
     [Authorize]
     [HttpPost("Logout")]
     public async Task<ActionResult> Logout()
     {
-        HttpContext.Response.Cookies.Delete("auth");
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
         return NoContent();
     }
 }

@@ -1,17 +1,16 @@
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;
 using Repositories.Abstractions;
 using Repositories.Implementations.EntityFrameworkRepositories;
 using Services.Abstractions;
 using Services.Implementations;
-using System.Text;
-using TokenProvider;
+using WebApiAuthenticate.Controllers;
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +21,6 @@ var userDbConString = configuration.GetConnectionString("UsersDb");
 if (string.IsNullOrWhiteSpace(userDbConString))
     throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
 
-// Configure services.
-services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
 
 // Add DbContext to the container.
 services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,
@@ -36,48 +33,29 @@ services.AddScoped<IUserRepository, UserRepository>();
 services.AddTransient<IUserManagementService, UserManagementService>();
 services.AddTransient<INotificationService, NotificationService>();
 services.AddTransient<IUserValidationService, UserValidationService>();
-services.AddTransient<ITokenService, TokenService>();
 
 // Add infrastructure to the container.
-services.AddTransient<IJwtTokenGenerator, JwtTokenGenerator>();
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
-services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        var jwtOptions = configuration.GetSection(nameof(JwtOptions)).Get<JwtOptions>();
-
-        options.RequireHttpsMetadata = true;
-        options.SaveToken = true;
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = false,
-            ValidateIssuer = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnMessageReceived =
-                context =>
+services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(
+        options =>
+            options.Events = new CookieAuthenticationEvents
+            {
+                OnRedirectToLogin = context =>
                 {
-                    context.Token = context.Request.Cookies[jwtOptions.CookieName];
-
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                },
+                OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
                     return Task.CompletedTask;
                 }
-        };
-    });
+            });
 
 services.AddControllers();
 

@@ -89,6 +89,7 @@ public class UsersController(
         return NoContent();
     }
 
+    [Authorize]
     [HttpPatch("{id:guid}/ChangePassword")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
@@ -115,6 +116,7 @@ public class UsersController(
         return NoContent();
     }
 
+    [Authorize]
     [HttpPost("{id:guid}/ChangeEmail")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
@@ -142,6 +144,7 @@ public class UsersController(
         return BadRequest();
     }
 
+    [Authorize]
     [HttpDelete("{id:guid}/Delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]

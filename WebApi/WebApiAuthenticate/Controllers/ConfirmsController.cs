@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
@@ -13,6 +14,7 @@ namespace WebApiAuthenticate.Controllers
         IMapper mapper,
         IUserValidationService validationService) : ControllerBase
     {
+        [Authorize]
         [HttpPatch("ConfirmEmail")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]

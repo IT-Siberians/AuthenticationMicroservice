@@ -133,9 +133,9 @@ public class UsersController(
         if (userToUpdate is null)
             return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changeEmailModel = new MailConfirmationGenerationModel(id, newEmail.EmailValue);
+        var changeEmailModel = new EmailConfirmationModel(id, newEmail.EmailValue);
 
-        var isCreated = await notificationService.CreateSetEmailRequest(changeEmailModel, cancellationToken);
+        var isCreated = await notificationService.SendingEmailConfirmationAsync(changeEmailModel, cancellationToken);
         if (isCreated)
         {
             return Ok($"A request has been created to change the email address to {changeEmailModel.NewEmail}. Check your email for confirmation.");

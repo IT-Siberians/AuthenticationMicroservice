@@ -35,7 +35,7 @@ namespace WebApiAuthenticate.Controllers
             if (userToUpdate is null)
                 return NotFound($"The user \"{request.Id}\" for the update does not exist");
 
-            var confirmEmailModel = mapper.Map<SetUserEmailModel>(request);
+            var confirmEmailModel = mapper.Map<EmailConfirmationModel>(request);
 
             var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
 

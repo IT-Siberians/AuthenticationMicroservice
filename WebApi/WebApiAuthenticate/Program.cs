@@ -1,8 +1,9 @@
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
+using MessageBusClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;
@@ -10,7 +11,6 @@ using Repositories.Abstractions;
 using Repositories.Implementations.EntityFrameworkRepositories;
 using Services.Abstractions;
 using Services.Implementations;
-using WebApiAuthenticate.Controllers;
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +20,9 @@ var configuration = builder.Configuration;
 var userDbConString = configuration.GetConnectionString("UsersDb");
 if (string.IsNullOrWhiteSpace(userDbConString))
     throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
-
+var rmqConString = configuration.GetConnectionString(nameof(MassTransitProducer));
+if (string.IsNullOrWhiteSpace(rmqConString))
+    throw new InvalidOperationException($"The connection string '{nameof(MassTransitProducer)}' cannot be null or empty.");
 
 // Add DbContext to the container.
 services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,
@@ -33,6 +35,7 @@ services.AddScoped<IUserRepository, UserRepository>();
 services.AddTransient<IUserManagementService, UserManagementService>();
 services.AddTransient<INotificationService, NotificationService>();
 services.AddTransient<IUserValidationService, UserValidationService>();
+services.AddTransient<IMessageBusProducer, MassTransitProducer>();
 
 // Add infrastructure to the container.
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
@@ -56,6 +59,15 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     return Task.CompletedTask;
                 }
             });
+services.AddMassTransit(
+    opt =>
+    {
+        opt.UsingRabbitMq(
+            (context, cfg) =>
+            {
+                cfg.Host(rmqConString);
+            });
+    });
 
 services.AddControllers();
 

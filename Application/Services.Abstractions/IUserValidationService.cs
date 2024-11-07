@@ -35,8 +35,9 @@ public interface IUserValidationService
     /// <summary>
     /// Проверяет срок жизни ссылки
     /// </summary>
-    /// <param name="createdTime">Время создания ссылки</param>
+    /// <param name="model"></param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - срок не истек/ false - срок истек</returns>
-    public Task<bool> IsLinkExpiredAsync(DateTime createdTime, CancellationToken cancellationToken);
+    public Task<bool> ValidateLinkTokenAsync(VerificationCodeModel model,
+        CancellationToken cancellationToken);
 }

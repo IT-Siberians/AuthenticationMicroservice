@@ -7,11 +7,12 @@ namespace Services.Implementations;
 /// <summary>
 /// Сервис валидации изменений пользователей
 /// </summary>
-/// <param name="repository">Репозиторий пользователей</param>
+/// <param name="userRepository">Репозиторий пользователей</param>
 /// <param name="hasher">Шифровальщик пароля</param>
 public class UserValidationService(
-    IUserRepository repository,
-    IPasswordHasher hasher) : IUserValidationService
+    IUserRepository userRepository,
+    IPasswordHasher hasher,
+    ILinkIdRepository linkRepository) : IUserValidationService
 {
     /// <summary>
     /// Проверка свободно ли имя пользователя
@@ -21,7 +22,7 @@ public class UserValidationService(
     /// <returns>Возвращает true - имя пользователя свободно/ false - имя пользователя занято</returns>
     public async Task<bool> IsAvailableUsernameAsync(string username, CancellationToken cancellationToken)
     {
-        return await repository.GetUserByUsernameAsync(username, cancellationToken) == null;
+        return await userRepository.GetUserByUsernameAsync(username, cancellationToken) == null;
     }
 
     /// <summary>
@@ -32,7 +33,7 @@ public class UserValidationService(
     /// <returns>Возвращает true - Email свободен/ false - Email занят</returns>
     public async Task<bool> IsAvailableEmailAsync(string email, CancellationToken cancellationToken)
     {
-        return await repository.GetUserByEmailAsync(email, cancellationToken) == null;
+        return await userRepository.GetUserByEmailAsync(email, cancellationToken) == null;
     }
 
     /// <summary>
@@ -43,19 +44,16 @@ public class UserValidationService(
     /// <returns>Возвращает true - пароль верный/ false - некорректный пароль</returns>
     public async Task<bool> ValidatePasswordAsync(ValidatePasswordModel validatePasswordModel, CancellationToken cancellationToken)
     {
-        var user = await repository.GetByIdAsync(validatePasswordModel.Id, cancellationToken);
+        var user = await userRepository.GetByIdAsync(validatePasswordModel.Id, cancellationToken);
         return user != null && hasher.VerifyHashedPassword(validatePasswordModel.Password, user.PasswordHash.Value);
     }
 
-    /// <summary>
-    /// Проверяет срок жизни ссылки
-    /// </summary>
-    /// <param name="createdTime">Время создания ссылки</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - срок не истек/ false - срок истек</returns>
-    public Task<bool> IsLinkExpiredAsync(DateTime createdTime, CancellationToken cancellationToken)
+    public async Task<bool> ValidateLinkTokenAsync(VerificationCodeModel model, CancellationToken cancellationToken)
     {
-        var time = DateTime.Now - createdTime;
-        return Task.FromResult(time.TotalMinutes > 15);
+        var codeModel = await linkRepository.GetLinkIdByUserIdAsync(model.Id, cancellationToken);
+        if (codeModel == null)
+            return false;
+
+        return codeModel.LinkGuid == model.LinkGuid;
     }
 }

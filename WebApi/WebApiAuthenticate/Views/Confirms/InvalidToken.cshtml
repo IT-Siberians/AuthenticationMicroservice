@@ -1,0 +1,12 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Подтверждение электронной почты";
+    Layout = "_Layout";
+}
+
+<h2>Неверный токен</h2>
+<p>Ваш токен недействителен. Пожалуйста, попробуйте снова.</p>
+<form method="post" action="/api/v1/Confirms/Retry">
+    <button type="submit">Попробовать снова</button>
+</form>

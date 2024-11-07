@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Application\Repositories.Abstractions\Repositories.Abstractions.csproj" />
+    <ProjectReference Include="..\..\RedisContext\Redis.csproj" />
     <ProjectReference Include="..\EntityFramework\EntityFramework.csproj" />
   </ItemGroup>
 

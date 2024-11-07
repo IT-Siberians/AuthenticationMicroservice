@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
@@ -7,24 +6,37 @@ using WebApiAuthenticate.Requests;
 
 namespace WebApiAuthenticate.Controllers
 {
-    [ApiController]
+    [Controller]
     [Route("/api/v1/[controller]")]
     public class ConfirmsController(
         IUserManagementService managementService,
         IMapper mapper,
-        IUserValidationService validationService) : ControllerBase
+        IConfirmLinkService linkService,
+        IUserValidationService validationService) : Controller
     {
-        [Authorize]
+        [HttpGet("ConfirmEmail")]
+        public async Task<ActionResult> ConfirmEmail(string token, string data, CancellationToken cancellationToken)
+        {
+            var codeModel = await linkService.GetDataFromLinkParameters<VerificationCodeModel>(token);
+
+            var isValidModel = await validationService.ValidateLinkTokenAsync(codeModel, cancellationToken);
+            if (!isValidModel)
+            {
+                ViewBag.IsValidModel = !isValidModel;
+                return View("InvalidToken");
+            }
+
+            var emailConfirmationModel = await linkService.GetDataFromLinkParameters<EmailConfirmationModel>(data);
+            ViewBag.EmailConfirmationModel = emailConfirmationModel;
+            return View("ValidToken");
+        }
+
         [HttpPatch("ConfirmEmail")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
         {
-            var isLinkExpired = await validationService.IsLinkExpiredAsync(request.CreatedDateTime, cancellationToken);
-            if (!isLinkExpired)
-                return BadRequest("Link is Expired");
-
             var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
             if (!isAvailableEmail)
             {
@@ -42,7 +54,7 @@ namespace WebApiAuthenticate.Controllers
             if (!updateResult)
                 return NotFound();
 
-            return NoContent();
+            return Ok("The email has been successfully confirmed");
         }
     }
 }

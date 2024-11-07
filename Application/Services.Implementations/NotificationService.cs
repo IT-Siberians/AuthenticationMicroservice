@@ -13,7 +13,8 @@ namespace Services.Implementations;
 /// <param name="repository">Репозиторий пользователей</param>
 public class NotificationService(
     IUserRepository repository,
-    IMessageBusProducer producer) : INotificationService
+    IMessageBusProducer producer,
+    IConfirmLinkService linkService) : INotificationService
 {
     /// <summary>
     /// Создать запрос на установку почты
@@ -29,7 +30,7 @@ public class NotificationService(
 
         var newEmail = new Email(model.NewEmail);
 
-        var link = new Uri("http://localhost:7263/api/v1/Confirms/ConfirmEmail");
+        var link = await linkService.GenerateConfirmEmailUriAsync(model, cancellationToken);
         const string culture = "ru";
 
         var emailPublishModel = new ConfirmationEmailEvent(newEmail.Value, user.Username.Value, link, culture);

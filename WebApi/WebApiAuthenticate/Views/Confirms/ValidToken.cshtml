@@ -1,0 +1,19 @@
+﻿@using WebApiAuthenticate.Requests
+@model dynamic
+
+@{
+    ViewBag.Title = "Подтверждение электронной почты";
+    Layout = "_Layout";
+}
+
+@{
+    var confirmModel = new ConfirmEmailRequest(ViewBag.EmailConfirmationModel.Id, ViewBag.EmailConfirmationModel.NewEmail);
+}
+
+<h2>Подтверждение электронной почты</h2>
+<p>Ваш токен действителен. Пожалуйста, подтвердите ваш адрес электронной почты.</p>
+<form method="patch" action="/api/v1/Confirms/ConfirmEmail">
+    <input name="Id" type="hidden" value="@confirmModel" />
+    <button type="submit">Подтвердить электронную почту</button>
+</form>
+

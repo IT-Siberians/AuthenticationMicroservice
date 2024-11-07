@@ -116,7 +116,7 @@ public class UsersController(
         return NoContent();
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpPost("{id:guid}/ChangeEmail")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]

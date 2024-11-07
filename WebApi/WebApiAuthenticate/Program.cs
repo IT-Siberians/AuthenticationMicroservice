@@ -34,7 +34,6 @@ if (string.IsNullOrWhiteSpace(rmqConString))
 
 // Configure services
 services.Configure<VerificationCodeRepositoryOptions>(configuration.GetSection(nameof(VerificationCodeRepositoryOptions)));
-services.Configure<ConfirmLinkServiceOptions>(configuration.GetSection(nameof(ConfirmLinkServiceOptions)));
 
 // Add DbContext to the container.
 services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,
@@ -45,14 +44,14 @@ services.AddScoped<RedisContext>();
 
 // Add repositories to the container.
 services.AddScoped<IUserRepository, UserRepository>();
-services.AddScoped<ILinkIdRepository, LinkIdRepository>();
+services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
 
 // Add services to the container.
 services.AddTransient<IUserManagementService, UserManagementService>();
 services.AddTransient<INotificationService, NotificationService>();
 services.AddTransient<IUserValidationService, UserValidationService>();
 services.AddTransient<IMessageBusProducer, MassTransitProducer>();
-services.AddTransient<IConfirmLinkService, ConfirmLinkService>();
+services.AddTransient<IVerificationCodeService, VerificationCodeService>();
 
 
 // Add infrastructure to the container.

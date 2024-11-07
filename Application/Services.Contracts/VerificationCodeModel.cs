@@ -1,3 +1,3 @@
 ﻿namespace Services.Contracts;
 
-public record VerificationCodeModel(Guid Id, Guid LinkGuid) : BaseModel<Guid>(Id);
+public record VerificationCodeModel(Guid Id, int VerificationCode) : BaseModel<Guid>(Id);

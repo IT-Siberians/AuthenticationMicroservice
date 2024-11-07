@@ -14,14 +14,8 @@ namespace Services.Implementations;
 public class NotificationService(
     IUserRepository repository,
     IMessageBusProducer producer,
-    IConfirmLinkService linkService) : INotificationService
+    IVerificationCodeService verificationCodeService) : INotificationService
 {
-    /// <summary>
-    /// Создать запрос на установку почты
-    /// </summary>
-    /// <param name="model">Модель генерации подтверждения Email</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - запрос создан/ false - запрос не создан</returns>
     public async Task<bool> SendingEmailConfirmationAsync(EmailConfirmationModel model, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
@@ -30,10 +24,11 @@ public class NotificationService(
 
         var newEmail = new Email(model.NewEmail);
 
-        var link = await linkService.GenerateConfirmEmailUriAsync(model, cancellationToken);
+        var code = await verificationCodeService.GenerateCodeAsync(user.Id, cancellationToken);
+        
         const string culture = "ru";
 
-        var emailPublishModel = new ConfirmationEmailEvent(newEmail.Value, user.Username.Value, link, culture);
+        var emailPublishModel = new ConfirmationEmailEvent(newEmail.Value, user.Username.Value, new Uri($"http://localhost/{code}"), culture);// исправить
         await producer.PublishDataAsync(emailPublishModel, cancellationToken);
 
         return true;

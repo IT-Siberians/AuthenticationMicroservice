@@ -6,37 +6,24 @@ using WebApiAuthenticate.Requests;
 
 namespace WebApiAuthenticate.Controllers
 {
-    [Controller]
+    [ApiController]
     [Route("/api/v1/[controller]")]
     public class ConfirmsController(
         IUserManagementService managementService,
         IMapper mapper,
-        IConfirmLinkService linkService,
-        IUserValidationService validationService) : Controller
+        IUserValidationService validationService) : ControllerBase
     {
-        [HttpGet("ConfirmEmail")]
-        public async Task<ActionResult> ConfirmEmail(string token, string data, CancellationToken cancellationToken)
-        {
-            var codeModel = await linkService.GetDataFromLinkParameters<VerificationCodeModel>(token);
-
-            var isValidModel = await validationService.ValidateLinkTokenAsync(codeModel, cancellationToken);
-            if (!isValidModel)
-            {
-                ViewBag.IsValidModel = !isValidModel;
-                return View("InvalidToken");
-            }
-
-            var emailConfirmationModel = await linkService.GetDataFromLinkParameters<EmailConfirmationModel>(data);
-            ViewBag.EmailConfirmationModel = emailConfirmationModel;
-            return View("ValidToken");
-        }
-
-        [HttpPatch("ConfirmEmail")]
+        [HttpPost("ConfirmEmail")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
         {
+            var isValidCode = await validationService.ValidateVerificationCodeAsync(request.Id, request.Code, cancellationToken);
+            if (!isValidCode)
+                return BadRequest("Invalid code verification");
+
+
             var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
             if (!isAvailableEmail)
             {

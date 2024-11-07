@@ -7,4 +7,4 @@
 /// <param name="NewEmail">Новый Email, который подтверждают</param>
 public record ConfirmEmailRequest(
     Guid Id,
-    string NewEmail) : BaseRequest<Guid>(Id);
+    string NewEmail, int Code) : BaseRequest<Guid>(Id);

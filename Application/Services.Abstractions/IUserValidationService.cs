@@ -32,12 +32,5 @@ public interface IUserValidationService
     public Task<bool> ValidatePasswordAsync(ValidatePasswordModel validatePasswordModel,
         CancellationToken cancellationToken);
 
-    /// <summary>
-    /// Проверяет срок жизни ссылки
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - срок не истек/ false - срок истек</returns>
-    public Task<bool> ValidateLinkTokenAsync(VerificationCodeModel model,
-        CancellationToken cancellationToken);
+    public Task<bool> ValidateVerificationCodeAsync(Guid requestId, int requestCode, CancellationToken cancellationToken);
 }

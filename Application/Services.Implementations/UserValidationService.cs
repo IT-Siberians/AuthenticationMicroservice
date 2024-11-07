@@ -12,7 +12,7 @@ namespace Services.Implementations;
 public class UserValidationService(
     IUserRepository userRepository,
     IPasswordHasher hasher,
-    ILinkIdRepository linkRepository) : IUserValidationService
+    IVerificationCodeRepository verificationCodeRepository) : IUserValidationService
 {
     /// <summary>
     /// Проверка свободно ли имя пользователя
@@ -48,12 +48,12 @@ public class UserValidationService(
         return user != null && hasher.VerifyHashedPassword(validatePasswordModel.Password, user.PasswordHash.Value);
     }
 
-    public async Task<bool> ValidateLinkTokenAsync(VerificationCodeModel model, CancellationToken cancellationToken)
+    public async Task<bool> ValidateVerificationCodeAsync(Guid requestId, int requestCode, CancellationToken cancellationToken)
     {
-        var codeModel = await linkRepository.GetLinkIdByUserIdAsync(model.Id, cancellationToken);
-        if (codeModel == null)
+        var code = await verificationCodeRepository.GetVerificationCodeByUserIdAsync(requestId, cancellationToken);
+        if (code == null)
             return false;
 
-        return codeModel.LinkGuid == model.LinkGuid;
+        return requestCode == code.VerificationCode;
     }
 }

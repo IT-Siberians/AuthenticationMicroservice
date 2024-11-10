@@ -133,10 +133,16 @@ public class UserManagementService(
     public async Task<bool> DeleteUserSoftlyByIdAsync(Guid id, CancellationToken cancellationToken)
         => await repository.DeleteSoftlyAsync(id, cancellationToken);
 
-    public async Task<UserModel> GetUserByLoginAsync(string requestLogin, CancellationToken cancellationToken)
+    /// <summary>
+    /// Получить пользователя по его имени пользователя или Email
+    /// </summary>
+    /// <param name="login">Имя пользователя или Email</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Модель пользователя для чтения</returns>
+    public async Task<UserModel?> GetUserByLoginAsync(string login, CancellationToken cancellationToken)
     {
-        var user = await repository.GetUserByEmailAsync(requestLogin, cancellationToken)
-                   ?? await repository.GetUserByUsernameAsync(requestLogin, cancellationToken);
+        var user = await repository.GetUserByEmailAsync(login, cancellationToken)
+                   ?? await repository.GetUserByUsernameAsync(login, cancellationToken);
         return mapper.Map<UserModel>(user);
     }
 }

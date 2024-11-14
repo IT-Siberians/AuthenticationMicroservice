@@ -7,4 +7,4 @@
 /// <param name="NewEmail">Новый Email пользователя</param>
 public record MailConfirmationGenerationModel(
     Guid Id,
-    string NewEmail) : BaseModel<Guid>(Id);
+    string NewEmail) : IBaseModel<Guid>;

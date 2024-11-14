@@ -7,4 +7,4 @@
 /// <param name="Password">Проверяемый пароль</param>
 public record ValidatePasswordModel(
     Guid Id,
-    string Password) : BaseModel<Guid>(Id);
+    string Password) : IBaseModel<Guid>;

@@ -7,4 +7,4 @@
 /// <param name="NewUsername">Новое имя пользователя(никнейм)</param>
 public record ChangeUsernameModel(
     Guid Id,
-    string NewUsername) : BaseModel<Guid>(Id);
+    string NewUsername) : IBaseModel<Guid>;

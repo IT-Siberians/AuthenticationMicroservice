@@ -7,4 +7,4 @@
 /// <param name="NewPassword">Новый пароль пользователя</param>
 public record ChangePasswordModel(
     Guid Id,
-    string NewPassword) : BaseModel<Guid>(Id);
+    string NewPassword) : IBaseModel<Guid>;

@@ -13,4 +13,4 @@ public record UserInfoResponse(
     Guid Id,
     string Username,
     string Email,
-    AccountStatuses AccountStatus);
+    AccountStatuses AccountStatus): IUserInfoResponse<Guid>;

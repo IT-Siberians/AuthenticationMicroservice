@@ -13,4 +13,4 @@ public record UserModel(
     Guid Id,
     string Username,
     string Email,
-    AccountStatuses AccountStatus) : BaseModel<Guid>(Id);
+    AccountStatuses AccountStatus) : IBaseModel<Guid>;

@@ -9,4 +9,4 @@
 public record ConfirmEmailRequest(
     Guid Id,
     string NewEmail,
-    DateTime CreatedDateTime) : BaseRequest<Guid>(Id);
+    DateTime CreatedDateTime) : IBaseRequest<Guid>;

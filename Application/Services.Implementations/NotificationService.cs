@@ -8,7 +8,10 @@ namespace Services.Implementations;
 /// <summary>
 /// Сервис оповещений
 /// </summary>
-/// <param name="repository">Репозиторий пользователей</param>
+/// <param name="repository">
+/// Репозиторий, предоставляющий доступ к данным пользователей.
+/// Используется для получения, добавления, обновления и удаления пользователей в базе данных.
+/// </param>
 public class NotificationService(IUserRepository repository) : INotificationService
 {
     /// <summary>

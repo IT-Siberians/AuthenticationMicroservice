@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Globalization;
+using AutoMapper;
 using Services.Contracts;
 using WebApiAuthenticate.Requests;
 using WebApiAuthenticate.Responses;
@@ -16,6 +17,16 @@ public class UserMappingsPresentationProfile : Profile
                 dest => dest.Username,
                 opt => opt.MapFrom(
                     src => src.Username.Trim().ToLower()))
+            .ForMember(
+                dest => dest.Firstname,
+                opt => opt.MapFrom(
+                    src => 
+                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(src.FirstName.Trim())))
+            .ForMember(
+                dest => dest.Lastname,
+                opt => opt.MapFrom(
+                    src =>
+                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(src.Lastname.Trim())))
             .ForMember(
                 dest => dest.Email,
                 opt => opt.MapFrom(

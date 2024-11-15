@@ -1,10 +1,14 @@
-﻿namespace Services.Contracts;
+﻿using Services.Contracts.UsernameChangeHelpers;
+
+namespace Services.Contracts;
 
 /// <summary>
-/// Модель смены имени пользователя(никнейма)
+/// Модель смены имени пользователя
 /// </summary>
 /// <param name="Id">Идентификатор модели</param>
-/// <param name="NewUsername">Новое имя пользователя(никнейм)</param>
+/// <param name="FirstName">Изменяемое имя пользователя</param>
+/// <param name="LastName">Изменяемая фамилия</param>
 public record ChangeUsernameModel(
     Guid Id,
-    string NewUsername) : BaseModel<Guid>(Id);
+    string FirstName,
+    string LastName) : BaseModel<Guid>(Id);

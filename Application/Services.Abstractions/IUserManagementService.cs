@@ -25,34 +25,34 @@ public interface IUserManagementService
     /// <summary>
     /// Создать пользователя
     /// </summary>
-    /// <param name="createUserModel">Модель для создания пользователя</param>
+    /// <param name="model">Модель для создания пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Модель пользователя для чтения</returns>
-    public Task<UserModel> CreateUserAsync(CreateUserModel createUserModel, CancellationToken cancellationToken);
+    public Task<UserModel> CreateUserAsync(CreateUserModel model, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Изменение имени пользователя(никнейм)
+    /// Изменение имени пользователя
     /// </summary>
-    /// <param name="changeUsernameModel">Модель для изменения имени пользователя</param>
+    /// <param name="model">Модель для изменения имени пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Модель пользователя для чтения</returns>
-    public Task<bool> ChangeUsernameAsync(ChangeUsernameModel changeUsernameModel, CancellationToken cancellationToken);
-
+    public Task<bool> ChangeFullNameAsync(ChangeUsernameModel model, CancellationToken cancellationToken);
+    
     /// <summary>
     /// Смена пароля пользователя
     /// </summary>
-    /// <param name="changePasswordModel">Модель смены пароля</param>
+    /// <param name="model">Модель смены пароля</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - смена пароля прошла успешно/ false - пароль не изменен</returns>
-    public Task<bool> ChangePasswordAsync(ChangePasswordModel changePasswordModel, CancellationToken cancellationToken);
+    public Task<bool> ChangePasswordAsync(ChangePasswordModel model, CancellationToken cancellationToken);
 
     /// <summary>
     /// Смена имени пользователя(никнейм)
     /// </summary>
-    /// <param name="setUserEmailModel">Модель смены имени пользователя(никнейма)</param>
+    /// <param name="model">Модель смены имени пользователя(никнейма)</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - смена имени пользователя прошла успешно/ false - имя пользователя не изменено</returns>
-    public Task<bool> SetUserEmailAsync(SetUserEmailModel setUserEmailModel, CancellationToken cancellationToken);
+    public Task<bool> SetUserEmailAsync(SetUserEmailModel model, CancellationToken cancellationToken);
 
     /// <summary>
     /// Удалить пользователя по идентификатору

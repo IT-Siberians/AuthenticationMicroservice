@@ -7,18 +7,24 @@ namespace Services.Implementations;
 /// <summary>
 /// Сервис валидации изменений пользователей
 /// </summary>
-/// <param name="repository">Репозиторий пользователей</param>
-/// <param name="hasher">Шифровальщик пароля</param>
+/// <param name="repository">
+/// Репозиторий, предоставляющий доступ к данным пользователей.
+/// Используется для получения, добавления, обновления и удаления пользователей в базе данных.
+/// </param>
+/// <param name="hasher">
+/// Шифровальщик паролей, используется для генерации безопасных хешей паролей пользователя,
+/// чтобы их можно было безопасно хранить в базе данных.
+/// </param>
 public class UserValidationService(
     IUserRepository repository,
     IPasswordHasher hasher) : IUserValidationService
 {
     /// <summary>
-    /// Проверка свободно ли имя пользователя
+    /// Проверка свободен ли никнейм
     /// </summary>
-    /// <param name="username">Проверяемое имя пользователя</param>
+    /// <param name="username">Проверяемый никнейм</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - имя пользователя свободно/ false - имя пользователя занято</returns>
+    /// <returns>Возвращает true - никнейм свободен/ false - никнейм занят</returns>
     public async Task<bool> IsAvailableUsernameAsync(string username, CancellationToken cancellationToken)
     {
         return await repository.GetUserByUsernameAsync(username, cancellationToken) == null;

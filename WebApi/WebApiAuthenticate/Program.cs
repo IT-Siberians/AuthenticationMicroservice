@@ -2,7 +2,6 @@ using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;
@@ -10,7 +9,6 @@ using Repositories.Abstractions;
 using Repositories.Implementations.EntityFrameworkRepositories;
 using Services.Abstractions;
 using Services.Implementations;
-using WebApiAuthenticate.Controllers;
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

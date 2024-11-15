@@ -11,8 +11,10 @@ namespace Domain.ValueObjects.ValueObjects;
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Электронной почты</param>
 public class Email(string value) : ValueObject<string>(value)
 {
-    private static readonly Regex ValidationRegex = new(EMAIL_VALID_PATTERN,
+    private static readonly Regex ValidationRegex = 
+        new(EMAIL_VALID_PATTERN,
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     /// <summary>
     /// Проверяет строку на соответствие формату электронной почты
     /// </summary>

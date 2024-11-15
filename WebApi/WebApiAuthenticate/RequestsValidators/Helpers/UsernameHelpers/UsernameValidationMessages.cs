@@ -9,7 +9,7 @@ public static class UsernameValidationMessages
     /// Текст ошибки при попытке передать пустую строку в Username
     /// </summary>
     public const string USERNAME_EMPTY_ERROR =
-        "The email cannot be empty.";
+        "The username cannot be empty.";
 
     /// <summary>
     /// Текст ошибки при попытке передать строку в Username с некорректной длиной

@@ -4,14 +4,21 @@ using Services.Abstractions;
 using Services.Contracts;
 using WebApiAuthenticate.Requests;
 
-namespace WebApiAuthenticate.Controllers
+namespace WebApiAuthenticate.Controllers;
+
+[ApiController]
+[Route("/api/v1/[controller]")]
+public class ConfirmsController(
+    IUserManagementService managementService,
+    IMapper mapper,
+    IUserValidationService validationService) : ControllerBase
 {
-    [ApiController]
-    [Route("/api/v1/[controller]")]
-    public class ConfirmsController(
-        IUserManagementService managementService,
-        IMapper mapper,
-        IUserValidationService validationService) : ControllerBase
+    [Authorize]
+    [HttpPatch("ConfirmEmail")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
     {
         [HttpPost("ConfirmEmail")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
@@ -28,18 +35,17 @@ namespace WebApiAuthenticate.Controllers
             if (!isAvailableEmail)
                 return BadRequest("Email is reserved");
 
-            var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
-            if (userToUpdate is null)
-                return NotFound($"The user \"{request.Id}\" for the update does not exist");
+        var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
+        if (userToUpdate is null)
+            return NotFound($"The user \"{request.Id}\" for the update does not exist");
 
             var confirmEmailModel = mapper.Map<EmailConfirmationModel>(request);
 
-            var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
+        var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
 
-            if (!updateResult)
-                return NotFound();
+        if (!updateResult)
+            return NotFound();
 
-            return NoContent();
-        }
+        return NoContent();
     }
 }

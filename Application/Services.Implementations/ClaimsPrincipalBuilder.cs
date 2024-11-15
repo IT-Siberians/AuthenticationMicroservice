@@ -36,6 +36,7 @@ public class ClaimsPrincipalBuilder
             throw new ArgumentException("Идентификатор не может быть пустым или null.", nameof(identifier));
 
         _claims.Add(new Claim(ClaimTypes.NameIdentifier, identifier));
+      
         return this;
     }
 
@@ -90,7 +91,7 @@ public class ClaimsPrincipalBuilder
     /// <returns>Экземпляр ClaimsPrincipal.</returns>
     public ClaimsPrincipal Build()
     {
-        var claimsIdentity = new ClaimsIdentity(_claims, _authenticationScheme); // Создаем объект ClaimsIdentity
+        var claimsIdentity = new ClaimsIdentity(_claims, _authenticationScheme);
         return new ClaimsPrincipal(claimsIdentity);
     }
 }

@@ -16,6 +16,8 @@ public class AuthController(
     IUserValidationService validationService) : ControllerBase
 {
     [HttpPost("Login")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     public async Task<ActionResult> Login(UserLoginRequest request, CancellationToken cancellationToken)
     {
         var user = await managementService.GetUserByLoginAsync(request.Login, cancellationToken);
@@ -39,11 +41,14 @@ public class AuthController(
             claimsPrincipal.Identity!.AuthenticationType,
             claimsPrincipal);
 
+        await HttpContext.SignInAsync(claimsPrincipal.Identity!.AuthenticationType, claimsPrincipal);
+
         return NoContent();
     }
 
     [Authorize]
     [HttpPost("Logout")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

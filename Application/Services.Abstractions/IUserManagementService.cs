@@ -1,4 +1,4 @@
-﻿using Services.Contracts;
+using Services.Contracts;
 
 namespace Services.Abstractions;
 

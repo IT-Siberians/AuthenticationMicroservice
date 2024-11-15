@@ -26,9 +26,7 @@ namespace WebApiAuthenticate.Controllers
 
             var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
             if (!isAvailableEmail)
-            {
                 return BadRequest("Email is reserved");
-            }
 
             var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
             if (userToUpdate is null)
@@ -41,7 +39,7 @@ namespace WebApiAuthenticate.Controllers
             if (!updateResult)
                 return NotFound();
 
-            return Ok("The email has been successfully confirmed");
+            return NoContent();
         }
     }
 }

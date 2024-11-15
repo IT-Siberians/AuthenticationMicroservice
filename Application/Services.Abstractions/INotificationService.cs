@@ -3,19 +3,23 @@
 namespace Services.Abstractions;
 
 /// <summary>
-/// Интерфейс сервиса оповещений
+/// Интерфейс сервиса оповещений.
 /// </summary>
 public interface INotificationService
 {
     /// <summary>
-    /// Создать запрос на установку почты
+    /// Отправляет запрос на подтверждение Email.
     /// </summary>
-    /// <param name="model">Модель генерации подтверждения Email</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - запрос создан/ false - запрос не создан</returns>
-    public Task<bool> SendingEmailConfirmationAsync(EmailConfirmationModel model,
-        CancellationToken cancellationToken);
+    /// <param name="model">Модель с данными для подтверждения Email.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>True, если запрос создан; иначе false.</returns>
+    public Task<bool> SendingEmailConfirmationAsync(EmailConfirmationModel model, CancellationToken cancellationToken);
 
-    public Task<bool> NotifyChangeUserDataAsync(UserModel model,
-        CancellationToken cancellationToken);
+    /// <summary>
+    /// Уведомляет об изменении данных пользователя.
+    /// </summary>
+    /// <param name="model">Модель данных пользователя.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>True, если уведомление отправлено успешно; иначе false.</returns>
+    public Task<bool> NotifyChangeUserDataAsync(UserModel model, CancellationToken cancellationToken);
 }

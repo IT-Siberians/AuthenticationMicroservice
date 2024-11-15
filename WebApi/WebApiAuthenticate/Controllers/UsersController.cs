@@ -44,16 +44,12 @@ public class UsersController(
     {
         var isAvailableUsername = await validationService.IsAvailableUsernameAsync(request.Username, cancellationToken);
         if (!isAvailableUsername)
-        {
             return BadRequest("Username is reserved.");
-        }
 
         var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.Email, cancellationToken);
         if (!isAvailableEmail)
-        {
             return BadRequest("Email is reserved");
-        }
-
+        
         var createUserDto = mapper.Map<CreateUserModel>(request);
         var createdUser = await managementService.CreateUserAsync(createUserDto, cancellationToken);
         if (createdUser == null)
@@ -72,9 +68,7 @@ public class UsersController(
     {
         var isAvailableUsername = await validationService.IsAvailableUsernameAsync(newUsername.UsernameValue, cancellationToken);
         if (!isAvailableUsername)
-        {
             return BadRequest("Username is reserved.");
-        }
 
         var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
@@ -99,9 +93,7 @@ public class UsersController(
         var validateModel = new ValidatePasswordModel(id, request.OldPassword);
         var isOldPasswordValid = await validationService.ValidatePasswordAsync(validateModel, cancellationToken);
         if (!isOldPasswordValid)
-        {
             return BadRequest("Old password not valid");
-        }
 
         var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
@@ -116,7 +108,7 @@ public class UsersController(
         return NoContent();
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpPost("{id:guid}/ChangeEmail")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
@@ -125,9 +117,7 @@ public class UsersController(
     {
         var isAvailableEmail = await validationService.IsAvailableEmailAsync(newEmail.EmailValue, cancellationToken);
         if (!isAvailableEmail)
-        {
             return BadRequest("Email is reserved");
-        }
 
         var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
@@ -137,9 +127,7 @@ public class UsersController(
 
         var isCreated = await notificationService.SendingEmailConfirmationAsync(changeEmailModel, cancellationToken);
         if (isCreated)
-        {
             return Ok($"A request has been created to change the email address to {changeEmailModel.NewEmail}. Check your email for confirmation.");
-        }
 
         return BadRequest();
     }

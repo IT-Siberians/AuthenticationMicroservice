@@ -4,7 +4,6 @@ using FluentValidation.AspNetCore;
 using MassTransit;
 using MessageBusClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;

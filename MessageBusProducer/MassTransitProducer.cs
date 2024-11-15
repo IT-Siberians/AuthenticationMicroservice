@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Services.Abstractions;
 
 namespace MessageBusClient;
 

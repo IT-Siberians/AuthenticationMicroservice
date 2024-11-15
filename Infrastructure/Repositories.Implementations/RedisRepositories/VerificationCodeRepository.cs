@@ -2,7 +2,6 @@
 using Redis;
 using Repositories.Abstractions;
 using Services.Contracts;
-using static Newtonsoft.Json.JsonConvert;
 
 namespace Repositories.Implementations.RedisRepositories;
 

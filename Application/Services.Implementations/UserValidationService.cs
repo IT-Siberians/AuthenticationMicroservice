@@ -21,9 +21,8 @@ public class UserValidationService(
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - имя пользователя свободно/ false - имя пользователя занято</returns>
     public async Task<bool> IsAvailableUsernameAsync(string username, CancellationToken cancellationToken)
-    {
-        return await userRepository.GetUserByUsernameAsync(username, cancellationToken) == null;
-    }
+        => await repository.GetUserByUsernameAsync(username, cancellationToken) == null;
+    
 
     /// <summary>
     /// Проверка свободен ли Email
@@ -32,9 +31,8 @@ public class UserValidationService(
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Возвращает true - Email свободен/ false - Email занят</returns>
     public async Task<bool> IsAvailableEmailAsync(string email, CancellationToken cancellationToken)
-    {
-        return await userRepository.GetUserByEmailAsync(email, cancellationToken) == null;
-    }
+        => await repository.GetUserByEmailAsync(email, cancellationToken) == null;
+    
 
     /// <summary>
     /// Валидация пароля

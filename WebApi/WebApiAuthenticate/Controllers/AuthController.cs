@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
-using System.Security.Claims;
+using Services.Implementations;
 using WebApiAuthenticate.Requests;
 
 namespace WebApiAuthenticate.Controllers;
@@ -20,25 +20,24 @@ public class AuthController(
     {
         var user = await managementService.GetUserByLoginAsync(request.Login, cancellationToken);
         if (user == null)
-            return Unauthorized("Invalid pair login and password");
+            return BadRequest("Invalid pair login and password");
 
         var validationModel = new ValidatePasswordModel(user.Id, request.Password);
         var isValidPassword = await validationService.ValidatePasswordAsync(validationModel, cancellationToken);
         if (!isValidPassword)
-            return Unauthorized("Invalid pair login and password");
+            return BadRequest("Invalid pair login and password");
 
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.Username),
-            new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Role, user.AccountStatus.ToString())
-        };
+        var claimsPrincipal =
+            new ClaimsPrincipalBuilder(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentifier(user.Id.ToString())
+                .AddUsername(user.Username)
+                .AddEmail(user.Email)
+                .AddAccountStatus(user.AccountStatus.ToString())
+                .Build();
 
-        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+        await HttpContext.SignInAsync(
+            claimsPrincipal.Identity!.AuthenticationType,
+            claimsPrincipal);
 
         return NoContent();
     }

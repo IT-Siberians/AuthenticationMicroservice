@@ -9,8 +9,6 @@ public class UserMappingsPresentationProfile : Profile
 {
     public UserMappingsPresentationProfile()
     {
-        #region CreatingUserRequest=>CreateUserModel
-
         CreateMap<CreatingUserRequest, CreateUserModel>()
             .ForMember(
                 dest => dest.Username,
@@ -20,27 +18,21 @@ public class UserMappingsPresentationProfile : Profile
                 dest => dest.Email,
                 opt => opt.MapFrom(
                     src => src.Email.Trim().ToLower()));
-        #endregion
-        #region UserModel=>UserResponse
+
         CreateMap<UserModel, UserInfoResponse>();
-        #endregion
-        #region ChangePasswordRequest=>ChangePasswordRequest
 
         CreateMap<ChangePasswordRequest, ChangePasswordModel>();
-        #endregion
-        #region ConfirmEmailRequest=>SetUserEmailModel
+
         CreateMap<ConfirmEmailRequest, SetUserEmailModel>()
             .ForMember(
                 dest => dest.NewEmail,
                 opt => opt.MapFrom(
                     src => src.NewEmail.Trim().ToLower()));
-        #endregion
-        #region ChangePasswordRequest=>ValidatePasswordModel
+
         CreateMap<ChangePasswordRequest, ValidatePasswordModel>()
             .ForMember(
                 dest => dest.Password,
                 opt => opt.MapFrom(
                     src => src.OldPassword));
-        #endregion
     }
 }

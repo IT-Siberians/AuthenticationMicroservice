@@ -1,13 +1,10 @@
 ﻿namespace Services.Contracts;
 
-
 /// <summary>
 /// Модель валидации пароля
 /// </summary>
-public class ValidatePasswordModel : BaseModel<Guid>
-{
-    /// <summary>
-    /// Проверяемый пароль
-    /// </summary>
-    public required string Password { get; init; }
-}
+/// <param name="Id">Идентификатор модели</param>
+/// <param name="Password">Проверяемый пароль</param>
+public record ValidatePasswordModel(
+    Guid Id,
+    string Password) : IBaseModel<Guid>;

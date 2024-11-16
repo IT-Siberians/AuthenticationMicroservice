@@ -3,10 +3,8 @@
 /// <summary>
 /// Модель смены имени пользователя(никнейма)
 /// </summary>
-public class ChangeUsernameModel : BaseModel<Guid>
-{
-    /// <summary>
-    /// Новое имя пользователя
-    /// </summary>
-    public required string NewUsername { get; init; }
-}
+/// <param name="Id">Идентификатор модели</param>
+/// <param name="NewUsername">Новое имя пользователя(никнейм)</param>
+public record ChangeUsernameModel(
+    Guid Id,
+    string NewUsername) : IBaseModel<Guid>;

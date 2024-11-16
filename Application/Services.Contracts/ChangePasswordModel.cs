@@ -3,10 +3,8 @@
 /// <summary>
 /// Модель для смены пароля
 /// </summary>
-public class ChangePasswordModel : BaseModel<Guid>
-{
-    /// <summary>
-    /// Пароль пользователя
-    /// </summary>
-    public required string NewPassword { get; init; }
-}
+/// <param name="Id">Идентификатор модели</param>
+/// <param name="NewPassword">Новый пароль пользователя</param>
+public record ChangePasswordModel(
+    Guid Id,
+    string NewPassword) : IBaseModel<Guid>;

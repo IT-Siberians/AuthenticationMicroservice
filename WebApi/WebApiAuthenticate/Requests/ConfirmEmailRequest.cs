@@ -3,15 +3,10 @@
 /// <summary>
 /// Запрос подтверждения Email
 /// </summary>
-public class ConfirmEmailRequest : BaseRequest<Guid>
-{
-    /// <summary>
-    /// Новый Email, который подтверждают
-    /// </summary>
-    public required string NewEmail { get; init; }
-
-    /// <summary>
-    /// Дата создания запроса
-    /// </summary>
-    public required DateTime CreatedDateTime { get; init; }
-}
+/// <param name="Id">Идентификатор запроса</param>
+/// <param name="NewEmail">Новый Email, который подтверждают</param>
+/// <param name="CreatedDateTime">Дата создания запроса</param>
+public record ConfirmEmailRequest(
+    Guid Id,
+    string NewEmail,
+    DateTime CreatedDateTime) : IBaseRequest<Guid>;

@@ -58,15 +58,11 @@ public class UserManagementService(
         var email = new Email(createUserModel.Email);
 
         var user = new User(username, passwordHash, email);
-        var createdUser = await repository.AddAsync(user, cancellationToken);
-        if (createdUser == null)
-            throw new UserNotCreatedException();
+        var createdUser = await repository.AddAsync(user, cancellationToken)
+                          ?? throw new UserNotCreatedException();
 
-        var mailConfirmationGenerationModel = new MailConfirmationGenerationModel()
-        {
-            Id = createdUser.Id,
-            NewEmail = createdUser.Email.Value
-        };
+        var mailConfirmationGenerationModel =
+            new MailConfirmationGenerationModel(createdUser.Id, createdUser.Email.Value);
 
         await notificationService.CreateSetEmailRequest(mailConfirmationGenerationModel, cancellationToken);
 

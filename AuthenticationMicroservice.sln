@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.ValueObjects", "Doma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Helpers", "Common\Common.Resources\Common.Helpers.csproj", "{D4AA3864-5C42-49E0-8960-AA66847EFC71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Helpers", "Domain\Domain.Helpers\Domain.Helpers.csproj", "{7051BA39-6118-4E33-B59A-B48D85D9C2D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Helpers", "Domain\Domain.Helpers\Domain.Helpers.csproj", "{7051BA39-6118-4E33-B59A-B48D85D9C2D1}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{395E0767-14E6-4DCF-B49B-BC5F50A61561}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,10 @@ Global
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{395E0767-14E6-4DCF-B49B-BC5F50A61561}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{395E0767-14E6-4DCF-B49B-BC5F50A61561}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{395E0767-14E6-4DCF-B49B-BC5F50A61561}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{395E0767-14E6-4DCF-B49B-BC5F50A61561}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

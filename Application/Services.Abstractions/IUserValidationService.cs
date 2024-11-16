@@ -38,5 +38,6 @@ public interface IUserValidationService
     /// <param name="requestCode">Код верификации для проверки.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>True, если код корректен; иначе false.</returns>
-    public Task<bool> ValidateVerificationCodeAsync(Guid requestId, int requestCode, CancellationToken cancellationToken);
+    public Task<bool> ValidateVerificationCodeAsync(Guid requestId, ushort requestCode,
+        CancellationToken cancellationToken);
 }

@@ -1,4 +1,5 @@
-﻿using Domain.ValueObjects.ValueObjects;
+﻿using AutoMapper;
+using Domain.ValueObjects.ValueObjects;
 using Otus.QueueDto.Notification;
 using Repositories.Abstractions;
 using Services.Abstractions;
@@ -12,7 +13,9 @@ namespace Services.Implementations;
 /// <param name="repository">Репозиторий пользователей.</param>
 /// <param name="producer">Клиент для отправки сообщений в шину данных.</param>
 /// <param name="verificationCodeService">Сервис для генерации и валидации кодов подтверждения.</param>
+/// <param name="mapper">Автомаппер для преобразования данных.</param>
 public class NotificationService(
+    IMapper mapper,
     IUserRepository repository,
     IMessageBusProducer producer,
     IVerificationCodeService verificationCodeService) : INotificationService
@@ -52,7 +55,7 @@ public class NotificationService(
     /// <returns>
     /// Возвращает <c>true</c>, если уведомление было успешно отправлено; иначе <c>false</c>.
     /// </returns>
-    public async Task<bool> NotifyChangeUserDataAsync(UserModel model, CancellationToken cancellationToken)
+    public async Task<bool> NotifyChangeUserDataAsync<T>(T model, CancellationToken cancellationToken)
     {
         if (model == null)
             return false;

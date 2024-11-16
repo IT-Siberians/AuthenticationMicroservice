@@ -21,5 +21,5 @@ public interface INotificationService
     /// <param name="model">Модель данных пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>True, если уведомление отправлено успешно; иначе false.</returns>
-    public Task<bool> NotifyChangeUserDataAsync(UserModel model, CancellationToken cancellationToken);
+    public Task<bool> NotifyChangeUserDataAsync<T>(T model, CancellationToken cancellationToken);
 }

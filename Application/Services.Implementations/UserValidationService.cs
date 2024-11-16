@@ -57,12 +57,7 @@ public class UserValidationService(
     /// <param name="requestCode">Код подтверждения для проверки.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>True, если код подтверждения верный; иначе false.</returns>
-    public async Task<bool> ValidateVerificationCodeAsync(Guid requestId, int requestCode, CancellationToken cancellationToken)
-    {
-        var code = await verificationCodeService.GetCodeByUserIdAsync(requestId, cancellationToken);
-        if (code == null)
-            return false;
-
-        return requestCode == code.VerificationCode;
-    }
+    public async Task<bool> ValidateVerificationCodeAsync(Guid requestId, ushort requestCode,
+        CancellationToken cancellationToken)
+        => await verificationCodeService.ValidateCodeByUserIdAsync(requestId, requestCode, cancellationToken);
 }

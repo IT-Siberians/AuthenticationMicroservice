@@ -78,11 +78,7 @@ IUserRepository repository,
 
         await notificationService.SendingEmailConfirmationAsync(emailConfirmationModel, cancellationToken);
 
-        var resultModel = mapper.Map<UserModel>(user);
-
-        await notificationService.NotifyChangeUserDataAsync(resultModel, cancellationToken);
-
-        return resultModel;
+        return mapper.Map<UserModel>(user);
     }
 
     /// <summary>
@@ -96,8 +92,11 @@ IUserRepository repository,
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
         if (user is null)
             return false;
-            
-        user.ChangeFullname(model.FirstName, model.LastName);
+
+        var firstname = new Firstname(model.FirstName);
+        var lastname = new Lastname(model.LastName);
+
+        user.ChangeFullname(firstname, lastname);
 
         var updatedUser = await repository.UpdateAsync(user, cancellationToken);
         return updatedUser.Firstname.Value == model.FirstName && updatedUser.Lastname.Value == model.LastName;
@@ -128,20 +127,19 @@ IUserRepository repository,
     /// <param name="model">Модель для смены email.</param>
     /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
     /// <returns>Возвращает true, если email был успешно изменен, иначе false.</returns>
-    public async Task<bool> SetUserEmailAsync(SetUserEmailModel model, CancellationToken cancellationToken)
+    public async Task<UserModel?> SetUserEmailAsync(EmailConfirmationModel model, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
         if (user is null)
-            return false;
+            return null;
 
-        user.ConfirmNewEmail(model.NewEmail);
+        var email = new Email(model.NewEmail);
+
+        user.ConfirmNewEmail(email);
 
         var updatedUser = await repository.UpdateAsync(user, cancellationToken);
 
-        var userModel = mapper.Map<UserModel>(updatedUser);
-        await notificationService.NotifyChangeUserDataAsync(userModel, cancellationToken);
-
-        return updatedUser.Email.Value == model.NewEmail;
+        return mapper.Map<UserModel>(updatedUser);
     }
 
     /// <summary>

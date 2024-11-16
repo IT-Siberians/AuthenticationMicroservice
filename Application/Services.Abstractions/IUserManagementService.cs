@@ -37,7 +37,7 @@ public interface IUserManagementService
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Модель пользователя для чтения</returns>
     public Task<bool> ChangeFullNameAsync(ChangeUsernameModel model, CancellationToken cancellationToken);
-    
+
     /// <summary>
     /// Изменяет пароль пользователя.
     /// </summary>
@@ -50,8 +50,8 @@ public interface IUserManagementService
     /// Устанавливает новый Email для пользователя.
     /// <param name="model">Модель для установки Email.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>True, если Email успешно установлен; иначе false.</returns>
-    public Task<bool> SetUserEmailAsync(EmailConfirmationModel model, CancellationToken cancellationToken);
+    /// <returns>Модель пользователя для чтения.</returns>
+    public Task<UserModel?> SetUserEmailAsync(EmailConfirmationModel model, CancellationToken cancellationToken);
 
     /// <summary>
     /// Мягкое удаление пользователя по идентификатору.
@@ -67,5 +67,5 @@ public interface IUserManagementService
     /// <param name="login">Логин пользователя.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель пользователя.</returns>
-    public Task<UserModel> GetUserByLoginAsync(string login, CancellationToken cancellationToken);
+    public Task<UserModel?> GetUserByLoginAsync(string login, CancellationToken cancellationToken);
 }

@@ -36,7 +36,7 @@ public class ClaimsPrincipalBuilder
             throw new ArgumentException("Идентификатор не может быть пустым или null.", nameof(identifier));
 
         _claims.Add(new Claim(ClaimTypes.NameIdentifier, identifier));
-      
+
         return this;
     }
 

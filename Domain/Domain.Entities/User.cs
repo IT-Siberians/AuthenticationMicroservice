@@ -80,12 +80,10 @@ namespace Domain.Entities
         /// </summary>
         /// <param name="lastnameValue">Новая фамилия пользователя</param>
         /// <param name="firstNameValue">Новое имя пользователя.</param>
-        public void ChangeFullname(string lastnameValue, string firstNameValue)
+        public void ChangeFullname(Firstname firstname, Lastname lastname)
         {
-            var lastname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastnameValue);
-            var firstname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstNameValue);
-            Firstname = new Firstname(firstname);
-            Lastname = new Lastname(lastname);
+            Firstname = firstname;
+            Lastname = lastname;
         }
 
         /// <summary>
@@ -110,9 +108,9 @@ namespace Domain.Entities
         /// Подтверждение новой электронной почты и смена статуса аккаунта.
         /// </summary>
         /// <param name="email">Новая электронная почта.</param>
-        public void ConfirmNewEmail(string email)
+        public void ConfirmNewEmail(Email email)
         {
-            ChangeEmail(new Email(email));
+            ChangeEmail(email);
             if (AccountStatus == AccountStatuses.UnconfirmedAccount)
             {
                 AccountStatus = AccountStatuses.ConfirmedAccount;

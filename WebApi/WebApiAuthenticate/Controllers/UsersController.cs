@@ -86,24 +86,27 @@ public class UsersController(
 
     [Authorize]
     [HttpPost("{id:guid}/ChangeEmail")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> CreateEmailChangeRequest(Guid id, [FromBody] NewEmailRequest newEmail, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateEmailChangeRequest(Guid id, [FromBody] NewEmailRequest request, CancellationToken cancellationToken)
     {
-        var isAvailableEmail = await validationService.IsAvailableEmailAsync(newEmail.EmailValue, cancellationToken);
-        if (!isAvailableEmail)
-            return BadRequest("Email is reserved");
-
         var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
             return NotFound($"The user \"{id}\" for the update does not exist");
 
-        var changeEmailModel = new EmailConfirmationModel(id, newEmail.EmailValue);
+        if (userToUpdate.Email != request.EmailValue)
+        {
+            var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.EmailValue, cancellationToken);
+            if (!isAvailableEmail)
+                return BadRequest("Email is reserved");
+        }
+
+        var changeEmailModel = new EmailConfirmationModel(id, request.EmailValue);
 
         var isCreated = await notificationService.SendingEmailConfirmationAsync(changeEmailModel, cancellationToken);
         if (isCreated)
-            return Ok($"A request has been created to change the email address to {changeEmailModel.NewEmail}. Check your email for confirmation.");
+            return NoContent();
 
         return BadRequest();
     }

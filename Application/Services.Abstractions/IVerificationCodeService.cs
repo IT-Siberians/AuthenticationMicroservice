@@ -1,6 +1,4 @@
-﻿using Services.Contracts;
-
-namespace Services.Abstractions;
+﻿namespace Services.Abstractions;
 
 /// <summary>
 /// Интерфейс сервиса для работы с кодами верификации.
@@ -18,8 +16,10 @@ public interface IVerificationCodeService
     /// <summary>
     /// Получает код верификации для указанного пользователя.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="code"></param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель кода верификации или null, если код не найден.</returns>
-    public Task<VerificationCodeModel?> GetCodeByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+    public Task<bool> ValidateCodeByUserIdAsync(Guid id, ushort code,
+        CancellationToken cancellationToken);
 }

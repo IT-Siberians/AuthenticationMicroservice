@@ -1,6 +1,7 @@
-﻿using Domain.ValueObjects.BaseEntities;
-using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using Domain.ValueObjects.BaseEntities;
 using Domain.ValueObjects.Exceptions.UserFullNameExceptions;
+using System.Text.RegularExpressions;
 using static Common.Helpers.Constants.UserFullnameConstants;
 
 namespace Domain.ValueObjects.ValueObjects;
@@ -9,12 +10,20 @@ namespace Domain.ValueObjects.ValueObjects;
 /// Базовый элемент для Фамилии пользователя.
 /// </summary>
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Фамилии пользователя</param>
-public class Lastname(string value) : ValueObject<string>(value)
+public class Lastname(string value) : ValueObject<string>(FormatValue(value))
 {
     private static readonly Regex CharacterSetRegex =
         new Regex(USER_FULLNAME_CHARACHTER_SET_PATTERN, RegexOptions.IgnoreCase | RegexOptions.Compiled);
     private static readonly Regex CapitalizationRegex =
         new Regex(USER_FULLNAME_CAPITALIZATION_PATTERN, RegexOptions.Compiled);
+
+    /// <summary>
+    /// Метод для форматирования значения перед валидацией и сохранением.
+    /// </summary>
+    /// <param name="value">Значение имени, которое требуется форматировать</param>
+    /// <returns>Отформатированное значение имени</returns>
+    private static string FormatValue(string value)
+        => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(value.Trim());
 
     /// <summary>
     /// Метод для валидации ValueObject - Фамилия пользователя.

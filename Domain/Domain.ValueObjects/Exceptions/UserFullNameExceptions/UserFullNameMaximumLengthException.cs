@@ -12,7 +12,7 @@ namespace Domain.ValueObjects.Exceptions.UserFullNameExceptions;
 public class UserFullNameMaximumLengthException(
     string nameType,
     int valueLength,
-    string paramName) 
+    string paramName)
     : ArgumentOutOfRangeException(
         paramName: paramName,
         string.Format(

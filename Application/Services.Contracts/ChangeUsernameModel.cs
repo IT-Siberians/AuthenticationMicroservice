@@ -1,6 +1,4 @@
-﻿using Services.Contracts.UsernameChangeHelpers;
-
-namespace Services.Contracts;
+﻿namespace Services.Contracts;
 
 /// <summary>
 /// Модель смены имени пользователя

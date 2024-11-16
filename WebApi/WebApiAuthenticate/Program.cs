@@ -6,6 +6,7 @@ using MessageBusClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Otus.QueueDto.User;
 using PasswordHasher;
 using Redis;
 using Repositories.Abstractions;
@@ -13,6 +14,7 @@ using Repositories.Implementations.EntityFrameworkRepositories;
 using Repositories.Implementations.RedisRepositories;
 using Services.Abstractions;
 using Services.Implementations;
+using Services.Implementations.Consumers;
 using StackExchange.Redis;
 
 using WebApiAuthenticate.Extensions;
@@ -76,15 +78,27 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     return Task.CompletedTask;
                 }
             });
-services.AddMassTransit(
-    opt =>
+
+services.AddMassTransit(x =>
+{
+    x.AddConsumer<MassTransitConsumer<UpdateUserEvent>>();
+
+    x.UsingRabbitMq((context, cfg) =>
     {
-        opt.UsingRabbitMq(
-            (context, cfg) =>
+        cfg.Host(rmqConString);
+        cfg.ReceiveEndpoint(
+            $"{nameof(UpdateUserEvent)}.Auth",
+            e =>
             {
-                cfg.Host(rmqConString);
+                e.ConfigureConsumer<MassTransitConsumer<UpdateUserEvent>>(context);
             });
+
+        cfg.ConfigureEndpoints(context);
+
     });
+});
+
+services.AddScoped<IMessageProcessService<UpdateUserEvent>, UpdateUserProcessService>();
 
 services.AddControllersWithViews();
 

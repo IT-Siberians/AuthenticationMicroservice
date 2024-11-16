@@ -8,8 +8,6 @@ public class UserMappingsApplicationProfile : Profile
 {
     public UserMappingsApplicationProfile()
     {
-        #region User=>UserModel
-
         CreateMap<User, UserModel>()
             .ForCtorParam(
                 nameof(UserModel.Username),
@@ -20,8 +18,17 @@ public class UserMappingsApplicationProfile : Profile
                 nameof(UserModel.Email),
                 opt =>
                     opt.MapFrom(src =>
-                        src.Email.Value));
-
-        #endregion
+                        src.Email.Value))
+            .ForCtorParam(
+                nameof(UserModel.Firstname),
+                opt =>
+                    opt.MapFrom(src =>
+                        src.Firstname.Value))
+            .ForCtorParam(
+                nameof(UserModel.Lastname),
+                opt =>
+                    opt.MapFrom(
+                        src =>
+                            src.Lastname.Value));
     }
 }

@@ -21,7 +21,7 @@ public class VerificationCodeService(
     {
         var code = (ushort)new Random().Next(10000, ushort.MaxValue);
 
-        await repository.AddVerificationCodeAsync(new VerificationCodeModel(userId, code), cancellationToken);
+        await repository.AddCodeAsync(new VerificationCodeModel(userId, code), cancellationToken);
 
         return code;
     }
@@ -29,9 +29,22 @@ public class VerificationCodeService(
     /// <summary>
     /// Получает код верификации для указанного пользователя.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="code">Проверяемый код подтверждения.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель с кодом верификации или null, если код не найден.</returns>
-    public async Task<VerificationCodeModel?> GetCodeByUserIdAsync(Guid userId, CancellationToken cancellationToken)
-        => await repository.GetVerificationCodeByUserIdAsync(userId, cancellationToken);
+    public async Task<bool> ValidateCodeByUserIdAsync(
+        Guid id,
+        ushort code,
+        CancellationToken cancellationToken)
+    {
+
+        var model = await repository.GetCodeByUserIdAsync(id, cancellationToken);
+        if (model is null)
+            return false;
+
+        if (code != 0 && model.VerificationCode != code) return false;
+        await repository.DeleteCodeByIdAsync(id, cancellationToken);
+        return true;
+    }
 }

@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Domain\Domain.Entities\Domain.Entities.csproj" />
-    <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
+    <PackageReference Include="MassTransit" Version="8.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Services.Abstractions\Services.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

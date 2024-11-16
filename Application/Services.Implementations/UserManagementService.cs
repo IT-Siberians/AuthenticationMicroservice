@@ -7,7 +7,6 @@ using Services.Contracts;
 using Services.Implementations.Exceptions;
 
 namespace Services.Implementations;
-
 /// <summary>
 /// Сервис для управления пользователями, включая операции создания, изменения, удаления пользователей и другие действия.
 /// </summary>
@@ -75,13 +74,15 @@ IUserRepository repository,
         var createdUser = await repository.AddAsync(user, cancellationToken)
                           ?? throw new UserNotCreatedException();
 
-        var mailConfirmationGenerationModel =
-            new MailConfirmationGenerationModel(createdUser.Id, createdUser.Email.Value);
+        var emailConfirmationModel = new EmailConfirmationModel(createdUser.Id, createdUser.Email.Value);
 
-        // Отправка запроса на подтверждение электронной почты
-        await notificationService.CreateSetEmailRequest(mailConfirmationGenerationModel, cancellationToken);
+        await notificationService.SendingEmailConfirmationAsync(emailConfirmationModel, cancellationToken);
 
-        return mapper.Map<UserModel>(user);
+        var resultModel = mapper.Map<UserModel>(user);
+
+        await notificationService.NotifyChangeUserDataAsync(resultModel, cancellationToken);
+
+        return resultModel;
     }
 
     /// <summary>
@@ -95,7 +96,7 @@ IUserRepository repository,
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
         if (user is null)
             return false;
-
+            
         user.ChangeFullname(model.FirstName, model.LastName);
 
         var updatedUser = await repository.UpdateAsync(user, cancellationToken);
@@ -136,6 +137,10 @@ IUserRepository repository,
         user.ConfirmNewEmail(model.NewEmail);
 
         var updatedUser = await repository.UpdateAsync(user, cancellationToken);
+
+        var userModel = mapper.Map<UserModel>(updatedUser);
+        await notificationService.NotifyChangeUserDataAsync(userModel, cancellationToken);
+
         return updatedUser.Email.Value == model.NewEmail;
     }
 

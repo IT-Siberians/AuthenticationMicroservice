@@ -1,14 +1,20 @@
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
+using MessageBusClient;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PasswordHasher;
+using Redis;
 using Repositories.Abstractions;
 using Repositories.Implementations.EntityFrameworkRepositories;
+using Repositories.Implementations.RedisRepositories;
 using Services.Abstractions;
 using Services.Implementations;
+using StackExchange.Redis;
+
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,19 +24,35 @@ var configuration = builder.Configuration;
 var userDbConString = configuration.GetConnectionString("UsersDb");
 if (string.IsNullOrWhiteSpace(userDbConString))
     throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
+var rmqConString = configuration.GetConnectionString(nameof(MassTransitProducer));
+if (string.IsNullOrWhiteSpace(rmqConString))
+    throw new InvalidOperationException($"The connection string '{nameof(MassTransitProducer)}' cannot be null or empty.");
+var redisConString = configuration.GetConnectionString(nameof(RedisContext));
+if (string.IsNullOrWhiteSpace(rmqConString))
+    throw new InvalidOperationException($"The connection string '{nameof(RedisContext)}' cannot be null or empty.");
 
+
+// Configure services
+services.Configure<VerificationCodeRepositoryOptions>(configuration.GetSection(nameof(VerificationCodeRepositoryOptions)));
 
 // Add DbContext to the container.
 services.AddDbContext<UserDbContext>(options => options.UseNpgsql(userDbConString,
     opt => opt.MigrationsAssembly("EntityFramework")));
+var redis = ConnectionMultiplexer.Connect(redisConString);
+services.AddSingleton<IConnectionMultiplexer>(redis);
+services.AddScoped<RedisContext>();
 
 // Add repositories to the container.
 services.AddScoped<IUserRepository, UserRepository>();
+services.AddScoped<IVerificationCodeRepository, VerificationCodeRepository>();
 
 // Add services to the container.
 services.AddTransient<IUserManagementService, UserManagementService>();
 services.AddTransient<INotificationService, NotificationService>();
 services.AddTransient<IUserValidationService, UserValidationService>();
+services.AddTransient<IMessageBusProducer, MassTransitProducer>();
+services.AddTransient<IVerificationCodeService, VerificationCodeService>();
+
 
 // Add infrastructure to the container.
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
@@ -54,8 +76,17 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                     return Task.CompletedTask;
                 }
             });
+services.AddMassTransit(
+    opt =>
+    {
+        opt.UsingRabbitMq(
+            (context, cfg) =>
+            {
+                cfg.Host(rmqConString);
+            });
+    });
 
-services.AddControllers();
+services.AddControllersWithViews();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -79,7 +110,7 @@ if (app.Environment.IsDevelopment())
     //c =>
     //{
     //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    //    c.RoutePrefix = string.Empty; // Доступ к Swagger UI по корневому URL
+    //    c.RoutePrefix = string.Empty; // Г„Г®Г±ГІГіГЇ ГЄ Swagger UI ГЇГ® ГЄГ®Г°Г­ГҐГўГ®Г¬Гі URL
     //});
 }
 

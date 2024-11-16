@@ -11,7 +11,7 @@ namespace Domain.ValueObjects.ValueObjects;
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
 public class Username(string value) : ValueObject<string>(value)
 {
-    private static readonly Regex ValidationRegex = new Regex(USERNAME_VALID_PATTERN,
+    private static readonly Regex ValidationRegex = new(USERNAME_VALID_PATTERN,
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
     /// <summary>
     /// Проверяет строку на соответствие формату Никнейм

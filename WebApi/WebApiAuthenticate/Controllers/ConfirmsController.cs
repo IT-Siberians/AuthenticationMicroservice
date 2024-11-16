@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
@@ -21,21 +20,26 @@ public class ConfirmsController(
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
     {
-        var isLinkExpired = await validationService.IsLinkExpiredAsync(request.CreatedDateTime, cancellationToken);
-        if (!isLinkExpired)
-            return BadRequest("Link is Expired");
-
-        var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
-        if (!isAvailableEmail)
+        [HttpPost("ConfirmEmail")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+        public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
         {
-            return BadRequest("Email is reserved");
-        }
+            var isValidCode = await validationService.ValidateVerificationCodeAsync(request.Id, request.Code, cancellationToken);
+            if (!isValidCode)
+                return BadRequest("Invalid code verification");
+
+
+            var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
+            if (!isAvailableEmail)
+                return BadRequest("Email is reserved");
 
         var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
         if (userToUpdate is null)
             return NotFound($"The user \"{request.Id}\" for the update does not exist");
 
-        var confirmEmailModel = mapper.Map<SetUserEmailModel>(request);
+            var confirmEmailModel = mapper.Map<EmailConfirmationModel>(request);
 
         var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
 

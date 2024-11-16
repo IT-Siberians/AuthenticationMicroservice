@@ -1,29 +1,29 @@
-﻿using Services.Contracts;
+using Services.Contracts;
 
 namespace Services.Abstractions;
 
 /// <summary>
-/// Интерфейс менеджера пользователей
+/// Интерфейс сервиса управления пользователями.
 /// </summary>
 public interface IUserManagementService
 {
     /// <summary>
-    /// Получить весь список моделей пользователя для чтения
+    /// Возвращает список всех пользователей.
     /// </summary>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Перечисляемая коллекция моделей пользователя для чтения</returns>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Список моделей пользователей.</returns>
     public Task<IEnumerable<UserModel>> GetAllUsersAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получить пользователя по его идентификатору
+    /// Получает пользователя по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор пользователя</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Модель пользователя для чтения</returns>
+    /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Модель пользователя или null, если пользователь не найден.</returns>
     public Task<UserModel?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Создать пользователя
+    /// Создает нового пользователя.
     /// </summary>
     /// <param name="model">Модель для создания пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
@@ -39,34 +39,33 @@ public interface IUserManagementService
     public Task<bool> ChangeFullNameAsync(ChangeUsernameModel model, CancellationToken cancellationToken);
     
     /// <summary>
-    /// Смена пароля пользователя
+    /// Изменяет пароль пользователя.
     /// </summary>
-    /// <param name="model">Модель смены пароля</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - смена пароля прошла успешно/ false - пароль не изменен</returns>
+    /// <param name="model">Модель с данными для изменения пароля.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>True, если пароль успешно изменен; иначе false.</returns>
     public Task<bool> ChangePasswordAsync(ChangePasswordModel model, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Смена имени пользователя(никнейм)
-    /// </summary>
-    /// <param name="model">Модель смены имени пользователя(никнейма)</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - смена имени пользователя прошла успешно/ false - имя пользователя не изменено</returns>
-    public Task<bool> SetUserEmailAsync(SetUserEmailModel model, CancellationToken cancellationToken);
+    /// Устанавливает новый Email для пользователя.
+    /// <param name="model">Модель для установки Email.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>True, если Email успешно установлен; иначе false.</returns>
+    public Task<bool> SetUserEmailAsync(EmailConfirmationModel model, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Удалить пользователя по идентификатору
+    /// Мягкое удаление пользователя по идентификатору.
     /// </summary>
-    /// <param name="id">Идентификатор пользователя</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - пользователь помечен как удаленный/ false - пользователь не удален</returns>
+    /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>True, если пользователь успешно помечен как удаленный; иначе false.</returns>
     public Task<bool> DeleteUserSoftlyByIdAsync(Guid id, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получить пользователя по его имени пользователя или Email
+    /// Получает пользователя по логину (Email или имя пользователя).
     /// </summary>
-    /// <param name="login">Имя пользователя или Email</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Модель пользователя для чтения</returns>
-    public Task<UserModel?> GetUserByLoginAsync(string login, CancellationToken cancellationToken);
+    /// <param name="login">Логин пользователя.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <returns>Модель пользователя.</returns>
+    public Task<UserModel> GetUserByLoginAsync(string login, CancellationToken cancellationToken);
 }

@@ -22,19 +22,24 @@ public class AuthController(
     {
         var user = await managementService.GetUserByLoginAsync(request.Login, cancellationToken);
         if (user == null)
-            return BadRequest("Unknown user.");
+            return BadRequest("Invalid pair login and password");
 
         var validationModel = new ValidatePasswordModel(user.Id, request.Password);
         var isValidPassword = await validationService.ValidatePasswordAsync(validationModel, cancellationToken);
         if (!isValidPassword)
             return BadRequest("Invalid pair login and password");
 
-        var claimsPrincipal = new ClaimsPrincipalBuilder(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddUserIdentifier(user.Id.ToString())
-            .AddUsername(user.Username)
-            .AddEmail(user.Email)
-            .AddAccountStatus(user.AccountStatus.ToString())
-            .Build();
+        var claimsPrincipal =
+            new ClaimsPrincipalBuilder(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentifier(user.Id.ToString())
+                .AddUsername(user.Username)
+                .AddEmail(user.Email)
+                .AddAccountStatus(user.AccountStatus.ToString())
+                .Build();
+
+        await HttpContext.SignInAsync(
+            claimsPrincipal.Identity!.AuthenticationType,
+            claimsPrincipal);
 
         await HttpContext.SignInAsync(claimsPrincipal.Identity!.AuthenticationType, claimsPrincipal);
 

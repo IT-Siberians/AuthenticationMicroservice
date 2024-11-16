@@ -25,19 +25,19 @@ public interface IUserManagementService
     /// <summary>
     /// Создает нового пользователя.
     /// </summary>
-    /// <param name="model">Модель для создания пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель созданного пользователя.</returns>
+    /// <param name="model">Модель для создания пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Модель пользователя для чтения</returns>
     public Task<UserModel> CreateUserAsync(CreateUserModel model, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Изменяет имя пользователя.
+    /// Изменение имени пользователя
     /// </summary>
-    /// <param name="model">Модель с новыми данными для имени пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>True, если имя успешно изменено; иначе false.</returns>
-    public Task<bool> ChangeUsernameAsync(ChangeUsernameModel model, CancellationToken cancellationToken);
-
+    /// <param name="model">Модель для изменения имени пользователя</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Модель пользователя для чтения</returns>
+    public Task<bool> ChangeFullNameAsync(ChangeUsernameModel model, CancellationToken cancellationToken);
+    
     /// <summary>
     /// Изменяет пароль пользователя.
     /// </summary>
@@ -48,7 +48,6 @@ public interface IUserManagementService
 
     /// <summary>
     /// Устанавливает новый Email для пользователя.
-    /// </summary>
     /// <param name="model">Модель для установки Email.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>True, если Email успешно установлен; иначе false.</returns>

@@ -14,6 +14,7 @@ using Repositories.Implementations.RedisRepositories;
 using Services.Abstractions;
 using Services.Implementations;
 using StackExchange.Redis;
+
 using WebApiAuthenticate.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -109,7 +110,7 @@ if (app.Environment.IsDevelopment())
     //c =>
     //{
     //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    //    c.RoutePrefix = string.Empty; // Доступ к Swagger UI по корневому URL
+    //    c.RoutePrefix = string.Empty; // Г„Г®Г±ГІГіГЇ ГЄ Swagger UI ГЇГ® ГЄГ®Г°Г­ГҐГўГ®Г¬Гі URL
     //});
 }
 

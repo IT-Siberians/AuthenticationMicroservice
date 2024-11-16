@@ -49,7 +49,7 @@ public class UsersController(
         var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.Email, cancellationToken);
         if (!isAvailableEmail)
             return BadRequest("Email is reserved");
-        
+
         var createUserDto = mapper.Map<CreateUserModel>(request);
         var createdUser = await managementService.CreateUserAsync(createUserDto, cancellationToken);
         if (createdUser == null)
@@ -57,30 +57,6 @@ public class UsersController(
 
         var userResponse = mapper.Map<UserInfoResponse>(createdUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
-    }
-
-    [Authorize]
-    [HttpPatch("{id:guid}/ChangeUsername")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> ChangeUsername(Guid id, [FromBody] NewUsernameRequest newUsername, CancellationToken cancellationToken)
-    {
-        var isAvailableUsername = await validationService.IsAvailableUsernameAsync(newUsername.UsernameValue, cancellationToken);
-        if (!isAvailableUsername)
-            return BadRequest("Username is reserved.");
-
-        var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
-        if (userToUpdate is null)
-            return NotFound($"The user \"{id}\" for the update does not exist");
-
-        var changeUsernameModel = new ChangeUsernameModel(id, newUsername.UsernameValue);
-
-        var updateResult = await managementService.ChangeUsernameAsync(changeUsernameModel, cancellationToken);
-        if (!updateResult)
-            return NotFound();
-
-        return NoContent();
     }
 
     [Authorize]

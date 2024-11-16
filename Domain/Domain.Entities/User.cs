@@ -1,130 +1,127 @@
 ﻿using Common.Helpers.Domain.Enums;
 using Domain.ValueObjects.ValueObjects;
+using System.Globalization;
 
-namespace Domain.Entities;
-
-/// <summary>
-/// Сущность пользователя
-/// </summary>
-public class User : IEntity<Guid>, IDeletableSoftly
+namespace Domain.Entities
 {
     /// <summary>
-    /// Идентификатор пользователя
+    /// Сущность пользователя в системе.
     /// </summary>
-    public Guid Id { get; }
-
-    /// <summary>
-    /// Имя пользователя(никнейм)
-    /// </summary>
-    public Username Username { get; private set; }
-
-    /// <summary>
-    /// Хэшированный пароль
-    /// </summary>
-    public PasswordHash PasswordHash { get; private set; }
-
-    /// <summary>
-    /// Email
-    /// </summary>
-    public Email Email { get; private set; }
-
-    /// <summary>
-    /// Статус аккаунта пользователя
-    /// </summary>
-    public AccountStatuses AccountStatus { get; private set; }
-
-    /// <summary>
-    /// Маркер помечен ли пользователь как удаленный
-    /// </summary>
-    public bool IsDeleted { get; private set; }
-
-    /// <summary>
-    /// Маркер помечен ли пользователь как авторизованный
-    /// </summary>
-    public bool IsSignIn { get; private set; }
-
-    /// <summary>
-    /// Конструктор для EF
-    /// </summary>
-    protected User()
+    public class User : IEntity<Guid>, IDeletableSoftly
     {
+        /// <summary>
+        /// Уникальный идентификатор пользователя.
+        /// </summary>
+        public Guid Id { get; }
 
-    }
+        /// <summary>
+        /// Никнейм.
+        /// </summary>
+        public Username Username { get; private set; }
 
-    /// <summary>
-    /// Конструктор для создания нового пользователя
-    /// </summary>
-    /// <param name="username">Базовый элемент имя пользователя(никнейм)</param>
-    /// <param name="passwordHash">Базовый элемент Хэш пароля</param>
-    /// <param name="email">Базовый элемент Email</param>
-    public User(Username username, PasswordHash passwordHash, Email email)
-    {
-        Id = Guid.NewGuid();
-        Username = username;
-        PasswordHash = passwordHash;
-        Email = email;
-        AccountStatus = AccountStatuses.UnconfirmedAccount;
-    }
+        /// <summary>
+        /// Хэшированный пароль пользователя.
+        /// </summary>
+        public PasswordHash PasswordHash { get; private set; }
 
-    /// <summary>
-    /// Изменение имени пользователя(никнейма)
-    /// </summary>
-    /// <param name="username">Новое имя пользователя</param>
-    public void ChangeUsername(string username)
-    {
-        Username = new Username(username);
-    }
+        /// <summary>
+        /// Электронная почта пользователя.
+        /// </summary>
+        public Email Email { get; private set; }
 
-    /// <summary>
-    /// Изменение хэшированного пароля
-    /// </summary>
-    /// <param name="passwordHash">Хэшированный пароль, на который заменяется</param>
-    public void ChangePasswordHash(string passwordHash)
-    {
-        PasswordHash = new PasswordHash(passwordHash);
-    }
+        /// <summary>
+        /// Фамилия пользователя.
+        /// </summary>
+        public Lastname Lastname { get; set; }
 
-    /// <summary>
-    /// Изменение электронной почты
-    /// </summary>
-    /// <param name="email">Новая электронная почта</param>
-    private void ChangeEmail(Email email)
-    {
-        Email = email;
-    }
+        /// <summary>
+        /// Имя пользователя.
+        /// </summary>
+        public Firstname Firstname { get; set; }
 
-    /// <summary>
-    /// Подтверждение и замена электронной почты
-    /// </summary>
-    /// <param name="email">Новая электронная почта</param>
-    public void ConfirmNewEmail(string email)
-    {
-        ChangeEmail(new Email(email));
-        if (AccountStatus == AccountStatuses.UnconfirmedAccount)
+        /// <summary>
+        /// Статус аккаунта пользователя (например, подтвержден или не подтвержден).
+        /// </summary>
+        public AccountStatuses AccountStatus { get; private set; }
+
+        /// <summary>
+        /// Маркер, который показывает, был ли пользователь удален.
+        /// </summary>
+        public bool IsDeleted { get; private set; }
+
+        /// <summary>
+        /// Защищенный конструктор для использования в Entity Framework.
+        /// </summary>
+        protected User()
         {
-            AccountStatus = AccountStatuses.ConfirmedAccount;
         }
-    }
 
-    /// <summary>
-    /// Удалить пользователя
-    /// </summary>
-    public void MarkAsDeletedSoftly() => IsDeleted = true;
+        /// <summary>
+        /// Конструктор для создания нового пользователя.
+        /// </summary>
+        /// <param name="username">Никнейм.</param>
+        /// <param name="passwordHash">Хэш пароля.</param>
+        /// <param name="email">Электронная почта пользователя.</param>
+        /// <param name="firstname">Имя пользователя.</param>
+        /// <param name="lastname">Фамилия пользователя.</param>
+        public User(Username username, PasswordHash passwordHash, Email email, Firstname firstname, Lastname lastname)
+        {
+            Id = Guid.NewGuid();
+            Username = username ?? throw new ArgumentNullException(nameof(username));
+            Firstname = firstname ?? throw new ArgumentNullException(nameof(firstname));
+            Lastname = lastname ?? throw new ArgumentNullException(nameof(lastname));
+            PasswordHash = passwordHash ?? throw new ArgumentNullException(nameof(passwordHash));
+            Email = email ?? throw new ArgumentNullException(nameof(email));
+            AccountStatus = AccountStatuses.UnconfirmedAccount;
+        }
 
-    /// <summary>
-    /// Вход пользователя в систему
-    /// </summary>
-    /// <returns>true/false</returns>
-    public bool SignIn() => IsSignIn = true;
+        /// <summary>
+        /// Изменение имени и фамилии пользователя.
+        /// </summary>
+        /// <param name="lastnameValue">Новая фамилия пользователя</param>
+        /// <param name="firstNameValue">Новое имя пользователя.</param>
+        public void ChangeFullname(string lastnameValue, string firstNameValue)
+        {
+            var lastname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(lastnameValue);
+            var firstname = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(firstNameValue);
+            Firstname = new Firstname(firstname);
+            Lastname = new Lastname(lastname);
+        }
 
+        /// <summary>
+        /// Изменение хэшированного пароля пользователя.
+        /// </summary>
+        /// <param name="passwordHash">Новый хэшированный пароль.</param>
+        public void ChangePasswordHash(string passwordHash)
+        {
+            PasswordHash = new PasswordHash(passwordHash);
+        }
 
-    /// <summary>
-    /// Выход пользователя из системы
-    /// </summary>
-    /// <returns>true/false</returns>
-    public bool SignOut()
-    {
-        IsSignIn = false;
-        return !IsSignIn;
+        /// <summary>
+        /// Изменение электронной почты пользователя (необходима для подтверждения).
+        /// </summary>
+        /// <param name="email">Новая электронная почта.</param>
+        private void ChangeEmail(Email email)
+        {
+            Email = email;
+        }
+
+        /// <summary>
+        /// Подтверждение новой электронной почты и смена статуса аккаунта.
+        /// </summary>
+        /// <param name="email">Новая электронная почта.</param>
+        public void ConfirmNewEmail(string email)
+        {
+            ChangeEmail(new Email(email));
+            if (AccountStatus == AccountStatuses.UnconfirmedAccount)
+            {
+                AccountStatus = AccountStatuses.ConfirmedAccount;
+            }
+        }
+
+        /// <summary>
+        /// Помечает пользователя как удаленного (мягкое удаление).
+        /// </summary>
+        public void MarkAsDeletedSoftly() => IsDeleted = true;
     }
 }

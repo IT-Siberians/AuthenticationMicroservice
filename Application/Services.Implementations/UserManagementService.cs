@@ -8,23 +8,35 @@ using Services.Implementations.Exceptions;
 
 namespace Services.Implementations;
 /// <summary>
-/// Сервис для управления пользователями.
+/// Сервис для управления пользователями, включая операции создания, изменения, удаления пользователей и другие действия.
 /// </summary>
-/// <param name="repository">Репозиторий пользователей.</param>
-/// <param name="notificationService">Сервис оповещений.</param>
-/// <param name="mapper">Автомаппер для преобразования данных.</param>
-/// <param name="hasher">Интерфейс для работы с хешированием паролей.</param>
+/// <param name="repository">
+/// Репозиторий, предоставляющий доступ к данным пользователей.
+/// Используется для получения, добавления, обновления и удаления пользователей в базе данных.
+/// </param>
+/// <param name="notificationService">
+/// Сервис уведомлений, который используется для отправки сообщений,
+/// таких как запросы на подтверждение электронной почты после регистрации пользователя.
+/// </param>
+/// <param name="mapper">
+/// Автомаппер, используется для преобразования сущностей модели данных в модели представления и наоборот,
+/// чтобы можно было работать с различными слоями приложения.
+/// </param>
+/// <param name="hasher">
+/// Шифровальщик паролей, используется для генерации безопасных хешей паролей пользователя,
+/// чтобы их можно было безопасно хранить в базе данных.
+/// </param>
 public class UserManagementService(
-    IUserRepository repository,
+IUserRepository repository,
     INotificationService notificationService,
     IMapper mapper,
     IPasswordHasher hasher) : IUserManagementService
 {
     /// <summary>
-    /// Получить список всех пользователей.
+    /// Получение списка всех пользователей для чтения.
     /// </summary>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Перечисляемая коллекция моделей пользователей.</returns>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Перечисляемая коллекция моделей пользователей для чтения.</returns>
     public async Task<IEnumerable<UserModel>> GetAllUsersAsync(CancellationToken cancellationToken)
     {
         var users = await repository.GetAllAsync(cancellationToken);
@@ -32,11 +44,11 @@ public class UserManagementService(
     }
 
     /// <summary>
-    /// Получить пользователя по идентификатору.
+    /// Получить пользователя по его идентификатору.
     /// </summary>
     /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель пользователя или null, если пользователь не найден.</returns>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Модель пользователя для чтения.</returns>
     public async Task<UserModel?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(id, cancellationToken);
@@ -44,19 +56,21 @@ public class UserManagementService(
     }
 
     /// <summary>
-    /// Создать нового пользователя.
+    /// Создание нового пользователя.
     /// </summary>
-    /// <param name="model">Модель для создания пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <exception cref="UserNotCreatedException">Выбрасывается, если создание пользователя не удалось.</exception>
-    /// <returns>Созданная модель пользователя.</returns>
+    /// <param name="model">Модель данных для создания пользователя.</param>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <exception cref="UserNotCreatedException">Выбрасывается, если пользователь не был создан.</exception>
+    /// <returns>Модель созданного пользователя для чтения.</returns>
     public async Task<UserModel> CreateUserAsync(CreateUserModel model, CancellationToken cancellationToken)
     {
         var username = new Username(model.Username);
         var passwordHash = new PasswordHash(hasher.GenerateHashPassword(model.Password));
         var email = new Email(model.Email);
+        var firstname = new Firstname(model.Firstname);
+        var lastname = new Lastname(model.Lastname);
 
-        var user = new User(username, passwordHash, email);
+        var user = new User(username, passwordHash, email, firstname, lastname);
         var createdUser = await repository.AddAsync(user, cancellationToken)
                           ?? throw new UserNotCreatedException();
 
@@ -72,33 +86,29 @@ public class UserManagementService(
     }
 
     /// <summary>
-    /// Изменить имя пользователя.
+    /// Изменение имени и фамилии пользователя.
     /// </summary>
-    /// <param name="model">Модель с данными для изменения имени.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>True, если имя успешно изменено; иначе false.</returns>
-    public async Task<bool> ChangeUsernameAsync(ChangeUsernameModel model, CancellationToken cancellationToken)
+    /// <param name="model">Модель для изменения имени и фамилии пользователя.</param>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Возвращает true, если имя и фамилия были успешно изменены, иначе false.</returns>
+    public async Task<bool> ChangeFullNameAsync(ChangeUsernameModel model, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
         if (user is null)
             return false;
-
-        user.ChangeUsername(model.NewUsername);
+            
+        user.ChangeFullname(model.FirstName, model.LastName);
 
         var updatedUser = await repository.UpdateAsync(user, cancellationToken);
-
-        var userModel = mapper.Map<UserModel>(updatedUser);
-        await notificationService.NotifyChangeUserDataAsync(userModel, cancellationToken);
-
-        return updatedUser.Username.Value == model.NewUsername;
+        return updatedUser.Firstname.Value == model.FirstName && updatedUser.Lastname.Value == model.LastName;
     }
 
     /// <summary>
-    /// Сменить пароль пользователя.
+    /// Смена пароля пользователя.
     /// </summary>
-    /// <param name="model">Модель с данными для смены пароля.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>True, если пароль успешно изменен; иначе false.</returns>
+    /// <param name="model">Модель для смены пароля.</param>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Возвращает true, если пароль был успешно изменен, иначе false.</returns>
     public async Task<bool> ChangePasswordAsync(ChangePasswordModel model, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
@@ -113,12 +123,12 @@ public class UserManagementService(
     }
 
     /// <summary>
-    /// Сменить email пользователя.
+    /// Смена электронной почты пользователя.
     /// </summary>
-    /// <param name="model">Модель с данными для смены email.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>True, если email успешно изменен; иначе false.</returns>
-    public async Task<bool> SetUserEmailAsync(EmailConfirmationModel model, CancellationToken cancellationToken)
+    /// <param name="model">Модель для смены email.</param>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Возвращает true, если email был успешно изменен, иначе false.</returns>
+    public async Task<bool> SetUserEmailAsync(SetUserEmailModel model, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
         if (user is null)
@@ -135,21 +145,21 @@ public class UserManagementService(
     }
 
     /// <summary>
-    /// Удалить пользователя (мягкое удаление).
+    /// Удаление пользователя по идентификатору (мягкое удаление).
     /// </summary>
-    /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>True, если пользователь успешно удален; иначе false.</returns>
+    /// <param name="id">Идентификатор пользователя для удаления.</param>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Возвращает true, если пользователь был помечен как удаленный, иначе false.</returns>
     public async Task<bool> DeleteUserSoftlyByIdAsync(Guid id, CancellationToken cancellationToken)
         => await repository.DeleteSoftlyAsync(id, cancellationToken);
 
     /// <summary>
-    /// Найти пользователя по логину (email или username).
+    /// Получение пользователя по имени пользователя или email.
     /// </summary>
-    /// <param name="login">Логин пользователя (email или username).</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель пользователя.</returns>
-    public async Task<UserModel> GetUserByLoginAsync(string login, CancellationToken cancellationToken)
+    /// <param name="login">Имя пользователя или email.</param>
+    /// <param name="cancellationToken">Токен отмены для асинхронных операций.</param>
+    /// <returns>Модель пользователя для чтения.</returns>
+    public async Task<UserModel?> GetUserByLoginAsync(string login, CancellationToken cancellationToken)
     {
         var user = await repository.GetUserByEmailAsync(login, cancellationToken)
                    ?? await repository.GetUserByUsernameAsync(login, cancellationToken);

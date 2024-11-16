@@ -41,11 +41,8 @@ public class ConfirmsController(
 
             var confirmEmailModel = mapper.Map<EmailConfirmationModel>(request);
 
-        var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
-
-        if (!updateResult)
-            return NotFound();
-
-        return NoContent();
+        return await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken)
+            ? NoContent()
+            : NotFound();
     }
 }

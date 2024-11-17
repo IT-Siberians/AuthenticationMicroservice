@@ -7,7 +7,7 @@ namespace Services.Implementations;
 /// <summary>
 /// Сервис валидации изменений пользователей.
 /// </summary>
-/// <param name="repository">
+/// <param name="userRepository">
 /// Репозиторий, предоставляющий доступ к данным пользователей.
 /// Используется для получения, добавления, обновления и удаления пользователей в базе данных.
 /// </param>
@@ -15,8 +15,12 @@ namespace Services.Implementations;
 /// Шифровальщик паролей, используется для генерации безопасных хешей паролей пользователя,
 /// чтобы их можно было безопасно хранить в базе данных.
 /// </param>
+/// <param name="verificationCodeService">
+/// Сервис, предоставляющий функциональность для генерации и валидации кодов подтверждения.
+/// Используется для проверки правильности введённых кодов подтверждения пользователя.
+/// </param>
 public class UserValidationService(
-    IUserRepository userRepository,
+IUserRepository userRepository,
     IPasswordHasher hasher,
     IVerificationCodeService verificationCodeService) : IUserValidationService
 {

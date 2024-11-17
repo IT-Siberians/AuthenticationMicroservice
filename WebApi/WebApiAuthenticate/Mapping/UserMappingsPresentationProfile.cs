@@ -16,15 +16,15 @@ public class UserMappingsPresentationProfile : Profile
                 opt => opt.MapFrom(
                     src => src.Username.Trim().ToLower()))
             .ForMember(
-                dest => dest.Firstname,
+                dest => dest.FirstName,
                 opt => opt.MapFrom(
                     src =>
                         CultureInfo.CurrentCulture.TextInfo.ToTitleCase(src.FirstName.Trim())))
             .ForMember(
-                dest => dest.Lastname,
+                dest => dest.LastName,
                 opt => opt.MapFrom(
                     src =>
-                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(src.Lastname.Trim())))
+                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(src.LastName.Trim())))
             .ForMember(
                 dest => dest.Email,
                 opt => opt.MapFrom(

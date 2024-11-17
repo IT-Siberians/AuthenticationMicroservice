@@ -16,10 +16,10 @@ public class CreatingUserValidator : AbstractValidator<CreatingUserRequest>
             .SetValidator(new UsernameValidator());
 
         RuleFor(request => request.FirstName)
-            .SetValidator(new FullnameValidator());
+            .SetValidator(new NameValidator());
 
-        RuleFor(request => request.Lastname)
-            .SetValidator(new FullnameValidator());
+        RuleFor(request => request.LastName)
+            .SetValidator(new NameValidator());
 
         RuleFor(request => request.Password)
             .SetValidator(new NewPasswordValidator());

@@ -1,6 +1,5 @@
 ﻿using Common.Helpers.Domain.Enums;
 using Domain.ValueObjects.ValueObjects;
-using System.Globalization;
 
 namespace Domain.Entities
 {
@@ -32,12 +31,12 @@ namespace Domain.Entities
         /// <summary>
         /// Фамилия пользователя.
         /// </summary>
-        public Lastname Lastname { get; set; }
+        public LastName LastName { get; set; }
 
         /// <summary>
         /// Имя пользователя.
         /// </summary>
-        public Firstname Firstname { get; set; }
+        public FirstName FirstName { get; set; }
 
         /// <summary>
         /// Статус аккаунта пользователя (например, подтвержден или не подтвержден).
@@ -62,14 +61,14 @@ namespace Domain.Entities
         /// <param name="username">Никнейм.</param>
         /// <param name="passwordHash">Хэш пароля.</param>
         /// <param name="email">Электронная почта пользователя.</param>
-        /// <param name="firstname">Имя пользователя.</param>
-        /// <param name="lastname">Фамилия пользователя.</param>
-        public User(Username username, PasswordHash passwordHash, Email email, Firstname firstname, Lastname lastname)
+        /// <param name="firstName">Имя пользователя.</param>
+        /// <param name="lastName">Фамилия пользователя.</param>
+        public User(Username username, PasswordHash passwordHash, Email email, FirstName firstName, LastName lastName)
         {
             Id = Guid.NewGuid();
             Username = username ?? throw new ArgumentNullException(nameof(username));
-            Firstname = firstname ?? throw new ArgumentNullException(nameof(firstname));
-            Lastname = lastname ?? throw new ArgumentNullException(nameof(lastname));
+            FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
+            LastName = lastName ?? throw new ArgumentNullException(nameof(lastName));
             PasswordHash = passwordHash ?? throw new ArgumentNullException(nameof(passwordHash));
             Email = email ?? throw new ArgumentNullException(nameof(email));
             AccountStatus = AccountStatuses.UnconfirmedAccount;
@@ -80,10 +79,10 @@ namespace Domain.Entities
         /// </summary>
         /// <param name="lastnameValue">Новая фамилия пользователя</param>
         /// <param name="firstNameValue">Новое имя пользователя.</param>
-        public void ChangeFullname(Firstname firstname, Lastname lastname)
+        public void ChangeFullname(FirstName firstName, LastName lastName)
         {
-            Firstname = firstname;
-            Lastname = lastname;
+            FirstName = firstName;
+            LastName = lastName;
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ public class NotificationService(
     /// <returns>
     /// Возвращает <c>true</c>, если письмо было успешно отправлено; иначе <c>false</c>.
     /// </returns>
-    public async Task<bool> SendingEmailConfirmationAsync(EmailConfirmationModel model, CancellationToken cancellationToken)
+    public async Task<bool> SendEmailConfirmationAsync(EmailConfirmationModel model, CancellationToken cancellationToken)
     {
         var user = await repository.GetByIdAsync(model.Id, cancellationToken);
         if (user == null)

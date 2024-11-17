@@ -1,10 +1,11 @@
 ﻿namespace WebApiAuthenticate.Requests;
 
 /// <summary>
-/// Запрос подтверждения Email
+/// Запрос на подтверждение нового адреса электронной почты пользователя.
 /// </summary>
-/// <param name="Id">Идентификатор запроса</param>
-/// <param name="NewEmail">Новый Email, который подтверждают</param>
+/// <param name="Id">Идентификатор запроса на подтверждение.</param>
+/// <param name="NewEmail">Новый адрес электронной почты, который требуется подтвердить.</param>
+/// <param name="Code">Код верификации, отправленный на новый адрес электронной почты для подтверждения.</param>
 public record ConfirmEmailRequest(
     Guid Id,
     string NewEmail,

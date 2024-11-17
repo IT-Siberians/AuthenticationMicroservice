@@ -8,18 +8,17 @@ public interface IVerificationCodeService
     /// <summary>
     /// Генерирует новый код верификации для указанного пользователя.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
+    /// <param name="userId">Идентификатор пользователя, для которого генерируется код.</param>
+    /// <param name="cancellationToken">Токен отмены операции, который может быть использован для прерывания операции.</param>
     /// <returns>Сгенерированный код верификации.</returns>
     public Task<ushort> GenerateCodeAsync(Guid userId, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Получает код верификации для указанного пользователя.
+    /// Получает и проверяет код верификации для указанного пользователя.
     /// </summary>
-    /// <param name="id">Идентификатор пользователя.</param>
-    /// <param name="code"></param>
-    /// <param name="cancellationToken">Токен отмены операции.</param>
-    /// <returns>Модель кода верификации или null, если код не найден.</returns>
-    public Task<bool> ValidateCodeByUserIdAsync(Guid id, ushort code,
-        CancellationToken cancellationToken);
+    /// <param name="id">Идентификатор пользователя, для которого проверяется код.</param>
+    /// <param name="code">Код верификации, который нужно проверить.</param>
+    /// <param name="cancellationToken">Токен отмены операции, который может быть использован для прерывания операции.</param>
+    /// <returns>Значение <c>true</c>, если код верификации валиден для указанного пользователя, иначе <c>false</c>.</returns>
+    public Task<bool> ValidateCodeByUserIdAsync(Guid id, ushort code, CancellationToken cancellationToken);
 }

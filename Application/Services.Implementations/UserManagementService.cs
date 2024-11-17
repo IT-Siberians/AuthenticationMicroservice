@@ -67,8 +67,8 @@ IUserRepository repository,
         var username = new Username(model.Username);
         var passwordHash = new PasswordHash(hasher.GenerateHashPassword(model.Password));
         var email = new Email(model.Email);
-        var firstname = new Firstname(model.Firstname);
-        var lastname = new Lastname(model.Lastname);
+        var firstname = new FirstName(model.FirstName);
+        var lastname = new LastName(model.LastName);
 
         var user = new User(username, passwordHash, email, firstname, lastname);
         var createdUser = await repository.AddAsync(user, cancellationToken)
@@ -76,7 +76,7 @@ IUserRepository repository,
 
         var emailConfirmationModel = new EmailConfirmationModel(createdUser.Id, createdUser.Email.Value);
 
-        await notificationService.SendingEmailConfirmationAsync(emailConfirmationModel, cancellationToken);
+        await notificationService.SendEmailConfirmationAsync(emailConfirmationModel, cancellationToken);
 
         return mapper.Map<UserModel>(user);
     }
@@ -93,13 +93,13 @@ IUserRepository repository,
         if (user is null)
             return false;
 
-        var firstname = new Firstname(model.FirstName);
-        var lastname = new Lastname(model.LastName);
+        var firstname = new FirstName(model.FirstName);
+        var lastname = new LastName(model.LastName);
 
         user.ChangeFullname(firstname, lastname);
 
         var updatedUser = await repository.UpdateAsync(user, cancellationToken);
-        return updatedUser.Firstname.Value == model.FirstName && updatedUser.Lastname.Value == model.LastName;
+        return updatedUser.FirstName.Value == model.FirstName && updatedUser.LastName.Value == model.LastName;
     }
 
     /// <summary>

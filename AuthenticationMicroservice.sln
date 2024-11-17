@@ -39,7 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.Helpers", "Domain\Do
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBusClient", "MessageBusProducer\MessageBusClient.csproj", "{972C10DE-E117-4481-AD3F-1C1957A2AE91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis", "RedisContext\Redis.csproj", "{C068E4EE-B39B-4578-8620-0CFBE820640D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redis", "RedisContext\Redis.csproj", "{C068E4EE-B39B-4578-8620-0CFBE820640D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationDataManager", "AuthenticationDataManager\AuthenticationDataManager.csproj", "{9637BB52-8256-445A-B339-B8A40A3B8433}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +105,10 @@ Global
 		{C068E4EE-B39B-4578-8620-0CFBE820640D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C068E4EE-B39B-4578-8620-0CFBE820640D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C068E4EE-B39B-4578-8620-0CFBE820640D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9637BB52-8256-445A-B339-B8A40A3B8433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9637BB52-8256-445A-B339-B8A40A3B8433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9637BB52-8256-445A-B339-B8A40A3B8433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9637BB52-8256-445A-B339-B8A40A3B8433}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +128,7 @@ Global
 		{7051BA39-6118-4E33-B59A-B48D85D9C2D1} = {C7671538-88CB-46EF-AB09-B44CD32B22CA}
 		{972C10DE-E117-4481-AD3F-1C1957A2AE91} = {46395E52-BFA9-4494-8EA0-91FF5217EBC9}
 		{C068E4EE-B39B-4578-8620-0CFBE820640D} = {46395E52-BFA9-4494-8EA0-91FF5217EBC9}
+		{9637BB52-8256-445A-B339-B8A40A3B8433} = {46395E52-BFA9-4494-8EA0-91FF5217EBC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {64E118D0-8E3B-4902-AFBF-296BB0F7D329}

@@ -1,9 +1,12 @@
+using AuthenticationDataManager.Cookies;
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
 using MessageBusClient;
+using MessageBusClient.Consumers;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Otus.QueueDto.User;
@@ -14,10 +17,12 @@ using Repositories.Implementations.EntityFrameworkRepositories;
 using Repositories.Implementations.RedisRepositories;
 using Services.Abstractions;
 using Services.Implementations;
-using Services.Implementations.Consumers;
 using StackExchange.Redis;
-
 using WebApiAuthenticate.Extensions;
+using WebApiAuthenticate.Helpers;
+using WebApiAuthenticate.Middlewares.AuthorizationMiddlewares;
+using WebApiAuthenticate.Middlewares.AuthorizationMiddlewares.AuthorizePolitics.IsOwner;
+using static WebApiAuthenticate.Helpers.CustomAuthorizationMessages;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,13 +59,22 @@ services.AddTransient<INotificationService, NotificationService>();
 services.AddTransient<IUserValidationService, UserValidationService>();
 services.AddTransient<IMessageBusProducer, MassTransitProducer>();
 services.AddTransient<IVerificationCodeService, VerificationCodeService>();
-
+services.AddScoped<IAuthManagerService, CookiesManagerService>();
+services.AddTransient<IClaimsPrincipalBuilder<CookiesClaimsPrincipalBuilder>, CookiesClaimsPrincipalBuilder>();
+services.AddSingleton<IAuthorizationHandler, IsOwnerHandler>();
 
 // Add infrastructure to the container.
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 services.AddFluentValidationAutoValidation()
     .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+
+services.AddAuthorization(options =>
+{
+    options.InvokeHandlersAfterFailure = false;
+    options.AddPolicy(AttributePoliticsNameHelpers.OWNER_ONLY_POLITIC_NAME, policy =>
+        policy.Requirements.Add(new IsOwnerRequirement()));
+});
 
 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(
@@ -70,11 +84,19 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    if (context.HttpContext.Items[CustomAuthorizationConstants.FAILURE_REASON_ITEM_KEY] != null)
+                        return Task.CompletedTask;
+                    context.HttpContext.Items[CustomAuthorizationConstants.FAILURE_REASON_ITEM_KEY] = STANDART_USER_NOT_AUTHENTICATION_ERROR_MESSAGE;
+                    context.HttpContext.Items[CustomAuthorizationConstants.FAILURE_STATUS_CODE_ITEM_KEY] = StatusCodes.Status401Unauthorized;
                     return Task.CompletedTask;
                 },
                 OnRedirectToAccessDenied = context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    if (context.HttpContext.Items[CustomAuthorizationConstants.FAILURE_REASON_ITEM_KEY] != null)
+                        return Task.CompletedTask;
+                    context.HttpContext.Items[CustomAuthorizationConstants.FAILURE_REASON_ITEM_KEY] = STANDART_ACCESS_DENIED_ERROR_MESSAGE;
+                    context.HttpContext.Items[CustomAuthorizationConstants.FAILURE_STATUS_CODE_ITEM_KEY] = StatusCodes.Status403Forbidden;
                     return Task.CompletedTask;
                 }
             });
@@ -98,6 +120,7 @@ services.AddMassTransit(x =>
     });
 });
 
+// Add consumer services.
 services.AddScoped<IMessageProcessService<UpdateUserEvent>, UpdateUserProcessService>();
 
 services.AddControllersWithViews();
@@ -128,9 +151,20 @@ if (app.Environment.IsDevelopment())
     //});
 }
 
+app.UseCors(policy =>
+{
+    policy
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
+app.UseMiddleware<CustomAuthorizationMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();

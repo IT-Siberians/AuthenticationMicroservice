@@ -48,6 +48,7 @@ public interface IUserManagementService
 
     /// <summary>
     /// Устанавливает новый Email для пользователя.
+    /// </summary>
     /// <param name="model">Модель для установки Email.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>Модель пользователя для чтения.</returns>

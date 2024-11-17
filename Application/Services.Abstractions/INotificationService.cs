@@ -13,7 +13,7 @@ public interface INotificationService
     /// <param name="model">Модель с данными для подтверждения Email.</param>
     /// <param name="cancellationToken">Токен отмены операции.</param>
     /// <returns>True, если запрос создан; иначе false.</returns>
-    public Task<bool> SendingEmailConfirmationAsync(EmailConfirmationModel model, CancellationToken cancellationToken);
+    public Task<bool> SendEmailConfirmationAsync(EmailConfirmationModel model, CancellationToken cancellationToken);
 
     /// <summary>
     /// Уведомляет об изменении данных пользователя.

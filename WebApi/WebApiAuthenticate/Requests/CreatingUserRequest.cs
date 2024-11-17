@@ -5,12 +5,12 @@
 /// </summary>
 /// <param name="Username">Никнейм создаваемого пользователя</param>
 /// <param name="FirstName">Имя создаваемого пользователя</param>
-/// <param name="Lastname">Фамилия создаваемого пользователя</param>
+/// <param name="LastName">Фамилия создаваемого пользователя</param>
 /// <param name="Password">Пароль создаваемого пользователя</param>
 /// <param name="Email">Email создаваемого пользователя</param>
 public record CreatingUserRequest(
     string Username,
     string FirstName,
-    string Lastname,
+    string LastName,
     string Password,
     string Email);

@@ -1,7 +1,7 @@
-﻿using static Common.Helpers.Constants.UserFullnameConstants;
-using static Domain.Helpers.UserFullNameHelpers.UserFullnameDomainMessages;
+﻿using static Common.Helpers.Constants.NameConstants;
+using static Domain.Helpers.NameHelpers.NameDomainMessages;
 
-namespace Domain.ValueObjects.Exceptions.UserFullNameExceptions;
+namespace Domain.ValueObjects.Exceptions.NameExceptions;
 
 /// <summary>
 /// Исключение, которое выбрасывается, если длина фамилии или имени пользователя превышает максимально допустимую.
@@ -9,14 +9,14 @@ namespace Domain.ValueObjects.Exceptions.UserFullNameExceptions;
 /// <param name="nameType">Тип имени (например, "FirstName" или "LastName").</param>
 /// <param name="valueLength">Текущая длина значения имени или фамилии.</param>
 /// <param name="paramName">Имя параметра, который имеет ошибку (например, "value").</param>
-public class UserFullNameMaximumLengthException(
+public class NameMaximumLengthException(
     string nameType,
     int valueLength,
     string paramName)
     : ArgumentOutOfRangeException(
         paramName: paramName,
         string.Format(
-            USER_FULLNAME_LONGER_MAX_LENGTH_ERROR,
+            NAME_LONGER_MAX_LENGTH_ERROR,
             nameType,
-            USER_FULLNAME_MAX_LENGTH,
+            NAME_MAX_LENGTH,
             valueLength));

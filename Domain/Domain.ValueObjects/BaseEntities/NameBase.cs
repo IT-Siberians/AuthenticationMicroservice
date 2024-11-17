@@ -1,6 +1,6 @@
-﻿using System.Globalization;
+﻿using Domain.ValueObjects.Exceptions.NameExceptions;
+using System.Globalization;
 using System.Text.RegularExpressions;
-using Domain.ValueObjects.Exceptions.NameExceptions;
 using static Common.Helpers.Constants.NameConstants;
 
 namespace Domain.ValueObjects.BaseEntities;

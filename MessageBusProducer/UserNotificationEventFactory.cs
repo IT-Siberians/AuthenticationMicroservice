@@ -24,7 +24,7 @@ public class UserNotificationEventFactory(
     /// <exception cref="ArgumentNullException">Если передана недопустимая модель пользователя.</exception>
     public async Task<INotificationEvent> CreateNotificationEventAsync(UserModel model, CancellationToken cancellationToken)
     {
-        if (model == null) 
+        if (model == null)
             throw new ArgumentNullException(nameof(model));
         switch (model.AccountStatus)
         {

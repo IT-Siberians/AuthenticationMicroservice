@@ -2,6 +2,8 @@ using AuthenticationDataManager.Cookies;
 using EntityFramework;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MassTransit;
 using MessageBusClient;
 using MessageBusClient.Consumers;
@@ -125,6 +127,11 @@ services.AddScoped<IMessageProcessService<UpdateUserEvent>, UpdateUserProcessSer
 
 services.AddControllersWithViews();
 
+services.AddHealthChecks()
+    .AddNpgSql(userDbConString)
+    //.AddRabbitMQ(rabbitConnectionString: rmqConnectionString)
+    .AddDbContextCheck<UserDbContext>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen(
@@ -151,6 +158,11 @@ if (app.Environment.IsDevelopment())
     //});
 }
 
+
+app.MapHealthChecks("health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 app.UseCors(policy =>
 {
     policy

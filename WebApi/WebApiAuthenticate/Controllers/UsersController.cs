@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
 using WebApiAuthenticate.Requests;
 using WebApiAuthenticate.Responses;
+using static WebApiAuthenticate.Helpers.AttributePoliticsNameHelpers;
 
 namespace WebApiAuthenticate.Controllers;
 
@@ -16,154 +18,118 @@ public class UsersController(
     IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserResponse>))]
-    public async Task<ActionResult<IEnumerable<UserResponse>>> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<IEnumerable<UserInfoResponse>>))]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var users = await managementService.GetAllUsersAsync(cancellationToken);
-        return Ok(mapper.Map<IEnumerable<UserResponse>>(users));
+        var usersInfos = mapper.Map<IEnumerable<UserInfoResponse>>(users);
+        return Ok(new ApiResponse<IEnumerable<UserInfoResponse>>(usersInfos));
     }
 
     [HttpGet("{id:guid}", Name = "GetUserById")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
-    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult<UserResponse>> GetUserById(Guid id, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<UserInfoResponse>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse<string>))]
+    public async Task<IActionResult> GetUserById(Guid id, CancellationToken cancellationToken)
     {
         var user = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (user == null)
-            return NotFound($"The user with this id - \"{id}\" was not found");
+            return NotFound(new ApiResponse<string>($"The user with this id - \"{id}\" was not found"));
 
-        var userResponse = mapper.Map<UserResponse>(user);
-        return Ok(userResponse);
+        var userResponse = mapper.Map<UserInfoResponse>(user);
+        return Ok(new ApiResponse<UserInfoResponse>(userResponse));
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserResponse))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-    public async Task<ActionResult<UserResponse>> CreateUser([FromBody] CreatingUserRequest request, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ApiResponse<UserInfoResponse>))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse<string>))]
+    public async Task<IActionResult> CreateUser([FromBody] CreatingUserRequest request, CancellationToken cancellationToken)
     {
         var isAvailableUsername = await validationService.IsAvailableUsernameAsync(request.Username, cancellationToken);
         if (!isAvailableUsername)
-        {
-            return BadRequest("Username is reserved.");
-        }
+            return BadRequest(new ApiResponse<string>("Username is reserved."));
 
         var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.Email, cancellationToken);
         if (!isAvailableEmail)
-        {
-            return BadRequest("Email is reserved");
-        }
+            return BadRequest(new ApiResponse<string>("Email is reserved"));
 
         var createUserDto = mapper.Map<CreateUserModel>(request);
         var createdUser = await managementService.CreateUserAsync(createUserDto, cancellationToken);
-        if (createdUser == null)
-            return BadRequest("The user has not been created");
 
-        var userResponse = mapper.Map<UserResponse>(createdUser);
+        var userResponse = mapper.Map<UserInfoResponse>(createdUser);
         return CreatedAtAction(nameof(GetUserById), new { userResponse.Id }, userResponse);
     }
 
-    [HttpPatch("{id:guid}/ChangeUsername")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> ChangeUsername(Guid id, [FromBody] NewUsernameRequest newUsername, CancellationToken cancellationToken)
-    {
-        var isAvailableUsername = await validationService.IsAvailableUsernameAsync(newUsername.UsernameValue, cancellationToken);
-        if (!isAvailableUsername)
-        {
-            return BadRequest("Username is reserved.");
-        }
-
-        var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
-        if (userToUpdate is null)
-            return NotFound($"The user \"{id}\" for the update does not exist");
-
-        var changeUsernameModel = new ChangeUsernameModel()
-        {
-            Id = id,
-            NewUsername = newUsername.UsernameValue
-        };
-
-        var updateResult = await managementService.ChangeUsernameAsync(changeUsernameModel, cancellationToken);
-        if (!updateResult)
-            return NotFound();
-
-        return NoContent();
-    }
-
+    [Authorize(Policy = OWNER_ONLY_POLITIC_NAME)]
     [HttpPatch("{id:guid}/ChangePassword")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse<string>))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse<string>))]
+    public async Task<IActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordRequest request, CancellationToken cancellationToken)
     {
-        var validateModel = new ValidatePasswordModel() { Id = id, Password = request.OldPassword };
+        var validateModel = new ValidatePasswordModel(id, request.OldPassword);
         var isOldPasswordValid = await validationService.ValidatePasswordAsync(validateModel, cancellationToken);
         if (!isOldPasswordValid)
-        {
-            return BadRequest("Old password not valid");
-        }
+            return BadRequest(new ApiResponse<string>("Old password not valid"));
 
         var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
-            return NotFound($"The user \"{id}\" for the update does not exist");
+            return NotFound(new ApiResponse<string>($"The user \"{id}\" for the update does not exist"));
 
-        var changePasswordModel = new ChangePasswordModel()
-        {
-            Id = id,
-            NewPassword = request.NewPassword
-        };
+        var changePasswordModel = new ChangePasswordModel(id, request.NewPassword);
 
         var updateResult = await managementService.ChangePasswordAsync(changePasswordModel, cancellationToken);
         if (!updateResult)
-            return NotFound();
+            return NotFound(new ApiResponse<string>("Updated user is null"));
 
         return NoContent();
     }
 
+    [Authorize(Policy = OWNER_ONLY_POLITIC_NAME)]
     [HttpPost("{id:guid}/ChangeEmail")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-    public async Task<ActionResult> CreateEmailChangeRequest(Guid id, [FromBody] NewEmailRequest newEmail, CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse<string>))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse<string>))]
+    public async Task<IActionResult> CreateEmailChangeRequest(Guid id, [FromBody] NewEmailRequest request, CancellationToken cancellationToken)
     {
-        var isAvailableEmail = await validationService.IsAvailableEmailAsync(newEmail.EmailValue, cancellationToken);
-        if (!isAvailableEmail)
-        {
-            return BadRequest("Email is reserved");
-        }
-
         var userToUpdate = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToUpdate is null)
-            return NotFound($"The user \"{id}\" for the update does not exist");
+            return NotFound(new ApiResponse<string>($"The user \"{id}\" for the update does not exist"));
 
-        var changeEmailModel = new MailConfirmationGenerationModel()
+        if (userToUpdate.Email != request.EmailValue)
         {
-            Id = id,
-            NewEmail = newEmail.EmailValue
-        };
-
-        var isCreated = await notificationService.CreateSetEmailRequest(changeEmailModel, cancellationToken);
-        if (isCreated)
-        {
-            return Ok($"A request has been created to change the email address to {changeEmailModel.NewEmail}. Check your email for confirmation.");
+            var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.EmailValue, cancellationToken);
+            if (!isAvailableEmail)
+                return BadRequest(new ApiResponse<string>("Email is reserved"));
         }
 
-        return BadRequest();
+        var changeEmailModel = new EmailConfirmationModel(id, request.EmailValue);
+
+        var isCreated = await notificationService.SendEmailConfirmationAsync(changeEmailModel, cancellationToken);
+        if (isCreated)
+            return NoContent();
+
+        return BadRequest(new ApiResponse<string>("Unknown error"));
     }
 
+    [Authorize(Policy = OWNER_ONLY_POLITIC_NAME)]
     [HttpDelete("{id:guid}/Delete")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse<bool>))]
     public async Task<ActionResult<bool>> DeleteUser(Guid id, CancellationToken cancellationToken)
     {
         var userToDelete = await managementService.GetUserByIdAsync(id, cancellationToken);
         if (userToDelete is null)
-            return NotFound($"The user \"{id}\" for the delete does not exist");
+            return NotFound(new ApiResponse<string>($"The user \"{id}\" for the delete does not exist"));
 
         var deleteResult = await managementService.DeleteUserSoftlyByIdAsync(id, cancellationToken);
         if (!deleteResult)
-            return NotFound(deleteResult);
+            return NotFound(new ApiResponse<bool>(deleteResult));
 
         return NoContent();
     }

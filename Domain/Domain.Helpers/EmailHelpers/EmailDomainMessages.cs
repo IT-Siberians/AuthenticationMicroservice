@@ -15,7 +15,7 @@ public static class EmailDomainMessages
     /// Текст ошибки при попытке создать Email длиннее установленного
     /// </summary>
     public const string EMAIL_LONGER_MAX_LENGTH_ERROR =
-        "The Email is longer than the allowed length of the user name. Max length - {0}, current length - {1}";
+        "The Email is longer than the allowed length of the email. Max length - {0}, current length - {1}";
 
     /// <summary>
     /// Текст ошибки при попытке создать Email в недопустимом формате

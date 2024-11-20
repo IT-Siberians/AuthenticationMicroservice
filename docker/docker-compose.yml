@@ -1,0 +1,43 @@
+services:
+  backend:    
+    build:
+     context: ../
+     dockerfile: ./Dockerfile
+    restart: unless-stopped
+    env_file: "backend.env"
+    ports:
+      - "9001:9001"
+    depends_on:
+      - redis
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    env_file: "db.env"
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "usersdb", "-U", "postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: "redis:latest"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 5
+      timeout: 10s
+
+volumes:
+  db-data:
+    driver: local
+  redis-data:
+    driver: local

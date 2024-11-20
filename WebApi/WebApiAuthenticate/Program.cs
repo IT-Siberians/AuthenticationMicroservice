@@ -28,14 +28,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 var configuration = builder.Configuration;
-var userDbConString = configuration.GetConnectionString("UsersDb");
+var userDbConString = configuration["DB_CONNECTION_STRING"];
 if (string.IsNullOrWhiteSpace(userDbConString))
     throw new InvalidOperationException("The connection string 'UsersDb' cannot be null or empty.");
-var rmqConString = configuration.GetConnectionString(nameof(MassTransitProducer));
+var rmqConString = configuration["RMQ_CONNECTION_STRING"];
 if (string.IsNullOrWhiteSpace(rmqConString))
     throw new InvalidOperationException($"The connection string '{nameof(MassTransitProducer)}' cannot be null or empty.");
-var redisConString = configuration.GetConnectionString(nameof(RedisContext));
-if (string.IsNullOrWhiteSpace(rmqConString))
+var redisConString = configuration["REDIS_CONNECTION_STRING"];
+if (string.IsNullOrWhiteSpace(redisConString))
     throw new InvalidOperationException($"The connection string '{nameof(RedisContext)}' cannot be null or empty.");
 
 
@@ -140,8 +140,8 @@ c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
     //c =>
@@ -149,7 +149,7 @@ if (app.Environment.IsDevelopment())
     //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
     //    c.RoutePrefix = string.Empty; // Äîñòóï ê Swagger UI ïî êîðíåâîìó URL
     //});
-}
+//}
 
 app.UseCors(policy =>
 {
@@ -159,7 +159,7 @@ app.UseCors(policy =>
         .AllowAnyHeader();
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

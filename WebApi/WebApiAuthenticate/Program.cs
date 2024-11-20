@@ -61,7 +61,9 @@ services.AddTransient<IMessageBusProducer, MassTransitProducer>();
 services.AddTransient<IVerificationCodeService, VerificationCodeService>();
 services.AddScoped<IAuthManagerService, CookiesManagerService>();
 services.AddTransient<IClaimsPrincipalBuilder<CookiesClaimsPrincipalBuilder>, CookiesClaimsPrincipalBuilder>();
+services.AddTransient<INotificationEventFactory, UserNotificationEventFactory>();
 services.AddSingleton<IAuthorizationHandler, IsOwnerHandler>();
+
 
 // Add infrastructure to the container.
 services.AddTransient<IPasswordHasher, CustomPasswordHasher>();

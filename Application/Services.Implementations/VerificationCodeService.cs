@@ -38,12 +38,17 @@ public class VerificationCodeService(
         ushort code,
         CancellationToken cancellationToken)
     {
+        if (code == 0)
+        {
+            await repository.DeleteCodeByIdAsync(id, cancellationToken);
+            return true;
+        }
 
         var model = await repository.GetCodeByUserIdAsync(id, cancellationToken);
         if (model is null)
             return false;
 
-        if (code != 0 && model.VerificationCode != code) return false;
+        if (model.VerificationCode != code) return false;
         await repository.DeleteCodeByIdAsync(id, cancellationToken);
         return true;
     }

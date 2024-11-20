@@ -38,6 +38,4 @@ services:
 
 volumes:
   db-data:
-    driver: local
   redis-data:
-    driver: local

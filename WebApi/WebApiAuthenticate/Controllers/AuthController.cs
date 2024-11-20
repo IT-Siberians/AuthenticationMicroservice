@@ -16,7 +16,7 @@ public class AuthController(
     IAuthManagerService authManagerService) : ControllerBase
 {
     [HttpPost("Login")]
-    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(ApiResponse<string>))]
+    [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(ApiResponse<Guid>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse<string>))]
     public async Task<IActionResult> Login(UserLoginRequest request, CancellationToken cancellationToken)
     {
@@ -35,7 +35,7 @@ public class AuthController(
             claimsPrincipal.Identity!.AuthenticationType,
             claimsPrincipal);
 
-        return Ok(new ApiResponse<Guid>(user.Id.ToString()));
+        return Ok(new ApiResponse<Guid>(user.Id));
     }
 
     [Authorize]

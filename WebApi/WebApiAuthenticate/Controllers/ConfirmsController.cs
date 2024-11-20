@@ -16,7 +16,7 @@ namespace WebApiAuthenticate.Controllers
         IUserValidationService validationService) : ControllerBase
     {
         [HttpPost("ConfirmEmail")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<string>))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse<string>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse<string>))]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)

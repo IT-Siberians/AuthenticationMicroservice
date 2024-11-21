@@ -37,12 +37,12 @@ namespace WebApiAuthenticate.Controllers
             }
 
             var confirmEmailModel = mapper.Map<EmailConfirmationModel>(request);
-            var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
+            var notificationEvent = await factory.CreateNotificationEventAsync(userToUpdate, cancellationToken);
 
+            var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
             if (updateResult is null)
                 return NotFound(new ApiResponse<string>("Updated user is null"));
 
-            var notificationEvent = await factory.CreateNotificationEventAsync(updateResult, cancellationToken);
             await notificationEvent.NotifyAsync(cancellationToken);
 
             return NoContent();

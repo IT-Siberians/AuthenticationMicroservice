@@ -6,20 +6,20 @@ using static Common.Helpers.Constants.UsernameConstants;
 namespace Domain.ValueObjects.ValueObjects;
 
 /// <summary>
-/// Базовый элемент Имя пользователя(никнейм)
+/// Базовый элемент Никнейм
 /// </summary>
 /// <param name="value">Строка хранящаяся в элементе и проходящая валидацию на соответствие правилам Хэшированного пароля</param>
 public class Username(string value) : ValueObject<string>(value)
 {
-    private static readonly Regex ValidationRegex = new Regex(USERNAME_VALID_PATTERN,
+    private static readonly Regex ValidationRegex = new(USERNAME_VALID_PATTERN,
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
     /// <summary>
-    /// Проверяет строку на соответствие формату  имени пользователя(никнейма)
+    /// Проверяет строку на соответствие формату Никнейм
     /// </summary>
     /// <param name="value"></param>
     /// <exception cref="ArgumentNullException">Нулевая или пустая строка в параметрах метода</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Несоответствие длине имени пользователя(никнейма)</exception>
-    /// <exception cref="ArgumentException">Несоответствие паттерну имени пользователя(никнейму)</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Несоответствие длине Никнейм</exception>
+    /// <exception cref="ArgumentException">Несоответствие паттерну Никнейм</exception>
     protected override void Validate(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -35,6 +35,6 @@ public class Username(string value) : ValueObject<string>(value)
 
         var match = ValidationRegex.Match(value);
         if (!match.Success)
-            throw new UsernameInvalidCharacterException(value); ;
+            throw new UsernameInvalidCharacterException(value);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Contracts;
 using WebApiAuthenticate.Requests;
+using WebApiAuthenticate.Responses;
 
 namespace WebApiAuthenticate.Controllers
 {
@@ -10,35 +11,39 @@ namespace WebApiAuthenticate.Controllers
     [Route("/api/v1/[controller]")]
     public class ConfirmsController(
         IUserManagementService managementService,
+        INotificationEventFactory factory,
         IMapper mapper,
         IUserValidationService validationService) : ControllerBase
     {
-        [HttpPatch("ConfirmEmail")]
+        [HttpPost("ConfirmEmail")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        public async Task<ActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ApiResponse<string>))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ApiResponse<string>))]
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request, CancellationToken cancellationToken)
         {
-            var isLinkExpired = await validationService.IsLinkExpiredAsync(request.CreatedDateTime, cancellationToken);
-            if (!isLinkExpired)
-                return BadRequest("Link is Expired");
-
-            var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
-            if (!isAvailableEmail)
-            {
-                return BadRequest("Email is reserved");
-            }
+            var isValidCode = await validationService.ValidateVerificationCodeAsync(request.Id, request.Code, cancellationToken);
+            if (!isValidCode)
+                return BadRequest(new ApiResponse<string>("Invalid code verification"));
 
             var userToUpdate = await managementService.GetUserByIdAsync(request.Id, cancellationToken);
             if (userToUpdate is null)
-                return NotFound($"The user \"{request.Id}\" for the update does not exist");
+                return NotFound(new ApiResponse<string>($"The user \"{request.Id}\" for the update does not exist"));
 
-            var confirmEmailModel = mapper.Map<SetUserEmailModel>(request);
+            if (userToUpdate.Email != request.NewEmail)
+            {
+                var isAvailableEmail = await validationService.IsAvailableEmailAsync(request.NewEmail, cancellationToken);
+                if (!isAvailableEmail)
+                    return BadRequest(new ApiResponse<string>("Email is reserved"));
+            }
+
+            var confirmEmailModel = mapper.Map<EmailConfirmationModel>(request);
+            var notificationEvent = await factory.CreateNotificationEventAsync(userToUpdate, cancellationToken);
 
             var updateResult = await managementService.SetUserEmailAsync(confirmEmailModel, cancellationToken);
+            if (updateResult is null)
+                return NotFound(new ApiResponse<string>("Updated user is null"));
 
-            if (!updateResult)
-                return NotFound();
+            await notificationEvent.NotifyAsync(cancellationToken);
 
             return NoContent();
         }

@@ -1,12 +1,12 @@
 ﻿namespace Services.Contracts;
 
 /// <summary>
-/// Модель смены имени пользователя(никнейма)
+/// Модель смены имени пользователя
 /// </summary>
-public class ChangeUsernameModel : BaseModel<Guid>
-{
-    /// <summary>
-    /// Новое имя пользователя
-    /// </summary>
-    public required string NewUsername { get; init; }
-}
+/// <param name="Id">Идентификатор модели</param>
+/// <param name="FirstName">Изменяемое имя пользователя</param>
+/// <param name="LastName">Изменяемая фамилия</param>
+public record ChangeUsernameModel(
+    Guid Id,
+    string FirstName,
+    string LastName) : BaseModel<Guid>(Id);

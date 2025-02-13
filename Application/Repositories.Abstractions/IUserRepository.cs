@@ -8,11 +8,11 @@ namespace Repositories.Abstractions;
 public interface IUserRepository : IBaseRepository<User, Guid>
 {
     /// <summary>
-    /// Получить пользователя по имени пользователя(никнейму)
+    /// Получить пользователя по Никнейм
     /// </summary>
-    /// <param name="username">Имя пользователя(никнейм) искомого пользователя</param>
+    /// <param name="username">Никнейм искомого пользователя</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Пользователь с указанным именем пользователя(никнеймом)</returns>
+    /// <returns>Пользователь с указанным Никнейм</returns>
     Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken);
 
     /// <summary>

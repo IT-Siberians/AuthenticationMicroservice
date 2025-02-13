@@ -20,11 +20,17 @@ namespace EntityFramework.Configurations
                 .HasMaxLength(UsernameConstants.USERNAME_MAX_LENGTH)
                 .HasConversion(username => username.Value, value => new Username(value));
 
+            builder.Property(u => u.FirstName)
+                .HasMaxLength(NameConstants.NAME_MAX_LENGTH)
+                .HasConversion(firstname => firstname.Value, value => new FirstName(value));
+
+            builder.Property(u => u.LastName)
+                .HasMaxLength(NameConstants.NAME_MAX_LENGTH)
+                .HasConversion(lastname => lastname.Value, value => new LastName(value));
+
             builder.Property(u => u.PasswordHash)
                 .HasMaxLength(PasswordHashConstants.PASSWORDHASH_MAX_LENGTH)
                 .HasConversion(passwordHash => passwordHash.Value, value => new PasswordHash(value));
-
-            builder.Ignore(u => u.IsSignIn);
         }
     }
 }

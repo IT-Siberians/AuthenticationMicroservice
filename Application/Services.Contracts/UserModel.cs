@@ -5,21 +5,16 @@ namespace Services.Contracts;
 /// <summary>
 /// Модель пользователя для чтения
 /// </summary>
-public class UserModel : BaseModel<Guid>
-{
-    /// <summary>
-    /// Имя пользователя
-    /// </summary>
-    public required string Username { get; init; }
-
-    /// <summary>
-    /// Email пользователя
-    /// </summary>
-    public required string Email { get; init; }
-
-    /// <summary>
-    /// Статус аккаунта пользователя
-    /// </summary>
-    public required AccountStatuses AccountStatus { get; init; }
-
-}
+/// <param name="Id">Идентификатор модели</param>
+/// <param name="Username">Никнейм пользователя</param>
+/// <param name="FirstName">Имя пользователя</param>
+/// <param name="LastName">Фамилия пользователя</param>
+/// <param name="Email">Email пользователя</param>
+/// <param name="AccountStatus">Статус аккаунта</param>
+public record UserModel(
+    Guid Id,
+    string Username,
+    string FirstName,
+    string LastName,
+    string Email,
+    AccountStatuses AccountStatus) : BaseModel<Guid>(Id);

@@ -3,15 +3,8 @@
 /// <summary>
 /// Запрос на смену пароля
 /// </summary>
-public class ChangePasswordRequest
-{
-    /// <summary>
-    /// Проверяемый пароль
-    /// </summary>
-    public required string OldPassword { get; init; }
-
-    /// <summary>
-    /// Новый пароль, на который происходит смена
-    /// </summary>
-    public required string NewPassword { get; init; }
-}
+/// <param name="OldPassword">Проверяемый пароль</param>
+/// <param name="NewPassword">Новый пароль, на который происходит смена</param>
+public record ChangePasswordRequest(
+    string OldPassword,
+    string NewPassword);

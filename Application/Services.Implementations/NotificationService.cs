@@ -1,4 +1,6 @@
-﻿using Domain.ValueObjects.ValueObjects;
+﻿using AutoMapper;
+using Domain.ValueObjects.ValueObjects;
+using Otus.QueueDto.Notification;
 using Repositories.Abstractions;
 using Services.Abstractions;
 using Services.Contracts;
@@ -6,26 +8,59 @@ using Services.Contracts;
 namespace Services.Implementations;
 
 /// <summary>
-/// Сервис оповещений
+/// Сервис для отправки уведомлений пользователям.
 /// </summary>
-/// <param name="repository">Репозиторий пользователей</param>
-public class NotificationService(IUserRepository repository) : INotificationService
+/// <param name="repository">Репозиторий пользователей.</param>
+/// <param name="producer">Клиент для отправки сообщений в шину данных.</param>
+/// <param name="verificationCodeService">Сервис для генерации и валидации кодов подтверждения.</param>
+/// <param name="mapper">Автомаппер для преобразования данных.</param>
+public class NotificationService(
+    IMapper mapper,
+    IUserRepository repository,
+    IMessageBusProducer producer,
+    IVerificationCodeService verificationCodeService) : INotificationService
 {
     /// <summary>
-    /// Создать запрос на установку почты
+    /// Отправляет пользователю письмо для подтверждения email-адреса.
     /// </summary>
-    /// <param name="mailConfirmationGenerationModel">Модель генерации подтверждения Email</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Возвращает true - запрос создан/ false - запрос не создан</returns>
-    public async Task<bool> CreateSetEmailRequest(MailConfirmationGenerationModel mailConfirmationGenerationModel, CancellationToken cancellationToken)
+    /// <param name="model">Модель данных, содержащая идентификатор пользователя и новый email.</param>
+    /// <param name="cancellationToken">Токен отмены для управления асинхронной операцией.</param>
+    /// <returns>
+    /// Возвращает <c>true</c>, если письмо было успешно отправлено; иначе <c>false</c>.
+    /// </returns>
+    public async Task<bool> SendEmailConfirmationAsync(EmailConfirmationModel model, CancellationToken cancellationToken)
     {
-        var user = await repository.GetByIdAsync(mailConfirmationGenerationModel.Id, cancellationToken);
+        var user = await repository.GetByIdAsync(model.Id, cancellationToken);
         if (user == null)
             return false;
 
-        var newEmail = new Email(mailConfirmationGenerationModel.NewEmail); //здесь это нужно чтобы провалидировать эмейл
-        //здесь будет логика отправки в почту
+        var newEmail = new Email(model.NewEmail);
 
+        var code = await verificationCodeService.GenerateCodeAsync(user.Id, cancellationToken);
+
+        const string culture = "ru";
+
+        var emailPublishModel = new ConfirmationEmailEvent(newEmail.Value, user.Username.Value, new Uri("https://localhost"), code, culture);
+
+        await producer.PublishDataAsync(emailPublishModel, cancellationToken);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Отправляет уведомление об изменении данных пользователя.
+    /// </summary>
+    /// <param name="model">Модель данных пользователя, содержащая обновленные данные.</param>
+    /// <param name="cancellationToken">Токен отмены для управления асинхронной операцией.</param>
+    /// <returns>
+    /// Возвращает <c>true</c>, если уведомление было успешно отправлено; иначе <c>false</c>.
+    /// </returns>
+    public async Task<bool> NotifyChangeUserDataAsync<T>(T model, CancellationToken cancellationToken)
+    {
+        if (model == null)
+            return false;
+
+        await producer.PublishDataAsync(model, cancellationToken);
         return true;
     }
 }

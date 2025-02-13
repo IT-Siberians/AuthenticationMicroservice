@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Services.Contracts;
+using System.Globalization;
 using WebApiAuthenticate.Requests;
 using WebApiAuthenticate.Responses;
 
@@ -9,38 +10,40 @@ public class UserMappingsPresentationProfile : Profile
 {
     public UserMappingsPresentationProfile()
     {
-        #region CreatingUserRequest=>CreateUserModel
-
         CreateMap<CreatingUserRequest, CreateUserModel>()
             .ForMember(
                 dest => dest.Username,
                 opt => opt.MapFrom(
                     src => src.Username.Trim().ToLower()))
             .ForMember(
+                dest => dest.FirstName,
+                opt => opt.MapFrom(
+                    src =>
+                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(src.FirstName.Trim())))
+            .ForMember(
+                dest => dest.LastName,
+                opt => opt.MapFrom(
+                    src =>
+                        CultureInfo.CurrentCulture.TextInfo.ToTitleCase(src.LastName.Trim())))
+            .ForMember(
                 dest => dest.Email,
                 opt => opt.MapFrom(
                     src => src.Email.Trim().ToLower()));
-        #endregion
-        #region UserModel=>UserResponse
-        CreateMap<UserModel, UserResponse>();
-        #endregion
-        #region ChangePasswordRequest=>ChangePasswordRequest
+
+        CreateMap<UserModel, UserInfoResponse>();
 
         CreateMap<ChangePasswordRequest, ChangePasswordModel>();
-        #endregion
-        #region ConfirmEmailRequest=>SetUserEmailModel
-        CreateMap<ConfirmEmailRequest, SetUserEmailModel>()
+
+        CreateMap<ConfirmEmailRequest, EmailConfirmationModel>()
             .ForMember(
                 dest => dest.NewEmail,
                 opt => opt.MapFrom(
                     src => src.NewEmail.Trim().ToLower()));
-        #endregion
-        #region ChangePasswordRequest=>ValidatePasswordModel
+
         CreateMap<ChangePasswordRequest, ValidatePasswordModel>()
             .ForMember(
                 dest => dest.Password,
                 opt => opt.MapFrom(
                     src => src.OldPassword));
-        #endregion
     }
 }

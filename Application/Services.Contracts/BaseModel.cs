@@ -4,11 +4,6 @@
 /// Базовый класс моделей
 /// </summary>
 /// <typeparam name="TId">Идентификатор модели</typeparam>
-public abstract class BaseModel<TId>
-    where TId : struct
-{
-    /// <summary>
-    /// Идентификатор модели
-    /// </summary>
-    public required TId Id { get; init; }
-}
+/// <param name="Id"> Идентификатор модели</param>
+public abstract record BaseModel<TId>(TId Id)
+    where TId : struct;
